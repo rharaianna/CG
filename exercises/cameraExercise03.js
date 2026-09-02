@@ -6,7 +6,7 @@ import {initRenderer,
         onWindowResize,
         createGroundPlaneXZ} from "../libs/util/util.js";
 
-let scene, renderer, camera, light; // Initial variables
+let scene, renderer, camera, light, posicao, quartenio, alpha; // Initial variables
 scene = new THREE.Scene();    
 renderer = initRenderer();    
 light = initDefaultBasicLight(scene, true);
@@ -14,21 +14,32 @@ window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)},
 
 // Camera
 camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-   camera.position.set(0.0, 10.0, 25.0);
+   camera.position.set(0.0, 0.0, 0.0);
    // Para o exercício, a câmera deve estar na posição (0, 0, 0)
    camera.up.set( 0.0, 1.0, 0.0 );
    camera.lookAt(0.0, 0.0, 0.0);
 scene.add(camera)
 
+posicao = new THREE.Vector3(0.0, 3.0, 25.0)
+quartenio = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0)
+alpha = 0.05
+
+
 buildScene();
 buildInterface();
 render();
 
+
+
 function render()
 {
-   requestAnimationFrame(render);
-   renderer.render(scene, camera) // Render scene
+  requestAnimationFrame(render);
+  camera.position.lerp(posicao, alpha);
+  camera.quaternion.slerp(quartenio, alpha);
+  
+  renderer.render(scene, camera) // Render scene
 }
+
 
 
 function buildInterface()
@@ -36,13 +47,16 @@ function buildInterface()
   var controls = new function ()
   {
     this.movePosition1 = function(){
-      console.log("Este botão ainda não faz nada - 1");
+      posicao.set(0.0, 3.0, 25.0);
+      quartenio.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0);
     };
     this.movePosition2 = function(){
-      console.log("Este botão ainda não faz nada - 2");
+      posicao.set(15.0, 4.0, 13.0);
+      quartenio.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI/4);
     };
     this.movePosition3 = function(){
-      console.log("Este botão ainda não faz nada - 3");
+      posicao.set(20.0, 6.0, 0.0);
+      quartenio.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI/2);
     };        
   };
 

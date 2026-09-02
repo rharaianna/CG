@@ -38,6 +38,9 @@ render();
 function updateCamera()
 {
    // DICA: Atualize a câmera aqui!
+   camera.position.copy(camPos);
+   camera.up.copy( camUp );
+   camera.lookAt(camLook);
 
    message.changeMessage("Pos: {" + camPos.x + ", " + camPos.y + ", " + camPos.z + "} " + 
                          "/ LookAt: {" + camLook.x + ", " + camLook.y + ", " + camLook.z + "}");
@@ -46,9 +49,22 @@ function updateCamera()
 function keyboardUpdate() {
 
    keyboard.update();
+   let alpha = 0.1
+   let angle = THREE.MathUtils.degToRad(5); 
+   if ( keyboard.pressed("left") )  camPos.x -= alpha;
+   if ( keyboard.pressed("right") )  camPos.x += alpha;
+   if ( keyboard.pressed("up") )   camPos.z -= alpha;
+   if ( keyboard.pressed("down") ) camPos.z += alpha;
+
+     
+   if ( keyboard.pressed("A") )  camLook.x -= alpha;
+   if ( keyboard.pressed("D") )  camLook.x += alpha;
+   if ( keyboard.pressed("W") )   camLook.y += alpha;
+   if ( keyboard.pressed("S") ) camLook.y -= alpha;
    
-   // DICA: Insira aqui seu código para mover a câmera
-   
+   if ( keyboard.pressed("Q") )   camLook.z -= alpha;
+   if ( keyboard.pressed("E") ) camLook.z += alpha;
+
    updateCamera();
 }
 
