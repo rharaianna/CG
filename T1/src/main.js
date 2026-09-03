@@ -1,19 +1,21 @@
 import * as THREE from  'three';
-import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
+import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import {initRenderer, 
         initCamera,
         initDefaultBasicLight,
         setDefaultMaterial,
         InfoBox,
         onWindowResize,
-        createGroundPlaneXZ} from "../libs/util/util.js";
+        createGroundPlaneXZ} from "../../libs/util/util.js";
+
+import { Castle } from './models/castle/Castle.js'
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
 scene = new THREE.Scene();    // Create main scene
 renderer = initRenderer();    // Init a basic renderer
 material = setDefaultMaterial(); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
-camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
+camera = initCamera(new THREE.Vector3(20, 70, 25)); // Init camera in this position
 scene.add(camera); // Add camera to the scene
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 
@@ -25,16 +27,13 @@ let axesHelper = new THREE.AxesHelper( 12 );
 scene.add( axesHelper );
 
 // create the ground plane
-let plane = createGroundPlaneXZ(20, 20)
+let plane = createGroundPlaneXZ(100, 100)
 scene.add(plane);
 
-// create a cube
-let cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
-let cube = new THREE.Mesh(cubeGeometry, material);
-// position the cube
-cube.position.set(0.0, 2.0, 0.0);
-// add the cube to the scene
-scene.add(cube);
+let castle = new Castle(0, 10, 0)
+scene.add(castle.object)
+//castle.object.position.set(, 0, 50);
+
 
 // Use this to show information onscreen
 let controls = new InfoBox();
