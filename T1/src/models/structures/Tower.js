@@ -27,7 +27,7 @@ export class Tower extends Model {
             }
         }
 
-        let mesh = new THREE.Mesh(towerBrush.geometry, towerBrush.material);
+        let mesh = new THREE.Mesh(towerBrush.geometry, this.material);
 
         if (
             (config.janelaslinha > 0 && config.janelacoluna > 0) || 

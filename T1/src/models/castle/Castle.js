@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Model } from "../Model.js";
 import { Tower } from "../structures/Tower.js";
 import { Floor } from "../structures/Floor.js";
+import { Door } from "../structures/Door.js";
 
 import { materials } from "../material.configs.js"
 import { Wall } from "../structures/Wall.js";
@@ -24,6 +25,7 @@ export class Castle extends Model {
         const floorY = floorConfig.height/2
         const floor = new Floor(0, floorY, 0, materials.grass, floorConfig);
         this.add(floor)
+        this.timer = 0;
 
         let wallConfig = {
             width: WALL_WIDTH,
@@ -132,5 +134,42 @@ export class Castle extends Model {
         this.add(midTower3)
         this.add(midTower4)
 
+
+        const doorConfig = {
+            width: 8,       // Mesma largura do portão cavado na parede
+            height: 6,      // Mesma altura
+            depth: 0.3      // Espessura das tábuas da porta
+        };
+
+        // Posiciona o portão na mesma coordenada da parede 1
+        const doorY = doorConfig.height / 2;
+        const doorZ = -wallZ + WALL_WIDTH / 2; // Levemente ajustado para o vão
+
+        this.castleDoor = new Door(0, doorY, doorZ, materials.wood || this.material, doorConfig);
+
+        
+        // Se quiser testar o portão aberto logo na criação:
+        // this.castleDoor.toggleDoor(true);
+
+        this.add(this.castleDoor);
+
+    }
+    
+    
+    
+    update(deltaTime) {
+        super.update(deltaTime);
+    
+        // Incrementa o tempo a cada frame
+        this.timer += deltaTime;
+    
+        // A cada 3 segundos, inverte o estado do portão automaticamente
+        if (this.timer > 3.0) {
+            this.timer = 0;
+            if (this.castleDoor) {
+                const estadoAtual = this.castleDoor.isOpen;
+                this.castleDoor.toggleDoor(!estadoAtual);
+            }
+        }
     }
 }

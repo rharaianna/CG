@@ -18,7 +18,8 @@ export class Wall extends Model {
             portao = false, 
             alturaPortao = 0, 
             larguraPortao = 0,
-            holes: customHoles = [] // Permite receber holes manuais se necessário
+            holes: customHoles = [], // Permite receber holes manuais se necessário
+            towerCuts = []
         } = config;
 
         //======== INICIO PARTE DAS JANELAS E PORTAO========
@@ -66,7 +67,10 @@ export class Wall extends Model {
             mesh = applyHolesToWall(mesh, width, height, depth, holes);
         }
     //======== FIM  PARTE DAS JANELAS E PORTAO========
-
+        
+        if (towerCuts.length > 0) {
+            mesh = applyTowerCutoutsToWall(mesh, width, height, depth, towerCuts);
+        }
 
         if(!!rotations)
             this.rotate(rotations)
