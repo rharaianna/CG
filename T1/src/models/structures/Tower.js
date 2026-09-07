@@ -1,42 +1,41 @@
 import * as THREE from "three";
 import { Model } from "../Model.js";
+import { Evaluator, Brush, SUBTRACTION } from 'three-bvh-csg';
+import { applyHolesToTower } from "../../utils/CSGModifiers.js";
+
+const evaluator = new Evaluator();
 
 export class Tower extends Model {
     constructor(x, y, z, material, config) {
         super(x, y, z, material);
 
-        const { height, radius, radialSegments } = config
+        const { height, radius, radialSegments, innerRadius = 0 } = config;
 
-        const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
-        const cylinder = new THREE.Mesh(geometry, this.material);
+        // Cilindro externo
+        const outerGeo = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
+        let towerBrush = new Brush(outerGeo, this.material);
 
-        /* const radius = 5;
-        const brickWidth = 1;
-        const brickHeight = 0.8;
+        // Se houver innerRadius válido, oca a torre diretamente
+        if (innerRadius > 0) {
+            const safeInnerRadius = Math.min(innerRadius, radius - 0.1);
 
-        for (let y = 0; y < 12; y++) {
+            if (safeInnerRadius > 0) {
+                const innerGeo = new THREE.CylinderGeometry(safeInnerRadius, safeInnerRadius, height + 0.1, radialSegments);
+                const innerBrush = new Brush(innerGeo);
 
-            for (let i = 0; i < 20; i++) {
-
-                const angle = (i / 20) * Math.PI * 2;
-
-                const brick = new THREE.Mesh(
-                    new THREE.BoxGeometry(1.5, brickHeight, 0.8),
-                    this.material
-                );
-
-                brick.position.set(
-                    Math.cos(angle) * radius,
-                    y * brickHeight,
-                    Math.sin(angle) * radius
-                );
-
-                brick.rotation.y = -angle;
-
-                this.object.add(brick);
+                towerBrush = evaluator.evaluate(towerBrush, innerBrush, SUBTRACTION);
             }
-        } */
+        }
 
-        this.object.add(cylinder);
+        let mesh = new THREE.Mesh(towerBrush.geometry, towerBrush.material);
+
+        if (
+            (config.janelaslinha > 0 && config.janelacoluna > 0) || 
+            (config.holes && config.holes.length > 0)
+        ) {
+            mesh = applyHolesToTower(mesh, radius, innerRadius > 0 ? innerRadius : 0, height, config);
+        }
+
+        this.object.add(mesh);
     }
 }

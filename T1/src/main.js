@@ -15,7 +15,7 @@ scene = new THREE.Scene();    // Create main scene
 renderer = initRenderer();    // Init a basic renderer
 material = setDefaultMaterial(); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
-camera = initCamera(new THREE.Vector3(20, 70, 25)); // Init camera in this position
+camera = initCamera(new THREE.Vector3(0, 40, 90)); // Init camera in this position
 scene.add(camera); // Add camera to the scene
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 

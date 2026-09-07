@@ -35,13 +35,29 @@ export class Castle extends Model {
                 y: THREE.MathUtils.degToRad(90),
                 z: 0
             }
+            
         }
         
+        const wall1Config = {
+            ...wallConfig,
+            portao: true,
+            alturaPortao: 6,
+            larguraPortao: 8,
+            janelaslinha: 1,
+            janelacoluna: 6,
+            janelaAltura: 2,
+            janelaLargura: 1.5
+        };
+
+        
+
+        
+
         // paredes paralelas ao Z 
         // parede 1
         let wallY = wallConfig.height/2 
         let wallZ = floorConfig.depth/2 + wallConfig.width/2
-        const wall1 = new Wall(0, wallY, -wallZ, null, wallConfig)
+        const wall1 = new Wall(0, wallY, -wallZ, materials.bricks, wall1Config)
         
         // parede 2
         const wall2 = new Wall(0, wallY, wallZ, materials.bricks, wallConfig)
@@ -53,6 +69,8 @@ export class Castle extends Model {
             y: 0,
             z: 0
         }
+
+
 
         // parede 3
         let wallX = floorConfig.width/2 + wallConfig.width/2
@@ -72,7 +90,12 @@ export class Castle extends Model {
             height: 20,
             depth: 10,
             radius: 4,
-            radialSegments: 32
+            radialSegments: 32,
+            innerRadius: 2,
+            janelaslinha: 2,        // 2 fileiras de janelas na altura
+            janelacoluna: 4,        // 4 colunas distribuídas em 360° ao redor da torre
+            janelaAltura: 2,
+            janelaLargura: 1
         }
 
         const towerY = towerConfig.height/2 + floorConfig.height
@@ -105,7 +128,7 @@ export class Castle extends Model {
         const midTower4 = new Tower(-midTowerX, midTowerY, 0, this.material, towerConfig);
 
         //this.add(midTower1)
-        this.add(midTower2)
+        //this.add(midTower2)
         this.add(midTower3)
         this.add(midTower4)
 

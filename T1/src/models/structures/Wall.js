@@ -1,12 +1,72 @@
 import * as THREE from "three";
 import { Model } from "../Model.js";
+import { applyHolesToWall } from "../../utils/CSGModifiers.js";
 
 export class Wall extends Model {
-    constructor(x, y, z, material, { width, height, depth, rotations}) {
+    constructor(x, y, z, material, config) {
         super(x, y, z, material);
 
+    const { 
+            width,        
+            height,       
+            depth,        
+            rotations, 
+            janelaslinha = 0, 
+            janelacoluna = 0, 
+            janelaAltura = 0, 
+            janelaLargura = 0, 
+            portao = false, 
+            alturaPortao = 0, 
+            larguraPortao = 0,
+            holes: customHoles = [] // Permite receber holes manuais se necessário
+        } = config;
+
+        //======== INICIO PARTE DAS JANELAS E PORTAO========
+
         const geometry = new THREE.BoxGeometry(width, height, depth);
-        const mesh = new THREE.Mesh(geometry, this.material);
+        let mesh = new THREE.Mesh(geometry, this.material);
+
+        const holes = [...customHoles];
+
+        // 1. Adiciona o portão em arco (U invertido) se ativado
+        if (portao && alturaPortao > 0 && larguraPortao > 0) {
+            holes.push({
+                x: (depth / 2) - (larguraPortao / 2), 
+                y: 0, 
+                width: larguraPortao,
+                height: alturaPortao,
+                type: 'arch' 
+            });
+        }
+
+        // 2. Adiciona as janelas em formato de grid se especificadas
+        if (janelaslinha > 0 && janelacoluna > 0 && janelaAltura > 0 && janelaLargura > 0) {
+            const spacingX = depth / (janelacoluna + 1);
+            const usableHeight = height - (portao ? alturaPortao : 0);
+            const spacingY = usableHeight / (janelaslinha + 1);
+            const baseOffsetY = portao ? alturaPortao : 0;
+
+            for (let r = 0; r < janelaslinha; r++) {
+                for (let c = 0; c < janelacoluna; c++) {
+                    const hx = spacingX * (c + 1) - (janelaLargura / 2);
+                    const hy = baseOffsetY + spacingY * (r + 1) - (janelaAltura / 2);
+
+                    holes.push({
+                        x: hx,
+                        y: hy,
+                        width: janelaLargura,
+                        height: janelaAltura
+                    });
+                }
+            }
+        }
+
+        // 3. Aplica os recortes apenas se houver buracos configurados
+        if (holes.length > 0) {
+            mesh = applyHolesToWall(mesh, width, height, depth, holes);
+        }
+    //======== FIM  PARTE DAS JANELAS E PORTAO========
+
 
         if(!!rotations)
             this.rotate(rotations)
@@ -14,3 +74,7 @@ export class Wall extends Model {
         this.object.add(mesh);
     }
 }
+
+
+//funcao (janelaslinha(int), janelacoluna, portao(bool)){
+//}
