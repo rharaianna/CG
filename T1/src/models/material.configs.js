@@ -2,11 +2,11 @@ import * as THREE from "three";
 
 export const materials = {
     grass: new THREE.MeshStandardMaterial({
-        color: "#1bdb4b",
+        color: "#498357",
         roughness: 0.8,
     }),
     bricks: new THREE.MeshStandardMaterial({
-        color: "#4c4948",
+        color: "#828181",
         roughness: 0.8,
     })
 }

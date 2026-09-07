@@ -1,42 +1,34 @@
-import * as THREE from "three";
-import { Model } from "../Model.js";
+import * as THREE from "three"
+import { Model } from "../Model.js"
 
 export class Tower extends Model {
-    constructor(x, y, z, material, config) {
-        super(x, y, z, material);
+    constructor(x, y, z, material, height, radius, radialSegments, brickHeight) {
+        super(x, y, z, material)
+        const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments)
+        const cylinder = new THREE.Mesh(geometry, this.material)
 
-        const { height, radius, radialSegments } = config
+        const brickWidth = 0.2 * radius
+        const brickDepth = 0.3 * radius
+        const merlonsNumber = 15
+    
+        // adiciona os merloes no c
+        for (let i=0; i< merlonsNumber; i++) {
+            const angle = (i / merlonsNumber) * Math.PI * 2
 
-        const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
-        const cylinder = new THREE.Mesh(geometry, this.material);
+            const merlon = new THREE.Mesh(new THREE.BoxGeometry(brickWidth, brickHeight, brickDepth), this.material)
 
-        /* const radius = 5;
-        const brickWidth = 1;
-        const brickHeight = 0.8;
+            merlon.position.set(
+                Math.cos(angle) * radius,
+                y,
+                Math.sin(angle) * radius
+            )
 
-        for (let y = 0; y < 12; y++) {
+            merlon.rotation.y = -angle
 
-            for (let i = 0; i < 20; i++) {
+            this.object.add(merlon)
+        }
+            
 
-                const angle = (i / 20) * Math.PI * 2;
-
-                const brick = new THREE.Mesh(
-                    new THREE.BoxGeometry(1.5, brickHeight, 0.8),
-                    this.material
-                );
-
-                brick.position.set(
-                    Math.cos(angle) * radius,
-                    y * brickHeight,
-                    Math.sin(angle) * radius
-                );
-
-                brick.rotation.y = -angle;
-
-                this.object.add(brick);
-            }
-        } */
-
-        this.object.add(cylinder);
+        this.object.add(cylinder)
     }
 }

@@ -15,7 +15,7 @@ scene = new THREE.Scene();    // Create main scene
 renderer = initRenderer();    // Init a basic renderer
 material = setDefaultMaterial(); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
-camera = initCamera(new THREE.Vector3(20, 70, 25)); // Init camera in this position
+camera = initCamera(new THREE.Vector3(0, 100, 200)); // Init camera in this position
 scene.add(camera); // Add camera to the scene
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 
@@ -23,17 +23,23 @@ orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotati
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 
 // Show axes (parameter is size of each axis)
-let axesHelper = new THREE.AxesHelper( 12 );
+let axesHelper = new THREE.AxesHelper( 100 );
 scene.add( axesHelper );
 
 // create the ground plane
-let plane = createGroundPlaneXZ(100, 100)
+let plane = createGroundPlaneXZ(300, 300)
 scene.add(plane);
 
-let castle = new Castle(0, 10, 0)
-scene.add(castle.object)
-//castle.object.position.set(, 0, 50);
+const CASTLE_WIDTH = 100
+const CASTLE_DEPTH = CASTLE_WIDTH * 3/2
+const SCALE = 1
+const CASTLE_X = 10
+const CASTLE_Y = 0
+const CASTLE_Z = 10
 
+let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
+scene.add(castle.object)
+castle.showBoundingBox(scene);
 
 // Use this to show information onscreen
 let controls = new InfoBox();

@@ -50,7 +50,8 @@ export class Model {
         this.boundingBox.setFromObject(this.object);
     }
 
-    showBoundingBox() {
+    showBoundingBox(scene) {
+        scene.add(this.boxHelper);
         this.boxHelper.visible = true;
     }   
 
@@ -63,6 +64,6 @@ export class Model {
             child.update(deltaTime);
         }
 
-        //this.updateBoundingBox();
+        this.updateBoundingBox();
     }
 }
