@@ -39,7 +39,8 @@ const CASTLE_Z = 10
 
 let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
 scene.add(castle.object)
-castle.showBoundingBox(scene);
+castle.hideBoundingBox()
+//castle.showBoundingBox(scene);
 
 // Use this to show information onscreen
 let controls = new InfoBox();
