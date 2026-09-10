@@ -5,17 +5,20 @@ import { applyHolesToTower } from "../../utils/CSGModifiers.js";
 
 const evaluator = new Evaluator();
 
-export class Tower extends Model {
-    constructor(x, y, z, material, height, radius, innerRadius, radialSegments, brickHeight, config) {
+export class MidTower extends Model {
+    constructor(x, y, z, material, width, height, depth, brickHeight, config) {
         super(x, y, z, material)
 
-        const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments)
-        let cylinder = new THREE.Mesh(geometry, this.material)
+        const geometry = new THREE.BoxGeometry(width, height, depth)
+        let mesh = new THREE.Mesh(geometry, this.material)
 
-        const brickWidth = 0.2 * radius
+        const radius = 1;
+        const brickWidth = 0.3 * radius
         const brickDepth = 0.6 * radius
         const merlonsNumber = 8
     
+        const miniTowers = new THREE.Group()
+
         // adiciona os merloes no c
         for (let i=0; i< merlonsNumber; i++) {
             
@@ -29,9 +32,13 @@ export class Tower extends Model {
             )
 
             merlon.rotation.y = -angle
-            this.object.add(merlon)
+            miniTowers.add(merlon)
         }
             
+        miniTowers.position.set(width/2 - radius, radius, 2)
+    
+        this.object.add(miniTowers)
+
         if(!!config) {
             // Cilindro externo
             const outerGeo = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
@@ -54,6 +61,6 @@ export class Tower extends Model {
             
         }        
         
-        this.object.add(cylinder)
+        this.object.add(mesh)
     }
 }

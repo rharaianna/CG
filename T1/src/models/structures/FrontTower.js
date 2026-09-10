@@ -5,33 +5,32 @@ import { applyHolesToTower } from "../../utils/CSGModifiers.js";
 
 const evaluator = new Evaluator();
 
-export class Tower extends Model {
-    constructor(x, y, z, material, height, radius, innerRadius, radialSegments, brickHeight, config) {
+export class FrontTower extends Model {
+    constructor(x, y, z, material, width, height, depth, brickHeight, config) {
         super(x, y, z, material)
 
-        const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments)
-        let cylinder = new THREE.Mesh(geometry, this.material)
+        //const geometry = new THREE.BoxGeometry(width, height, depth)
+        let mesh = new THREE.Group()
 
-        const brickWidth = 0.2 * radius
-        const brickDepth = 0.6 * radius
-        const merlonsNumber = 8
-    
-        // adiciona os merloes no c
-        for (let i=0; i< merlonsNumber; i++) {
-            
-            const angle = (i / merlonsNumber) * Math.PI * 2
-            const merlon = new THREE.Mesh(new THREE.BoxGeometry(brickWidth, brickHeight, brickDepth), this.material)
 
-            merlon.position.set(
-                Math.cos(angle) * radius,
-                y,
-                Math.sin(angle) * radius
-            )
 
-            merlon.rotation.y = -angle
-            this.object.add(merlon)
-        }
-            
+
+        const lateralCube = new THREE.BoxGeometry(width/3, height, depth)
+
+        let cube0 = new THREE.Mesh(lateralCube, this.material)
+        cube0.translateZ(-depth/3)
+
+        let cube1 = new THREE.Mesh(lateralCube, this.material)
+        cube1.translateX(width/3)
+
+        let cube2 = new THREE.Mesh(lateralCube, this.material)
+        cube2.translateX(-width/3)
+
+        mesh.add(cube0)
+        mesh.add(cube1)
+        mesh.add(cube2)
+
+
         if(!!config) {
             // Cilindro externo
             const outerGeo = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
@@ -54,6 +53,6 @@ export class Tower extends Model {
             
         }        
         
-        this.object.add(cylinder)
+        this.object.add(mesh)
     }
 }

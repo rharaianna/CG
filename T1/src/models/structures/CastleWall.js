@@ -1,19 +1,19 @@
 import * as THREE from "three";
-import { Model } from "../Model.js";
+import { Wall } from "./Wall.js";
 
 /** 
   * geometria similar a Wall mas tem os merlões posicionados em cima, precisa de receber o raio da torre para posicionar corretamente
 **/
-export class CastleWall extends Model {
-    constructor(x, y, z, material, width, height, depth, towerRadius) {
-        super(x, y, z, material);
+export class CastleWall extends Wall  {
+    constructor(x, y, z, material, width, height, depth, towerRadius, windowsConfig) {
+        super(x, y, z, material, width, height, depth, windowsConfig);
 
-        const geometry = new THREE.BoxGeometry(width, height, depth)
-        const mesh = new THREE.Mesh(geometry, this.material)
+       // const geometry = new THREE.BoxGeometry(width, height, depth)
+       // const mesh = new THREE.Mesh(geometry, this.material)
 
-        const brickSpacing = 0.015 * width
-        const brickWidth = 0.025 * width
-        const brickHeight = depth
+        const brickSpacing = 0.02 * width
+        const brickWidth = 0.06 * width
+        const brickHeight = 0.04 * width
         const brickDepth = depth
 
         // numeros de tijolo para cada metade de parede
@@ -53,6 +53,8 @@ export class CastleWall extends Model {
             this.object.add(merlon2);
         }
 
-        this.object.add(mesh)
+        
+        //this.renderWindows(windowsConfig, mesh)
+        //this.object.add(mesh)
     }
 }
