@@ -13,8 +13,8 @@ export class Tower extends Model {
         let cylinder = new THREE.Mesh(geometry, this.material)
 
         const brickWidth = 0.2 * radius
-        const brickDepth = 0.3 * radius
-        const merlonsNumber = 15
+        const brickDepth = 0.6 * radius
+        const merlonsNumber = 8
     
         // adiciona os merloes no c
         for (let i=0; i< merlonsNumber; i++) {
@@ -49,14 +49,9 @@ export class Tower extends Model {
                 }
             }
             
-            let mesh = new THREE.Mesh(towerBrush.geometry, this.material);
-            
-            if (
-                (config.janelaslinha > 0 && config.janelacoluna > 0) || 
-                (config.holes && config.holes.length > 0)
-            ) {
+            if(!!config) 
                 cylinder = applyHolesToTower(towerBrush, radius, innerRadius > 0 ? innerRadius : 0, height, config);
-            }
+            
         }        
         
         this.object.add(cylinder)
