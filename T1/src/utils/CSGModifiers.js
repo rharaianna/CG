@@ -1,10 +1,15 @@
 import * as THREE from 'three';
 import { Evaluator, Brush, SUBTRACTION } from 'https://unpkg.com/three-bvh-csg@0.0.16/build/index.module.js';
+//import { degToRad } from 'three/src/math/MathUtils.js';
+
+
 
 const evaluator = new Evaluator();
 
 export function applyHolesToTower(baseMesh, radius, innerRadius, height, config) {
-    let resultBrush = new Brush(baseMesh.geometry.clone(), baseMesh.material);
+    //let resultBrush = new Brush(baseMesh.geometry.clone(), baseMesh.material);
+
+    let resultBrush = baseMesh
 
     const {
         janelaslinha = 0,
@@ -16,56 +21,80 @@ export function applyHolesToTower(baseMesh, radius, innerRadius, height, config)
 
     const holes = [...customHoles];
 
+    console.log(holes)
+
     // Se houver parâmetros de grid para janelas, calcula a distribuição angular e vertical
     if (janelaslinha > 0 && janelacoluna > 0 && janelaAltura > 0 && janelaLargura > 0) {
         // A espessura da parede da torre é a diferença entre o raio externo e o interno
         const wallThickness = radius - innerRadius;
+
+        console.log(wallThickness)
         
         // Espaçamento angular entre as colunas ao longo dos 360 graus (2 * PI radianos)
-        const angleStep = 360 / janelacoluna;
+        //const angleStep = 360 / janelacoluna;
+        
         
         // Espaçamento vertical ao longo da altura da torre
         const spacingY = height / (janelaslinha + 1);
-
+        
         for (let r = 0; r < janelaslinha; r++) {
             for (let c = 0; c < janelacoluna; c++) {
                 // Ângulo central desta coluna em graus
-                const angleDeg = c * angleStep;
+                const angle = (c / janelacoluna) * Math.PI * 2
+
+                //const angleDeg = c * angleStep;
                 
                 // Altura Y da janela centralizada na sua linha
                 const posY = (spacingY * (r + 1)) - (height / 2);
 
                 holes.push({
-                    angle: angleDeg,
+                    angle: angle,
                     y: posY,
                     width: janelaLargura,
                     height: janelaAltura,
-                    depth: wallThickness * 4 // Garante que atravessa de fora a dentro
+                    depth: wallThickness * 10 // Garante que atravessa de fora a dentro
                 });
             }
         }
     }
 
+    console.log(holes)
+
     // Executa as subtrações usando manipulação direta de geometria (sem updateMatrixWorld)
     holes.forEach(hole => {
-        const thickness = hole.depth || (radius - innerRadius) * 4;
-        const holeGeo = new THREE.BoxGeometry(hole.width, hole.height, thickness);
+        
+        const holeGeo = new THREE.BoxGeometry(hole.width, hole.height, hole.depth);
+        const holeBrush = new Brush(holeGeo, new THREE.MeshBasicMaterial({
+            wireframe: true
+        }));
 
-        // Posicionamento polar baseado no ângulo da janela
-        const angleRad = hole.angle * (Math.PI / 180);
-        const posX = Math.cos(angleRad) * radius;
-        const posZ = Math.sin(angleRad) * radius;
+        //const angleRad = THREE.MathUtils.degToRad(hole.angle);
+        const angleRad =  hole.angle 
 
-        // Desloca a geometria para a posição no cilindro
-        holeGeo.translate(posX, hole.y, posZ);
+        // Posiciona no ponto médio da parede da torre para o furo atravessar corretamente
+        const midRadius = (radius + innerRadius) / 2;
+        
+        holeBrush.position.set(
+            Math.cos(angleRad) * midRadius,
+            hole.y,
+            Math.sin(angleRad) * midRadius
+        );
 
-        // Rotaciona a geometria para apontar para o centro da torre
-        holeGeo.rotateY(-angleRad + (Math.PI / 2));
+        // Rotaciona a geometria para acompanhar a curvatura da torre (negativo para alinhar tangencialmente)
+        holeBrush.rotation.y = -angleRad;
+        
+        holeBrush.updateMatrixWorld();
 
-        const holeBrush = new Brush(holeGeo);
+        // Desloca para a posição correta no anel
+        //holeGeo.translate(posX, hole.y, posZ);
+
+
+        //holeBrush.rotateY(angleRad)
         resultBrush = evaluator.evaluate(resultBrush, holeBrush, SUBTRACTION);
+        
+        //resultBrush.add(holeBrush)
     });
-
+    
     return new THREE.Mesh(resultBrush.geometry, resultBrush.material);
 }
 
@@ -140,5 +169,3 @@ export function applyHolesToWall(baseMesh, wallWidth, wallHeight, wallDepth, hol
         resultBrush.material
     );
 }
-
-

@@ -99,14 +99,14 @@ export class Castle extends Model {
         this.add(wall4)
 
         let windowsTowerConfig = {
-            janelaslinha: 2,        // 2 fileiras de janelas na altura
+            janelaslinha: 1,        // 2 fileiras de janelas na altura
             janelacoluna: 4,        // 4 colunas distribuídas em 360° ao redor da torre
-            janelaAltura: 2,
+            janelaAltura: 1,
             janelaLargura: 1
         }
     
         // posicionadas nas extremidades das paredes
-        const tower1 = new Tower(towerX, towerY, towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
+        const tower1 = new Tower(0, towerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         const tower2 = new Tower(-towerX, towerY, towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         const tower3 = new Tower(towerX, towerY, -towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         const tower4 = new Tower(-towerX, towerY, -towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
