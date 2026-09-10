@@ -11,9 +11,9 @@ export class CastleWall extends Wall  {
        // const geometry = new THREE.BoxGeometry(width, height, depth)
        // const mesh = new THREE.Mesh(geometry, this.material)
 
-        const brickSpacing = 0.015 * width
-        const brickWidth = 0.025 * width
-        const brickHeight = depth
+        const brickSpacing = 0.02 * width
+        const brickWidth = 0.06 * width
+        const brickHeight = 0.04 * width
         const brickDepth = depth
 
         // numeros de tijolo para cada metade de parede

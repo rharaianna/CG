@@ -30,12 +30,13 @@ scene.add( axesHelper );
 let plane = createGroundPlaneXZ(300, 300)
 scene.add(plane);
 
-const CASTLE_WIDTH = 100
-const CASTLE_DEPTH = CASTLE_WIDTH * 3/2
+// tamanhos aproximados do castelo
+const CASTLE_WIDTH = 40
+const CASTLE_DEPTH = 46
 const SCALE = 1
-const CASTLE_X = 10
+const CASTLE_X = 0
 const CASTLE_Y = 0
-const CASTLE_Z = 10
+const CASTLE_Z = 0
 
 let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
 scene.add(castle.object)

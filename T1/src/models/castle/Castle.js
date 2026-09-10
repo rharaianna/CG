@@ -7,6 +7,8 @@ import { Door } from "../structures/Door.js";
 import { materials } from "../material.configs.js"
 import { Wall } from "../structures/Wall.js";
 import { CastleWall } from "../structures/CastleWall.js";
+import { MidTower } from "../structures/MidTower.js";
+import { FrontTower } from "../structures/FrontTower.js";
 
 export class Castle extends Model {
     constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
@@ -27,8 +29,8 @@ export class Castle extends Model {
         const FLOOR_HEIGHT = 0.1 * SCALE
         
         // paredes
-        const WALL_HEIGHT = 15 * SCALE
-        const WALL_DEPTH = 3 * SCALE
+        const WALL_HEIGHT = 14 * SCALE
+        const WALL_DEPTH = 4 * SCALE
         
         // posicionamento das paredes
         const wallY = WALL_HEIGHT/2 
@@ -40,27 +42,39 @@ export class Castle extends Model {
         const wallZ = DEPTH/2 + WALL_DEPTH/2
 
         // torres
-        const TOWER_HEIGHT = 28 * SCALE
-        const TOWER_RADIUS = 9 * SCALE
-        const TOWER_INNER_RADIUS = 6 * SCALE
-        const TOWER_RADIAL_SEGMENTS = 12
-        const TOWER_BRICKS = 0.25 * TOWER_HEIGHT
+        const TOWER_HEIGHT = 21 * SCALE
+        const TOWER_RADIUS = 5 * SCALE
+        const TOWER_INNER_RADIUS = 2.7 * SCALE
+        const TOWER_RADIAL_SEGMENTS = 32
+        const TOWER_BRICKS = 2 * SCALE
         
         // posicionamento das torres
         const towerY = TOWER_HEIGHT/2 
 
+        // deslocamento das torres do castelo
+        const OFFSET = 1 * SCALE
+
         // posicionadas conforme as paredes
-        const towerX = wallX
-        const towerZ = wallZ
+        const towerX = wallX + OFFSET
+        const towerZ = wallZ + OFFSET
         
         // torres intermediárias
-        const MID_TOWER_HEIGHT = TOWER_HEIGHT * 0.9
-        const MID_TOWER_BRICKS = 0.15 * TOWER_HEIGHT
+        const MIDTOWER_HEIGHT = TOWER_HEIGHT * SCALE
+        const MIDTOWER_WIDTH = 12 
+        const MIDTOWER_DEPTH = 9 
+        const MIDTOWER_BRICKS = 0.15 * TOWER_HEIGHT
+
+        // torres intermediárias
+        const FRONTTOWER_HEIGHT = TOWER_HEIGHT *1.05 * SCALE
+        const FRONTTOWER_WIDTH = 18 
+        const FRONTTOWER_DEPTH = 9 
+        const FRONTTOWER_BRICKS = 0.15 * TOWER_HEIGHT
+
 
         // posicionamento das torres intermediárias
         const midTowerX = wallX
         const midTowerZ = wallZ
-        const midTowerY = MID_TOWER_HEIGHT/2
+        const midTowerY = MIDTOWER_HEIGHT/2
 
         // elementos
         const floorY = FLOOR_HEIGHT/2
@@ -69,26 +83,33 @@ export class Castle extends Model {
         this.add(floor)
         this.timer = 0;
 
-        const windowsConfig = {
+        let windowsWallConfig = {
             portao: true,
-            alturaPortao: (WALL_HEIGHT - (2 * SCALE)),
-            larguraPortao: (2 * TOWER_RADIUS),
-            janelaslinha: 1,
-            janelacoluna: 4,
-            janelaAltura: 2,
-            janelaLargura: 1.5
+            alturaPortao: (WALL_HEIGHT/2),
+            larguraPortao: (1 * TOWER_RADIUS),
         };
-
+        
         // paredes posicionadas no Z, paralelas ao X (vermelho)
         // largura delas é a mesma largura do terreno 
-        const wall1 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsConfig)
-        const wall2 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsConfig)
+        
+        // parede com o portão
+        const wall1 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
+        
+        windowsWallConfig = {
+            linhas: 1,
+            colunas: 4,
+            altura: 3,
+            largura: 1,
+            raio: 2
+        };
+
+        const wall2 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
 
         // paredes posicionadas no X, paralelas ao Z (azul)
         // comprimento delas é a profundidade do terreno e rotacionadas
         // largura delas é a mesma profundidade do terreno e são rotacionadas
-        const wall3 = new CastleWall(wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsConfig)
-        const wall4 = new CastleWall(-wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsConfig)
+        const wall3 = new CastleWall(wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
+        const wall4 = new CastleWall(-wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
 
         wall3.object.rotateY(THREE.MathUtils.degToRad(90))
         wall4.object.rotateY(THREE.MathUtils.degToRad(90))
@@ -99,14 +120,13 @@ export class Castle extends Model {
         this.add(wall4)
 
         let windowsTowerConfig = {
-            janelaslinha: 1,        // 2 fileiras de janelas na altura
-            janelacoluna: 4,        // 4 colunas distribuídas em 360° ao redor da torre
-            janelaAltura: 1,
-            janelaLargura: 1
+            linhas: 2,          // n fileiras de janelas na altura
+            colunas: 4,        // m colunas distribuídas em 360° ao redor da torre
+            raio: 1,
         }
     
         // posicionadas nas extremidades das paredes
-        const tower1 = new Tower(0, towerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
+        const tower1 = new Tower(towerX, towerY, towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         const tower2 = new Tower(-towerX, towerY, towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         const tower3 = new Tower(towerX, towerY, -towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         const tower4 = new Tower(-towerX, towerY, -towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
@@ -116,17 +136,21 @@ export class Castle extends Model {
         this.add(tower3)
         this.add(tower4)
         
-        //const midTower1 = new Tower(0, midTowerY, midTowerZ, this.material, towerConfig);
-        const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, MID_TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, MID_TOWER_BRICKS);
-        const midTower3 = new Tower(midTowerX, midTowerY, 0, this.material, MID_TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, MID_TOWER_BRICKS);
-        const midTower4 = new Tower(-midTowerX, midTowerY, 0, this.material, MID_TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, MID_TOWER_BRICKS);
+        const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
+        
+        const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
+        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
+        
+        midTower3.object.rotateY(THREE.MathUtils.degToRad(90))
+        midTower4.object.rotateY(THREE.MathUtils.degToRad(90))
+        
+        this.add(midTower2)
+        this.add(midTower3)
+        this.add(midTower4)
 
-        //this.add(midTower1)
-        //this.add(midTower2)
-        //this.add(midTower3)
-        //this.add(midTower4)
-
-
+        const frontTower = new FrontTower(0, midTowerY, midTowerZ, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS);
+        this.add(frontTower)
+        
         const doorConfig = {
             width: 8,       // Mesma largura do portão cavado na parede
             height: 6,      // Mesma altura

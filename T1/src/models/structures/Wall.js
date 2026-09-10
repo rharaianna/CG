@@ -21,13 +21,11 @@ export class Wall extends Model {
     renderWindows(windowsConfig, mesh) {
         if(!!windowsConfig) {
             
-            console.log(windowsConfig);
-
             const {
-                janelaslinha = 0,
-                janelacoluna = 0,
-                janelaAltura = 0,
-                janelaLargura = 0,
+                linhas = 0,
+                colunas = 0,
+                altura = 0,
+                largura = 0,
                 portao = false,
                 alturaPortao = 0,
                 larguraPortao = 0,
@@ -50,22 +48,22 @@ export class Wall extends Model {
             }
     
             // 2. Adiciona as janelas em formato de grid se especificadas
-            if (janelaslinha > 0 && janelacoluna > 0 && janelaAltura > 0 && janelaLargura > 0) {
-                const spacingX = this.width / (janelacoluna + 1);
+            if (linhas > 0 && colunas > 0 && altura > 0 && largura > 0) {
+                const spacingX = this.width / (colunas + 1);
                 const usableHeight = this.height - (portao ? alturaPortao : 0);
-                const spacingY = usableHeight / (janelaslinha + 1);
+                const spacingY = usableHeight / (linhas + 1);
                 const baseOffsetY = portao ? alturaPortao : 0;
     
-                for (let r = 0; r < janelaslinha; r++) {
-                    for (let c = 0; c < janelacoluna; c++) {
-                        const hx = spacingX * (c + 1) - (janelaLargura / 2);
-                        const hy = baseOffsetY + spacingY * (r + 1) - (janelaAltura / 2);
+                for (let r = 0; r < linhas; r++) {
+                    for (let c = 0; c < colunas; c++) {
+                        const hx = spacingX * (c + 1) - (largura / 2);
+                        const hy = baseOffsetY + spacingY * (r + 1) - (altura / 2);
     
                         holes.push({
                             x: hx,
                             y: hy,
-                            width: janelaLargura,
-                            height: janelaAltura
+                            width: largura,
+                            height: altura
                         });
                     }
                 }
