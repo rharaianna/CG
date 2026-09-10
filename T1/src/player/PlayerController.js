@@ -31,8 +31,6 @@ export class PlayerController {
             
             case 16: // shift
                 this.moveDown = value; break;
-
-            //case 68: // C-> change camera
         }
     }
 }

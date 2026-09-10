@@ -2,7 +2,7 @@ import * as THREE from  'three';
 import { Capsule } from '../../../build/jsm/math/Capsule.js';
 
 
-const GRAVITY = 30
+const GRAVITY = 98
 
 export class PlayerPhysics{
     constructor(worldOctree){

@@ -30,8 +30,39 @@ const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerH
 camera.rotation.order = 'YXZ'
 scene.add(camera); // Add camera to the scene
 
-const orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
-const controls = new PointerLockControls(camera, renderer.domElement); //
+const pointerControls = new PointerLockControls(camera, renderer.domElement); //
+const orbitControls = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
+orbitControls.enabled = false;
+let pointerControlsOn = true;
+
+
+//  ------------------------ LISTENERS ------------------------
+
+document.body.addEventListener('click', function() { // enable pointerLockControls with mouse click
+    if(pointerControlsOn){
+        pointerControls.lock();
+    }
+});
+
+document.body.addEventListener('keydown', function(event) { // alternate controls
+    if(event.key.toLocaleLowerCase() === 'c'){// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
+        pointerControlsOn = !pointerControlsOn;
+
+        if(pointerControlsOn){ // 
+            orbitControls.enabled = false;
+        } else {
+            pointerControls.unlock();
+            orbitControls.enabled = true;
+        }
+    }
+});
+
+pointerControls.addEventListener('unlock', () => {
+  pointerControlsOn = false;
+  orbitControls.enabled = true;
+});
+
+window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 
 
 // ------------------------ CREATE CASTLE ------------------------
@@ -55,6 +86,16 @@ let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE
 scene.add(castle.object)
 castle.showBoundingBox(scene);
 
+// Use this to show information onscreen
+let information = new InfoBox();
+  information.add("Basic Scene");
+  information.addParagraph();
+  information.add("Use mouse to interact:");
+  information.add("* Left button to rotate");
+  information.add("* Right button to translate (pan)");
+  information.add("* Scroll to zoom in/out.");
+  information.show();
+
 
 // ------------------------ COLLISION ------------------------
 
@@ -65,12 +106,6 @@ const physics = new PlayerPhysics(worldOctree);
 
 const STEPS_PER_FRAME = 5
 
-
-
-//  ------------------------ LISTENERS ------------------------
-
-document.body.addEventListener('click', function() {controls.lock();});
-window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 
 render();
 
@@ -110,7 +145,11 @@ function render()
     const deltaTime = Math.min(0.05, timer.getDelta())/STEPS_PER_FRAME
 
     for(let i=0; i< STEPS_PER_FRAME; i++){
-        if(controls.isLocked){
+
+        if (orbitControls.enabled) {
+            orbitControls.update();
+        }
+        if(pointerControls.isLocked){
             moveControls(deltaTime)
             physics.updatePlayer(deltaTime)
             camera.position.copy(physics.playerCollider.end);
@@ -121,13 +160,3 @@ function render()
     renderer.render(scene, camera)
     requestAnimationFrame(render);
 }
-
-// Use this to show information onscreen
-// let controls = new InfoBox();
-//   controls.add("Basic Scene");
-//   controls.addParagraph();
-//   controls.add("Use mouse to interact:");
-//   controls.add("* Left button to rotate");
-//   controls.add("* Right button to translate (pan)");
-//   controls.add("* Scroll to zoom in/out.");
-//   controls.show();
