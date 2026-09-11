@@ -82,7 +82,17 @@ export function applyHolesToWall(baseMesh, wallWidth, wallHeight, wallDepth, hol
         let holeGeo;
 
         if (hole.type === 'arch') {
-            const radius = hole.width / 2;
+            console.log("HOLE:", hole);
+
+    const radius = hole.width / 2;
+
+    console.log({
+        width: hole.width,
+        height: hole.height,
+        radius,
+        x: hole.x,
+        y: hole.y
+    });
 
             const shape = new THREE.Shape();
 

@@ -148,24 +148,30 @@ export class Castle extends Model {
         this.add(midTower3)
         this.add(midTower4)
 
-        const frontTower = new FrontTower(0, midTowerY, midTowerZ, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS);
+        const doorConfig1 = {
+            portao: true,
+            alturaPortao: FRONTTOWER_HEIGHT/3,
+            larguraPortao: FRONTTOWER_WIDTH/4,  // Espessura das tábuas da porta
+        };
+
+        const frontTower = new FrontTower(0, midTowerY, midTowerZ, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorConfig1);
         this.add(frontTower)
         
         const doorConfig = {
-            width: 8,       // Mesma largura do portão cavado na parede
-            height: 6,      // Mesma altura
-            depth: 0.3      // Espessura das tábuas da porta
+            width: FRONTTOWER_WIDTH/2,       // Mesma largura do portão cavado na parede
+            height: FRONTTOWER_HEIGHT/3,      // Mesma altura
+            depth: 1     // Espessura das tábuas da porta
         };
 
         // Posiciona o portão na mesma coordenada da parede 1
         const doorY = doorConfig.height / 2;
-        const doorZ = -wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
+        const doorZ = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
 
         this.castleDoor = new Door(0, doorY, doorZ, materials.wood || this.material, doorConfig);
 
         
         // Se quiser testar o portão aberto logo na criação:
-        // this.castleDoor.toggleDoor(true);
+         this.castleDoor.toggleDoor(true);
 
         this.add(this.castleDoor);
 
