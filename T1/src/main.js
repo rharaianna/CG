@@ -37,7 +37,6 @@ const SCALE = 1
 const CASTLE_X = 0
 const CASTLE_Y = 0
 const CASTLE_Z = 0
-
 let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
 scene.add(castle.object)
 castle.hideBoundingBox()
@@ -45,17 +44,33 @@ castle.hideBoundingBox()
 
 // Use this to show information onscreen
 let controls = new InfoBox();
-  controls.add("Basic Scene");
-  controls.addParagraph();
-  controls.add("Use mouse to interact:");
-  controls.add("* Left button to rotate");
-  controls.add("* Right button to translate (pan)");
-  controls.add("* Scroll to zoom in/out.");
-  controls.show();
+controls.add("Basic Scene");
+controls.addParagraph();
+controls.add("Use mouse to interact:");
+controls.add("* Left button to rotate");
+controls.add("* Right button to translate (pan)");
+controls.add("* Scroll to zoom in/out.");
+controls.show();
+
+const clock = new THREE.Timer();
+
+//jogar aqui td que tem update
+const updatables = [];
+updatables.push(castle.castleDoor);
+
 
 render();
+
 function render()
 {
   requestAnimationFrame(render);
+
+  clock.update();
+  const deltaTime = clock.getDelta();
+
+  updatables.forEach(object => {
+        object.update(deltaTime);
+  });
+
   renderer.render(scene, camera) // Render scene
 }

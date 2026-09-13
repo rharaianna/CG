@@ -171,27 +171,11 @@ export class Castle extends Model {
 
         
         // Se quiser testar o portão aberto logo na criação:
-         this.castleDoor.toggleDoor(true);
+        // this.castleDoor.toggleDoor(true);
 
         this.add(this.castleDoor);
 
-    }
+    } 
     
     
-    
-    update(deltaTime) {
-        super.update(deltaTime);
-    
-        // Incrementa o tempo a cada frame
-        this.timer += deltaTime;
-    
-        // A cada 3 segundos, inverte o estado do portão automaticamente
-        if (this.timer > 3.0) {
-            this.timer = 0;
-            if (this.castleDoor) {
-                const estadoAtual = this.castleDoor.isOpen;
-                this.castleDoor.toggleDoor(!estadoAtual);
-            }
-        }
-    }
 }
