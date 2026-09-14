@@ -8,5 +8,9 @@ export const materials = {
     bricks: new THREE.MeshStandardMaterial({
         color: "#828181",
         roughness: 0.8,
+    }),
+    gun: new THREE.MeshStandardMaterial({
+        color:"#bebebe",
+        roughness: 0.8,
     })
 }

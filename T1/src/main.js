@@ -15,7 +15,7 @@ import {initRenderer,
 import { Castle } from './models/castle/Castle.js'
 import { PlayerController } from './player/PlayerController.js';
 import { PlayerPhysics } from './player/PlayerPhysics.js';
-
+import { Bullet } from './player/Bullet.js';
 
 // ------------------------ Initial variables ------------------------
 const timer = new THREE.Timer();
@@ -35,11 +35,22 @@ const orbitControls = new OrbitControls( camera, renderer.domElement ); // Enabl
 orbitControls.enabled = false;
 let pointerControlsOn = true;
 
+const bullets = []
+
+const raycaster = new THREE.Raycaster();
+const alvosAtivos = []; // seus inimigos/objetos atingíveis
+const particulasImpacto = []; // pool simples de efeitos
+
+let podeAtirar = true;
+const CADENCIA_TIRO = 0.15; // segundos entre tiros
+const DANO = 25;
+const ALCANCE_MAX = 100;
+
 
 //  ------------------------ LISTENERS ------------------------
 
-document.body.addEventListener('click', function() { // enable pointerLockControls with mouse click
-    if(pointerControlsOn){
+document.body.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' && pointerControlsOn) {
         pointerControls.lock();
     }
 });
@@ -57,9 +68,14 @@ document.body.addEventListener('keydown', function(event) { // alternate control
     }
 });
 
+
+document.addEventListener('mousedown', (evento) => {
+  if (evento.button === 0) shoot(camera);
+});
+
 pointerControls.addEventListener('unlock', () => {
-  pointerControlsOn = false;
-  orbitControls.enabled = true;
+    pointerControlsOn = false;
+    orbitControls.enabled = true;
 });
 
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
@@ -93,6 +109,7 @@ let information = new InfoBox();
   information.add("Basic Scene");
   information.addParagraph();
   information.add("Use mouse to interact:");
+  information.add("* Enter")
   information.add("* Left button to rotate");
   information.add("* Right button to translate (pan)");
   information.add("* Scroll to zoom in/out.");
@@ -137,6 +154,19 @@ function moveControls(deltaTime){
     }
 }
 
+function shoot(camera){
+    if(!podeAtirar) return;
+    
+    podeAtirar = false;
+    setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 100);
+
+    const origin = camera.getWorldPosition(new THREE.Vector3());
+    console.log(origin)
+    const direction = camera.getWorldDirection(new THREE.Vector3());
+
+    const bullet = new Bullet(scene, origin, direction)
+    bullets.push(bullet)
+}
 
 
 
@@ -158,6 +188,13 @@ function render()
         }
         physics.teleportPlayerIfOob(camera);
     }
+
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        bullets[i].update(deltaTime, worldOctree, scene);
+            if (!bullets[i].vivo) {
+                bullets.splice(i, 1);
+            }
+        }
 
     renderer.render(scene, camera)
     requestAnimationFrame(render);
