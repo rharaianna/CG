@@ -170,32 +170,32 @@ function shoot(camera){
 
 
 
-function render()
-{
+function render() {
     timer.update();
 
-    const deltaTime = Math.min(0.05, timer.getDelta())/STEPS_PER_FRAME
+    const deltaTime = Math.min(0.05, timer.getDelta()) / STEPS_PER_FRAME;
 
-    for(let i=0; i< STEPS_PER_FRAME; i++){
+    for (let i = 0; i < STEPS_PER_FRAME; i++) {
 
         if (orbitControls.enabled) {
             orbitControls.update();
         }
-        if(pointerControls.isLocked){
-            moveControls(deltaTime)
-            physics.updatePlayer(deltaTime)
+        if (pointerControls.isLocked) {
+            moveControls(deltaTime);
+            physics.updatePlayer(deltaTime);
             camera.position.copy(physics.playerCollider.end);
         }
         physics.teleportPlayerIfOob(camera);
-    }
 
-    for (let i = bullets.length - 1; i >= 0; i--) {
-        bullets[i].update(deltaTime, worldOctree, scene);
-            if (!bullets[i].vivo) {
-                bullets.splice(i, 1);
+        // balas atualizadas junto com a física
+        for (let j = bullets.length - 1; j >= 0; j--) {
+            bullets[j].update(deltaTime, worldOctree, scene);
+            if (!bullets[j].alive) {
+                bullets.splice(j, 1);
             }
         }
+    }
 
-    renderer.render(scene, camera)
+    renderer.render(scene, camera);
     requestAnimationFrame(render);
 }

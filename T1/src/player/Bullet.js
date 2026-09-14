@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 const BULLET_RADIUS = 0.2
-const BULLET_VELOCITY = 50
+const BULLET_VELOCITY = 15
 
 export class Bullet {
     constructor(scene, posicaoInicial, direction) {
