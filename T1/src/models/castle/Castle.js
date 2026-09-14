@@ -97,19 +97,19 @@ export class Castle extends Model {
         
         // parede com o portão
         
-        windowsWallConfig = {
-            linhas: 1,
-            colunas: 4,
-            altura: 3,
-            largura: 1,
-            raio: 2
-        };
+        // windowsWallConfig = {
+        //     linhas: 1,
+        //     colunas: 4,
+        //     altura: 3,
+        //     largura: 1,
+        //     raio: 2
+        // };
         
         const wall1 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         const wall2 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         
         //const wall1 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS)
-        const wall11 = new Wall(0, wallY, -wallZ + 11.5, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsConfig)
+        const wall11 = new Wall(0, wallY, -wallZ + 11.5, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         //const wall2 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsConfig)
 
 
@@ -147,9 +147,9 @@ export class Castle extends Model {
         
 
         //const midTower1 = new Tower(0, midTowerY, midTowerZ, this.material, towerConfig);
-        const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, MID_TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, MID_TOWER_BRICKS);
-        const midTower3 = new Tower(midTowerX, midTowerY, 0, this.material, MID_TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, MID_TOWER_BRICKS);
-        const midTower4 = new Tower(-midTowerX, midTowerY, 0, this.material, MID_TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, MID_TOWER_BRICKS);
+        const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
+        const midTower3 = new Tower(midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
+        const midTower4 = new Tower(-midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
 
         midTower3.object.rotateY(THREE.MathUtils.degToRad(90))
         midTower4.object.rotateY(THREE.MathUtils.degToRad(90))

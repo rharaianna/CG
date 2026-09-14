@@ -18,6 +18,7 @@ import {
 import { Castle } from './models/castle/Castle.js'
 import { PlayerController } from './player/PlayerController.js';
 import { PlayerPhysics } from './player/PlayerPhysics.js';
+import { Door } from './models/structures/Door.js';
 
 
 // ------------------------ Initial variables ------------------------
@@ -103,8 +104,14 @@ information.show();
 
 // ------------------------ COLLISION ------------------------
 
+// A porta continua visível, mas fica fora da malha estática de colisão.
+castle.object.remove(castle.castleDoor.object);
+
 const worldOctree = new Octree();
-worldOctree.fromGraphNode(scene)
+worldOctree.fromGraphNode(scene);
+
+castle.object.add(castle.castleDoor.object);
+
 const player = new PlayerController();
 const physics = new PlayerPhysics(worldOctree);
 
