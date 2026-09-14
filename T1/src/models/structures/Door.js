@@ -32,26 +32,24 @@ export class Door extends Model {
         this.isOpen = false;
     }
 
-    toggleDoor(open = true) {
-        this.isOpen = open;
-        
-        // Aplica a rotação diretamente nos grupos de pivo  
+    toggleDoor(open) {
+            this.isOpen = open;
     }
-    
+
     update(deltaTime) {
-        
+
         let animationSpeed = 2
         const factor = 1 - Math.exp(-animationSpeed * deltaTime);
-        const targetAngle = Math.PI / 2;
-        
+        const targetAngle = this.isOpen ? Math.PI / 2 : 0;
+
         // Incrementa o tempo a cada frame
-        
-        this.leftPivot.rotation.y =       
-        THREE.MathUtils.lerp(
-            this.leftPivot.rotation.y,
-            -targetAngle,
-            factor
-        );
+
+        this.leftPivot.rotation.y =
+            THREE.MathUtils.lerp(
+                this.leftPivot.rotation.y,
+                -targetAngle,
+                factor
+            );
         this.rightPivot.rotation.y = THREE.MathUtils.lerp(
             this.rightPivot.rotation.y,
             targetAngle,

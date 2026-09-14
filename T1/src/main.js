@@ -1,16 +1,19 @@
-import * as THREE from  'three';
+import * as THREE from 'three';
 import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import { PointerLockControls } from '../../build/jsm/controls/PointerLockControls.js';
 import { Octree } from '../../build/jsm/math/Octree.js';
 import { OctreeHelper } from '../../build/jsm/helpers/OctreeHelper.js';
 
-import {initRenderer, 
-        initCamera,
-        initDefaultBasicLight,
-        setDefaultMaterial,
-        InfoBox,
-        onWindowResize,
-        createGroundPlaneXZ} from "../../libs/util/util.js";
+
+import {
+  initRenderer,
+  initCamera,
+  initDefaultBasicLight,
+  setDefaultMaterial,
+  InfoBox,
+  onWindowResize,
+  createGroundPlaneXZ
+} from "../../libs/util/util.js";
 
 import { Castle } from './models/castle/Castle.js'
 import { PlayerController } from './player/PlayerController.js';
@@ -31,30 +34,30 @@ camera.rotation.order = 'YXZ'
 scene.add(camera); // Add camera to the scene
 
 const pointerControls = new PointerLockControls(camera, renderer.domElement); //
-const orbitControls = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
+const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
 orbitControls.enabled = false;
 let pointerControlsOn = true;
 
 
 //  ------------------------ LISTENERS ------------------------
 
-document.body.addEventListener('click', function() { // enable pointerLockControls with mouse click
-    if(pointerControlsOn){
-        pointerControls.lock();
-    }
+document.body.addEventListener('click', function () { // enable pointerLockControls with mouse click
+  if (pointerControlsOn) {
+    pointerControls.lock();
+  }
 });
 
-document.body.addEventListener('keydown', function(event) { // alternate controls
-    if(event.key.toLocaleLowerCase() === 'c'){// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
-        pointerControlsOn = !pointerControlsOn;
+document.body.addEventListener('keydown', function (event) { // alternate controls
+  if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
+    pointerControlsOn = !pointerControlsOn;
 
-        if(pointerControlsOn){ // 
-            orbitControls.enabled = false;
-        } else {
-            pointerControls.unlock();
-            orbitControls.enabled = true;
-        }
+    if (pointerControlsOn) { // 
+      orbitControls.enabled = false;
+    } else {
+      pointerControls.unlock();
+      orbitControls.enabled = true;
     }
+  }
 });
 
 pointerControls.addEventListener('unlock', () => {
@@ -62,14 +65,14 @@ pointerControls.addEventListener('unlock', () => {
   orbitControls.enabled = true;
 });
 
-window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
+window.addEventListener('resize', function () { onWindowResize(camera, renderer) }, false);
 
 
 // ------------------------ CREATE CASTLE ------------------------
 
 // Show axes (parameter is size of each axis)
-let axesHelper = new THREE.AxesHelper( 100 );
-scene.add( axesHelper );
+let axesHelper = new THREE.AxesHelper(100);
+scene.add(axesHelper);
 
 // create the ground plane
 let plane = createGroundPlaneXZ(300, 300)
@@ -89,13 +92,13 @@ castle.hideBoundingBox()
 
 // Use this to show information onscreen
 let information = new InfoBox();
-  information.add("Basic Scene");
-  information.addParagraph();
-  information.add("Use mouse to interact:");
-  information.add("* Left button to rotate");
-  information.add("* Right button to translate (pan)");
-  information.add("* Scroll to zoom in/out.");
-  information.show();
+information.add("Basic Scene");
+information.addParagraph();
+information.add("Use mouse to interact:");
+information.add("* Left button to rotate");
+information.add("* Right button to translate (pan)");
+information.add("* Scroll to zoom in/out.");
+information.show();
 
 
 // ------------------------ COLLISION ------------------------
@@ -110,27 +113,27 @@ const STEPS_PER_FRAME = 5
 
 //  ------------------------ FUNCTIONS ------------------------
 
-function moveControls(deltaTime){
-    const speedDelta = deltaTime * (player.playerOnFloor ? 100 : 50)
+function moveControls(deltaTime) {
+  const speedDelta = deltaTime * (player.playerOnFloor ? 100 : 50)
 
-    if(player.moveForward){
-        physics.playerVelocity.add(physics.getForwardVector(camera).multiplyScalar(speedDelta))
-    }
-    if(player.moveBackward){
-        physics.playerVelocity.add(physics.getForwardVector(camera).multiplyScalar(-speedDelta))
-    }
+  if (player.moveForward) {
+    physics.playerVelocity.add(physics.getForwardVector(camera).multiplyScalar(speedDelta))
+  }
+  if (player.moveBackward) {
+    physics.playerVelocity.add(physics.getForwardVector(camera).multiplyScalar(-speedDelta))
+  }
 
-    if(player.moveLeft){
-        physics.playerVelocity.add(physics.getSideVector(camera).multiplyScalar(-speedDelta))
-    }
-    if(player.moveRight){
-        physics.playerVelocity.add(physics.getSideVector(camera).multiplyScalar(speedDelta))
-    }
+  if (player.moveLeft) {
+    physics.playerVelocity.add(physics.getSideVector(camera).multiplyScalar(-speedDelta))
+  }
+  if (player.moveRight) {
+    physics.playerVelocity.add(physics.getSideVector(camera).multiplyScalar(speedDelta))
+  }
 
-    if(physics.playerOnFloor){
-        if (player.moveUp)
-            physics.playerVelocity.y = 40;
-    }
+  if (physics.playerOnFloor) {
+    if (player.moveUp)
+      physics.playerVelocity.y = 40;
+  }
 }
 
 
@@ -139,33 +142,52 @@ const clock = new THREE.Timer();
 //jogar aqui td que tem update
 const updatables = [];
 updatables.push(castle.castleDoor);
+const doorPosition = new THREE.Vector3();
+const playerPosition = new THREE.Vector3();
 
 
 render();
-function render()
-{
-    clock.update();
+function render() {
+  
+  
+  clock.update();
   const deltaTime1 = clock.getDelta();
+  
+  camera.getWorldPosition(playerPosition);
+  castle.castleDoor.object.getWorldPosition(doorPosition);
+
+  const nearDoor = playerPosition.distanceTo(doorPosition) < 4;
+
+  if (nearDoor !== castle.castleDoor.isOpen) {
+    castle.castleDoor.toggleDoor(nearDoor);
+  }
+
+
+
+  console.log(nearDoor);
+
+
+  
 
   updatables.forEach(object => {
-        object.update(deltaTime1);
+    object.update(deltaTime1);
   });
   timer.update();
 
-    const deltaTime = Math.min(0.05, timer.getDelta())/STEPS_PER_FRAME
+  const deltaTime = Math.min(0.05, timer.getDelta()) / STEPS_PER_FRAME
 
-    for(let i=0; i< STEPS_PER_FRAME; i++){
+  for (let i = 0; i < STEPS_PER_FRAME; i++) {
 
-        if (orbitControls.enabled) {
-            orbitControls.update();
-        }
-        if(pointerControls.isLocked){
-            moveControls(deltaTime)
-            physics.updatePlayer(deltaTime)
-            camera.position.copy(physics.playerCollider.end);
-        }
-        physics.teleportPlayerIfOob(camera);
+    if (orbitControls.enabled) {
+      orbitControls.update();
     }
+    if (pointerControls.isLocked) {
+      moveControls(deltaTime)
+      physics.updatePlayer(deltaTime)
+      camera.position.copy(physics.playerCollider.end);
+    }
+    physics.teleportPlayerIfOob(camera);
+  }
   requestAnimationFrame(render);
   renderer.render(scene, camera) // Render scene
 }
