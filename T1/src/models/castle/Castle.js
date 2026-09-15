@@ -90,16 +90,16 @@ export class Castle extends Model {
         this.add(floor)
         this.timer = 0;
         
-        let doorWallConfig = {
+        let doorWallConfig = { // passa pra wall
             portao: true,
             alturaPortao: DOOR_HEIGHT,
             larguraPortao: DOOR_WIDTH,
         };
         
-        const doorConfig = {
-            width: DOOR_WIDTH,       // Mesma largura do portão cavado na parede
-            height: DOOR_HEIGHT,      // Mesma altura
-            depth: DOOR_DEPTH     // Espessura das tábuas da porta
+        const doorConfig = {   //Passa pra door
+            width: DOOR_WIDTH,       
+            height: DOOR_HEIGHT,      
+            depth: DOOR_DEPTH     
         };
         
         
@@ -178,15 +178,25 @@ export class Castle extends Model {
         
 
         // Posiciona o portão na mesma coordenada da parede 1
-        const doorY = doorConfig.height / 2;
-        const doorZ = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
+        const door3X = midTowerX
+        const door3Y = doorConfig.height / 2;
+        const door3Z = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
 
-        this.castleDoor = new Door(0, doorY, doorZ, materials.wood || this.material, doorConfig);
-        
+        const door4X = -midTowerX
+        const door4Y = doorConfig.height / 2;
+        const door4Z = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
+
+        this.doors = [];
+        this.castleDoor3 = new Door(door3X, door3Y, door3Z, materials.wood || this.material, doorConfig);
+        this.castleDoor3.object.rotateY(THREE.MathUtils.degToRad(-90))
+
+        this.castleDoor4 = new Door(door4X, door4Y, door4Z, materials.wood || this.material, doorConfig);
+        this.castleDoor4.object.rotateY(THREE.MathUtils.degToRad(-90))
         // Se quiser testar o portão aberto logo na criação:
         // this.castleDoor.toggleDoor(true);
 
-        this.add(this.castleDoor);
+        this.add(this.castleDoor3);
+        this.add(this.castleDoor4);
 
     } 
  
