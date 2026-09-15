@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Evaluator, Brush, SUBTRACTION } from 'https://unpkg.com/three-bvh-csg@0.0.16/build/index.module.js';
+import { createArchGeometry } from './ArchGeometry.js';
 
 const evaluator = new Evaluator();
 
@@ -82,30 +83,7 @@ export function applyHolesToWall(baseMesh, wallWidth, wallHeight, wallDepth, hol
         let holeGeo;
 
         if (hole.type === 'arch') {
-            const radius = hole.width / 2;
-
-            const shape = new THREE.Shape();
-
-            shape.moveTo(0, 0);
-            shape.lineTo(0, hole.height - radius);
-
-            shape.absarc(
-                radius,
-                hole.height - radius,
-                radius,
-                Math.PI,
-                0,
-                true
-            );
-
-            shape.lineTo(hole.width, 0);
-
-            holeGeo = new THREE.ExtrudeGeometry(shape, {
-                depth: wallDepth * 4
-            });
-
-            holeGeo.center();
-
+            holeGeo = createArchGeometry(hole.width, hole.height, wallDepth * 4);
         } else {
             holeGeo = new THREE.BoxGeometry(
                 hole.width,

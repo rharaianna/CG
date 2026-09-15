@@ -66,4 +66,6 @@ export class Model {
 
         this.updateBoundingBox();
     }
+
+    
 }

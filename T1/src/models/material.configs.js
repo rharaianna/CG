@@ -9,8 +9,8 @@ export const materials = {
         color: "#828181",
         roughness: 0.8,
     }),
-    gun: new THREE.MeshStandardMaterial({
-        color:"#bebebe",
+    red: new THREE.MeshStandardMaterial({
+        color: "#7e0000",
         roughness: 0.8,
     })
 }
