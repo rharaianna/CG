@@ -59,15 +59,15 @@ export class Castle extends Model {
         const towerZ = wallZ + OFFSET
         
         // torres intermediárias
-        const MIDTOWER_HEIGHT = TOWER_HEIGHT * SCALE
-        const MIDTOWER_WIDTH = 12 
-        const MIDTOWER_DEPTH = 9 
+        const MIDTOWER_HEIGHT = TOWER_HEIGHT
+        const MIDTOWER_WIDTH = 12 * SCALE
+        const MIDTOWER_DEPTH = 9 * SCALE
         const MIDTOWER_BRICKS = 0.15 * TOWER_HEIGHT
 
         // torres intermediárias
-        const FRONTTOWER_HEIGHT = TOWER_HEIGHT *1.05 * SCALE
-        const FRONTTOWER_WIDTH = 18 
-        const FRONTTOWER_DEPTH = 9 
+        const FRONTTOWER_HEIGHT = TOWER_HEIGHT *1.05 
+        const FRONTTOWER_WIDTH = 21  * SCALE
+        const FRONTTOWER_DEPTH = 9 * SCALE
         const FRONTTOWER_BRICKS = 0.15 * TOWER_HEIGHT
 
 
@@ -154,8 +154,12 @@ export class Castle extends Model {
             larguraPortao: FRONTTOWER_WIDTH/4,  // Espessura das tábuas da porta
         };
 
-        const frontTower = new FrontTower(0, midTowerY, midTowerZ, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorConfig1);
+        const FRONTTOWER_Y = FRONTTOWER_HEIGHT/2
+        const FRONTTOWER_Z = wallZ
+
+        const frontTower = new FrontTower(0, FRONTTOWER_Y, 50, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorConfig1);
         this.add(frontTower)
+        
         
         const doorConfig = {
             width: FRONTTOWER_WIDTH/2,       // Mesma largura do portão cavado na parede
