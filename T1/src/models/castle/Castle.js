@@ -145,11 +145,14 @@ export class Castle extends Model {
         this.add(tower3)
         this.add(tower4)
         
+        const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
+        const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
+        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
 
         //const midTower1 = new Tower(0, midTowerY, midTowerZ, this.material, towerConfig);
-        const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
-        const midTower3 = new Tower(midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
-        const midTower4 = new Tower(-midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
+        //const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
+        //const midTower3 = new Tower(midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
+        //const midTower4 = new Tower(-midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
 
         midTower3.object.rotateY(THREE.MathUtils.degToRad(90))
         midTower4.object.rotateY(THREE.MathUtils.degToRad(90))
@@ -179,11 +182,10 @@ export class Castle extends Model {
         stair.object.rotateY(THREE.MathUtils.degToRad(90))
         this.add(stair)
 
-
         const FRONTTOWER_Y = FRONTTOWER_HEIGHT/2
         const FRONTTOWER_Z = wallZ
 
-        const frontTower = new FrontTower(0, FRONTTOWER_Y, 50, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorConfig1);
+        const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorConfig1);
         this.add(frontTower)
         
         
@@ -198,7 +200,6 @@ export class Castle extends Model {
         const doorZ = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
 
         this.castleDoor = new Door(0, doorY, doorZ, materials.wood || this.material, doorConfig);
-
         
         // Se quiser testar o portão aberto logo na criação:
         // this.castleDoor.toggleDoor(true);
