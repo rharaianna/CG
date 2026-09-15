@@ -30,41 +30,21 @@ const light = initDefaultBasicLight(scene); // Create a basic light to illuminat
 const material = setDefaultMaterial(); // create a basic material
 const renderer = initRenderer();    // Init a basic renderer
 
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+let camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.rotation.order = 'YXZ'
+camera = initCamera(new THREE.Vector3(0, 50, 70));
 scene.add(camera); // Add camera to the scene
 
-const pointerControls = new PointerLockControls(camera, renderer.domElement); //
+//const pointerControls = new PointerLockControls(camera, renderer.domElement); //
 const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
-orbitControls.enabled = false;
+orbitControls.enabled = true; //trucar para comecar no orbit
 let pointerControlsOn = true;
 
 
 //  ------------------------ LISTENERS ------------------------
 
-document.body.addEventListener('click', function () { // enable pointerLockControls with mouse click
-  if (pointerControlsOn) {
-    pointerControls.lock();
-  }
-});
+// troca de camera aqui
 
-document.body.addEventListener('keydown', function (event) { // alternate controls
-  if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
-    pointerControlsOn = !pointerControlsOn;
-
-    if (pointerControlsOn) { // 
-      orbitControls.enabled = false;
-    } else {
-      pointerControls.unlock();
-      orbitControls.enabled = true;
-    }
-  }
-});
-
-pointerControls.addEventListener('unlock', () => {
-  pointerControlsOn = false;
-  orbitControls.enabled = true;
-});
 
 window.addEventListener('resize', function () { onWindowResize(camera, renderer) }, false);
 
@@ -183,18 +163,18 @@ function render() {
 
   const deltaTime = Math.min(0.05, timer.getDelta()) / STEPS_PER_FRAME
 
-  for (let i = 0; i < STEPS_PER_FRAME; i++) {
+//   for (let i = 0; i < STEPS_PER_FRAME; i++) {
 
-    if (orbitControls.enabled) {
-      orbitControls.update();
-    }
-    if (pointerControls.isLocked) {
-      moveControls(deltaTime)
-      physics.updatePlayer(deltaTime)
-      camera.position.copy(physics.playerCollider.end);
-    }
-    physics.teleportPlayerIfOob(camera);
-  }
+//     if (orbitControls.enabled) {
+//       orbitControls.update();
+//     }
+//     if (pointerControls.isLocked) {
+//       moveControls(deltaTime)
+//       physics.updatePlayer(deltaTime)
+//       camera.position.copy(physics.playerCollider.end);
+//     }
+//     physics.teleportPlayerIfOob(camera);
+//   }
   requestAnimationFrame(render);
   renderer.render(scene, camera) // Render scene
 }
