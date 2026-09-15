@@ -15,6 +15,7 @@ import { Stair } from "../structures/Stair.js";
 export class Castle extends Model {
     constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
         super(x, y, z, materials.bricks);
+        this.doors = [];
 
         // parâmetros ajustáveis do castelo
         // são atualizados conforme a escala e alteraram todas as paredes e torres
@@ -163,7 +164,7 @@ export class Castle extends Model {
 
         // posicionadas na parede do fundo, ou seja, paralelas ao X
         
-        //const STAIR_Z = -(wallZ - STAIR_TOTAL_DEPTH - WALL_DEPTH/2)
+        
         const STAIR_Z = -wallZ +STAIR_STEP_WITDH/2 +WALL_DEPTH/2
         const stair = new Stair(20, STAIR_Y, STAIR_Z, materials.red, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
         stair.object.rotateY(THREE.MathUtils.degToRad(90))
@@ -176,28 +177,70 @@ export class Castle extends Model {
         this.add(frontTower)
         
         
-
+        //==== Portoes==========
+        const doorFX = 0;
+        const doorFY = doorConfig.height / 2;
+        const doorFZ = FRONTTOWER_Z;
         // Posiciona o portão na mesma coordenada da parede 1
         const door3X = midTowerX
         const door3Y = doorConfig.height / 2;
-        const door3Z = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
+        const door3Z = 0
 
         const door4X = -midTowerX
         const door4Y = doorConfig.height / 2;
-        const door4Z = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
+        const door4Z = 0
 
-        this.doors = [];
-        this.castleDoor3 = new Door(door3X, door3Y, door3Z, materials.wood || this.material, doorConfig);
-        this.castleDoor3.object.rotateY(THREE.MathUtils.degToRad(-90))
+        this.addDoor({
+            x: door3X,
+            y: door3Y,
+            z: door3Z,
+            width: doorConfig.width,
+            height: doorConfig.height,
+            depth: doorConfig.depth,
+            interactionDistance: 4 * SCALE,
+            rotationY: THREE.MathUtils.degToRad(90)
+        });
 
-        this.castleDoor4 = new Door(door4X, door4Y, door4Z, materials.wood || this.material, doorConfig);
-        this.castleDoor4.object.rotateY(THREE.MathUtils.degToRad(-90))
-        // Se quiser testar o portão aberto logo na criação:
-        // this.castleDoor.toggleDoor(true);
+        this.addDoor({
+            x: door4X,
+            y: door4Y,
+            z: door4Z,
+            width: doorConfig.width,
+            height: doorConfig.height,
+            depth: doorConfig.depth,
+            interactionDistance: 4 * SCALE,
+            rotationY: THREE.MathUtils.degToRad(-90)
+        });
 
-        this.add(this.castleDoor3);
-        this.add(this.castleDoor4);
-
+        this.addDoor({
+            x: doorFX,
+            y: doorFY,
+            z: doorFZ,
+            width: doorConfig.width,
+            height: doorConfig.height,
+            depth: doorConfig.depth,
+            interactionDistance: 4 * SCALE,
+            rotationY: THREE.MathUtils.degToRad(0)
+        });
     } 
+
+    addDoor(config) {
+        const door = new Door(
+            config.x,
+            config.y,
+            config.z,
+            this.material,
+            config
+        );
+
+        door.interactionDistance = config.interactionDistance ?? 4;
+        door.object.rotation.y = config.rotationY ?? 0;
+
+        this.doors.push(door);
+        this.add(door);
+
+        return door;
+    }
+
  
 }
