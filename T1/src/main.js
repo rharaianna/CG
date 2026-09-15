@@ -34,13 +34,18 @@ const renderer = initRenderer();    // Init a basic renderer
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.rotation.order = 'YXZ'
 
-const gunGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.5, 30);
-const gunMaterial = new THREE.MeshBasicMaterial({color:'#bebebe'});
-const gun = new THREE.Mesh(gunGeometry, gunMaterial);
-gun.rotation.x = Math.PI / 2;
-gun.position.set(0, -0.3, -0.6);
-camera.add(gun)
+const gun = new Gun();
+gun.object.add(new THREE.AxesHelper(0.3));
+camera.add(gun.object)
 scene.add(camera); // Add camera to the scene
+
+// temporário, só para debug visual
+const debugSphere = new THREE.Mesh(
+  new THREE.SphereGeometry(0.03),
+  new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+);
+scene.add(debugSphere);
+
 
 const pointerControls = new PointerLockControls(camera, renderer.domElement); //
 const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
@@ -55,8 +60,6 @@ const particulasImpacto = []; // pool simples de efeitos
 
 let podeAtirar = true;
 const CADENCIA_TIRO = 0.15; // segundos entre tiros
-const DANO = 25;
-const ALCANCE_MAX = 100;
 
 
 //  ------------------------ LISTENERS ------------------------
@@ -67,18 +70,20 @@ document.body.addEventListener('keydown', function(event) {
     }
 });
 
-document.body.addEventListener('keydown', function (event) { // alternate controls
-  if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
-    pointerControlsOn = !pointerControlsOn;
+// document.body.addEventListener('keydown', function (event) { // alternate controls
+//   if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
+//     pointerControlsOn = !pointerControlsOn;
 
-    if (pointerControlsOn) { // 
-      orbitControls.enabled = false;
-    } else {
-      pointerControls.unlock();
-      orbitControls.enabled = true;
-    }
-  }
-});
+//     if (pointerControlsOn) { // 
+//       orbitControls.enabled = false;
+//       podeAtirar =  true;
+//     } else {
+//       pointerControls.unlock();
+//       orbitControls.enabled = true;
+//       podeAtirar = false;
+//     }
+//   }
+// });
 
 
 document.addEventListener('mousedown', (evento) => {
@@ -167,13 +172,14 @@ function moveControls(deltaTime) {
   }
 }
 
+
 function shoot(camera){
     if(!podeAtirar) return;
     
     podeAtirar = false;
     setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 100);
 
-    const origin = camera.getWorldPosition(new THREE.Vector3());
+    const origin = gun.getPontaCilindro();
     const direction = camera.getWorldDirection(new THREE.Vector3());
 
     const bullet = new Bullet(scene, origin, direction)
@@ -206,32 +212,35 @@ function render() {
     castle.castleDoor.toggleDoor(nearDoor);
   }
 
-
-
-  console.log(nearDoor);
-
-
-  
-
   updatables.forEach(object => {
     object.update(deltaTime1);
   });
-  timer.update();
+    //debugSphere.position.copy(gun.getPontaCilindro());
 
+  timer.update();
   const deltaTime = Math.min(0.05, timer.getDelta()) / STEPS_PER_FRAME
 
-  for (let i = 0; i < STEPS_PER_FRAME; i++) {
+    for (let i = 0; i < STEPS_PER_FRAME; i++) {
 
-    if (orbitControls.enabled) {
-      orbitControls.update();
+        if (orbitControls.enabled) {
+            orbitControls.update();
+        }
+        if (pointerControls.isLocked) {
+            moveControls(deltaTime);
+            physics.updatePlayer(deltaTime);
+            camera.position.copy(physics.playerCollider.end);
+        }
+        physics.teleportPlayerIfOob(camera);
+
+        // balas atualizadas junto com a física
+        for (let j = bullets.length - 1; j >= 0; j--) {
+            bullets[j].update(deltaTime, worldOctree, scene);
+            if (!bullets[j].alive) {
+                bullets.splice(j, 1);
+            }
+        }
     }
-    if (pointerControls.isLocked) {
-      moveControls(deltaTime)
-      physics.updatePlayer(deltaTime)
-      camera.position.copy(physics.playerCollider.end);
-    }
-    physics.teleportPlayerIfOob(camera);
-  }
-  requestAnimationFrame(render);
-  renderer.render(scene, camera) // Render scene
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
 }
