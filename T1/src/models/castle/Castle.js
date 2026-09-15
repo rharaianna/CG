@@ -145,9 +145,15 @@ export class Castle extends Model {
         this.add(tower3)
         this.add(tower4)
         
-        const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
-        const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
-        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
+        const doorConfig1 = {
+            portao: true,
+            alturaPortao: FRONTTOWER_HEIGHT/3,
+            larguraPortao: FRONTTOWER_WIDTH/4,  // Espessura das tábuas da porta
+        };
+        
+        const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS,doorConfig1);
+        const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS,doorConfig1);
+        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS,doorConfig1);
 
         //const midTower1 = new Tower(0, midTowerY, midTowerZ, this.material, towerConfig);
         //const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
@@ -161,12 +167,6 @@ export class Castle extends Model {
         this.add(midTower3)
         this.add(midTower4)
 
-        const doorConfig1 = {
-            portao: true,
-            alturaPortao: FRONTTOWER_HEIGHT/3,
-            larguraPortao: FRONTTOWER_WIDTH/4,  // Espessura das tábuas da porta
-        };
-        
         const STAIR_STEP_WITDH = 10
         const STAIR_STEP_HEIGHT = 0.18
         const STAIR_STEP_DEPTH = 0.5
