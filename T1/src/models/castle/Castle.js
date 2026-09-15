@@ -80,7 +80,7 @@ export class Castle extends Model {
 
         // elementos
         const floorY = FLOOR_HEIGHT/2
-        const floor = new Floor(0, floorY, 0, null, FLOOR_WIDTH, FLOOR_HEIGHT, FLOOR_DEPTH);
+        const floor = new Floor(0, floorY, 0, materials.grass, FLOOR_WIDTH, FLOOR_HEIGHT, FLOOR_DEPTH);
         
         this.add(floor)
         this.timer = 0;
