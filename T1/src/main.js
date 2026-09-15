@@ -16,6 +16,7 @@ import { Castle } from './models/castle/Castle.js'
 import { PlayerController } from './player/PlayerController.js';
 import { PlayerPhysics } from './player/PlayerPhysics.js';
 import { Bullet } from './player/Bullet.js';
+import { Gun } from './models/Gun.js';
 
 // ------------------------ Initial variables ------------------------
 const timer = new THREE.Timer();
@@ -28,6 +29,13 @@ const renderer = initRenderer();    // Init a basic renderer
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.rotation.order = 'YXZ'
+
+const gunGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.5, 30);
+const gunMaterial = new THREE.MeshBasicMaterial({color:'#bebebe'});
+const gun = new THREE.Mesh(gunGeometry, gunMaterial);
+gun.rotation.x = Math.PI / 2;
+gun.position.set(0, -0.3, -0.6);
+camera.add(gun)
 scene.add(camera); // Add camera to the scene
 
 const pointerControls = new PointerLockControls(camera, renderer.domElement); //
@@ -161,7 +169,6 @@ function shoot(camera){
     setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 100);
 
     const origin = camera.getWorldPosition(new THREE.Vector3());
-    console.log(origin)
     const direction = camera.getWorldDirection(new THREE.Vector3());
 
     const bullet = new Bullet(scene, origin, direction)
