@@ -8,11 +8,11 @@ export class Bullet {
     constructor(scene, posicaoInicial, direction) {
         const bulletGeometry = new THREE.SphereGeometry(0.1, 32, 32);
         const bulletMaterial = new THREE.MeshStandardMaterial({
-            color: '#D70413', 
+            color: '#D70413',
             roughness: 0.8,
             metalness: 0.1
         });
-        
+
         this.mesh = new THREE.Mesh(bulletGeometry, bulletMaterial);
         this.mesh.position.copy(posicaoInicial);
         scene.add(this.mesh)
@@ -21,7 +21,7 @@ export class Bullet {
 
         this.velocity = direction.clone().normalize().multiplyScalar(BULLET_VELOCITY);
         this.alive = true;
-  }
+    }
 
     update(deltaTime, worldOctree, scene) {
 
@@ -31,11 +31,11 @@ export class Bullet {
             this.mesh.position.clone().addScaledVector(this.velocity, -deltaTime),
             this.velocity.clone().normalize()
         );
-        
+
         const distance = this.velocity.length() * deltaTime;
         const result = worldOctree.rayIntersect(ray);
 
-        if(result && result.distance <= distance){
+        if (result && result.distance <= distance) {
             this.alive = false;
             scene.remove(this.mesh);
             return;

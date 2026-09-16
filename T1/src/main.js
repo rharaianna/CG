@@ -31,21 +31,13 @@ const light = initDefaultBasicLight(scene); // Create a basic light to illuminat
 const material = setDefaultMaterial(); // create a basic material
 const renderer = initRenderer();    // Init a basic renderer
 
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.rotation.order = 'YXZ'
 
 const gun = new Gun();
 gun.object.add(new THREE.AxesHelper(0.3));
 camera.add(gun.object)
 scene.add(camera); // Add camera to the scene
-
-// temporário, só para debug visual
-const debugSphere = new THREE.Mesh(
-  new THREE.SphereGeometry(0.03),
-  new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-);
-scene.add(debugSphere);
-
 
 const pointerControls = new PointerLockControls(camera, renderer.domElement); //
 const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
