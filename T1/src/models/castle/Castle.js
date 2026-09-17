@@ -11,6 +11,8 @@ import { CastleWall } from "../structures/CastleWall.js";
 import { MidTower } from "../structures/MidTower.js";
 import { FrontTower } from "../structures/FrontTower.js";
 import { Stair } from "../structures/Stair.js";
+import { Ceil } from "../structures/Ceil.js";
+import { DetailedWall } from "../structures/DetailedWall.js";
 
 export class Castle extends Model {
     constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
@@ -31,8 +33,8 @@ export class Castle extends Model {
         const FLOOR_HEIGHT = 0.1 * SCALE
         
         // paredes
-        const WALL_HEIGHT = 14 * SCALE
-        const WALL_DEPTH = 4 * SCALE
+        const WALL_HEIGHT = 13 * SCALE
+        const WALL_DEPTH = 2 * SCALE
         
         // posicionamento das paredes
         const wallY = WALL_HEIGHT/2 
@@ -108,25 +110,68 @@ export class Castle extends Model {
         const wall1 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         const wall2 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         
+        const DISTANCE = 10
+        const MID_WALL_DEPTH = WALL_DEPTH/3
+        const MID_WALL_WIDTH = DEPTH/3
+        const MID_WALL_Z = -wallZ + DISTANCE + WALL_DEPTH/2 + MID_WALL_DEPTH/2
+        const MID_WALL_X = wallX - MID_WALL_WIDTH/2 - WALL_DEPTH/2 - DISTANCE
+
+        windowsWallConfig = {
+            portao: true,
+            alturaPortao: (WALL_HEIGHT*2/3),
+            larguraPortao: (DISTANCE*SCALE),
+        };
+
+        const midWall1 = new Wall(MID_WALL_X, wallY, MID_WALL_Z, this.material, MID_WALL_WIDTH, WALL_HEIGHT, MID_WALL_DEPTH)
+        const midWall2 = new Wall(MID_WALL_X, wallY, MID_WALL_Z, this.material, MID_WALL_DEPTH, WALL_HEIGHT, MID_WALL_WIDTH)
+        
+        const STAIR_STEP_WITDH = DISTANCE
+        //const STAIR_STEP_HEIGHT = 0.18
+        const STAIR_STEP_HEIGHT = 0.25
+        const STAIR_STEP_DEPTH = 0.5
+        const STEPS_NUMBER = 30
+        const STAIR_TOTAL_DEPTH = STEPS_NUMBER * STAIR_STEP_DEPTH
+        
+        const CEIL_HEIGHT = 8
+        const CEIL_Y = CEIL_HEIGHT/2
+        const CEIL_X = wallX - DISTANCE/2 - WALL_DEPTH/2
+        const ceil1 = new Ceil(CEIL_X, CEIL_Y, 0, materials.blue, DISTANCE, CEIL_HEIGHT, DEPTH)
+        this.add(ceil1)
+
+        // posicionadas na parede do fundo, ou seja, paralelas ao X
+        const STAIR_X = wallX - WALL_DEPTH/2 - (STAIR_TOTAL_DEPTH) - DISTANCE
+        const STAIR_Y = floorY + STAIR_STEP_HEIGHT/2
+        const STAIR_Z = -wallZ +STAIR_STEP_WITDH/2 +WALL_DEPTH/2
+        
+        const stair = new Stair(STAIR_X, STAIR_Y, STAIR_Z, materials.red, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
+        stair.object.rotateY(THREE.MathUtils.degToRad(90))
+        this.add(stair)
+
+
         //const wall1 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS)
-        const wall11 = new Wall(0, wallY, -wallZ + 11.5, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         //const wall2 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsConfig)
 
 
         // paredes posicionadas no X, paralelas ao Z (azul)
         // comprimento delas é a profundidade do terreno e rotacionadas
         // largura delas é a mesma profundidade do terreno e são rotacionadas
-        const wall3 = new CastleWall(wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
-        const wall4 = new CastleWall(-wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
+        const wall3 = new CastleWall(wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, null)
+        
+        const wall4 = new CastleWall(-wallX, wallY, -DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
+        
+        // parede com detalhes
+        const wall44 = new DetailedWall(-wallX, wallY, DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
 
         wall3.object.rotateY(THREE.MathUtils.degToRad(90))
         wall4.object.rotateY(THREE.MathUtils.degToRad(90))
+        wall44.object.rotateY(THREE.MathUtils.degToRad(90))
 
         this.add(wall1)
-        this.add(wall11)
+        this.add(midWall1)
         this.add(wall2)
         this.add(wall3)
         this.add(wall4)
+        this.add(wall44)
 
         let windowsTowerConfig = {
             linhas: 2,          // n fileiras de janelas na altura
@@ -167,21 +212,7 @@ export class Castle extends Model {
             larguraPortao: FRONTTOWER_WIDTH/4,  // Espessura das tábuas da porta
         };
         
-        const STAIR_STEP_WITDH = 10
-        const STAIR_STEP_HEIGHT = 0.18
-        const STAIR_STEP_DEPTH = 0.5
-        const STEPS_NUMBER = 30
-        const STAIR_Y = floorY + STAIR_STEP_HEIGHT/2
-        const STAIR_TOTAL_DEPTH = STEPS_NUMBER * STAIR_STEP_DEPTH
-
-        // posicionadas na parede do fundo, ou seja, paralelas ao X
         
-        //const STAIR_Z = -(wallZ - STAIR_TOTAL_DEPTH - WALL_DEPTH/2)
-        const STAIR_Z = -wallZ +STAIR_STEP_WITDH/2 +WALL_DEPTH/2
-        const stair = new Stair(20, STAIR_Y, STAIR_Z, materials.red, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
-        stair.object.rotateY(THREE.MathUtils.degToRad(90))
-        this.add(stair)
-
         const FRONTTOWER_Y = FRONTTOWER_HEIGHT/2
         const FRONTTOWER_Z = wallZ
 
