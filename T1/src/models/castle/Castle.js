@@ -194,6 +194,12 @@ export class Castle extends Model {
         const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
         const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
 
+        // correções
+        const desvio = MIDTOWER_DEPTH/2 - WALL_DEPTH/2
+        midTower2.object.translateZ(-desvio)
+        midTower3.object.translateX(desvio)
+        midTower4.object.translateX(-desvio)
+
         //const midTower1 = new Tower(0, midTowerY, midTowerZ, this.material, towerConfig);
         //const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
         //const midTower3 = new Tower(midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
