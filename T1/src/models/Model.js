@@ -20,6 +20,7 @@ export class Model {
             0xffff00
         );
         this.object.add(this.boxHelper); 
+        this.boxHelper.visible = false;
     }
 
     add(model) {
