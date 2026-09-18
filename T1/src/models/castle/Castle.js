@@ -285,7 +285,7 @@ export class Castle extends Model {
             config.x,
             config.y,
             config.z,
-            this.material,
+            materials.rotten_wood,
             config
         );
 
