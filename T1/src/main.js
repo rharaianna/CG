@@ -51,11 +51,11 @@ const bullets = []
 
 //  ------------------------ LISTENERS ------------------------
 
-document.body.addEventListener('click', function(event) {
-    if (pointerControlsOn) {
-        pointerControls.lock();
-        podeAtirar = true;
-    }
+document.body.addEventListener('click', function (event) {
+  if (pointerControlsOn) {
+    pointerControls.lock();
+    podeAtirar = true;
+  }
 });
 
 document.body.addEventListener('keydown', function (event) { // alternate controls
@@ -65,7 +65,7 @@ document.body.addEventListener('keydown', function (event) { // alternate contro
     if (pointerControlsOn) { //
       pointerControls.lock();
       orbitControls.enabled = false;
-      podeAtirar =  true;
+      podeAtirar = true;
       gun.object.visible = true;
       crosshair.style.display = ''
     } else {
@@ -79,12 +79,12 @@ document.body.addEventListener('keydown', function (event) { // alternate contro
 });
 
 pointerControls.addEventListener('unlock', () => {
-    pointerControlsOn = false;
-    orbitControls.enabled = true;
+  pointerControlsOn = false;
+  orbitControls.enabled = true;
 });
 
 document.addEventListener('mousedown', (evento) => {// disparo
-  if(pointerControlsOn){
+  if (pointerControlsOn) {
     if (evento.button === 0 || evento.button === 2) {//0->botao esquerdo e 2->boato direito
       shoot(camera);
     }
@@ -177,17 +177,17 @@ function moveControls(deltaTime) {
 }
 
 
-function shoot(camera){
-    if(!podeAtirar) return;
-    
-    podeAtirar = false;
-    setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 100);
+function shoot(camera) {
+  if (!podeAtirar) return;
 
-    const origin = gun.getPontaCilindro();
-    const direction = camera.getWorldDirection(new THREE.Vector3());
+  podeAtirar = false;
+  setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 100);
 
-    const bullet = new Bullet(scene, origin, direction)
-    bullets.push(bullet)
+  const origin = gun.getPontaCilindro();
+  const direction = camera.getWorldDirection(new THREE.Vector3());
+
+  const bullet = new Bullet(scene, origin, direction)
+  bullets.push(bullet)
 }
 
 const clock = new THREE.Timer();
@@ -204,52 +204,52 @@ const playerPosition = new THREE.Vector3();
 render();
 
 function render() {
-  
-  
+
+
   clock.update();
   const deltaTime1 = clock.getDelta();
-  
+
   camera.getWorldPosition(playerPosition);
   for (const door of castle.doors) {
-      door.object.getWorldPosition(doorPosition);
+    door.object.getWorldPosition(doorPosition);
 
-      const nearDoor =
-          playerPosition.distanceTo(doorPosition) <= door.interactionDistance;
+    const nearDoor =
+      playerPosition.distanceTo(doorPosition) <= door.interactionDistance;
 
-      if (nearDoor !== door.isOpen) {
-          door.toggleDoor(nearDoor);
-      }
+    if (nearDoor !== door.isOpen) {
+      door.toggleDoor(nearDoor);
+    }
   }
 
   updatables.forEach(object => {
     object.update(deltaTime1);
   });
-    //debugSphere.position.copy(gun.getPontaCilindro());
+  //debugSphere.position.copy(gun.getPontaCilindro());
 
   timer.update();
   const deltaTime = Math.min(0.05, timer.getDelta()) / STEPS_PER_FRAME
 
-    for (let i = 0; i < STEPS_PER_FRAME; i++) {
+  for (let i = 0; i < STEPS_PER_FRAME; i++) {
 
-        if (orbitControls.enabled) {
-            orbitControls.update();
-        }
-        if (pointerControls.isLocked) {
-            moveControls(deltaTime);
-            physics.updatePlayer(deltaTime);
-            camera.position.copy(physics.playerCollider.end);
-            physics.teleportPlayerIfOob(camera);
-        }
-
-        // balas atualizadas junto com a física
-        for (let j = bullets.length - 1; j >= 0; j--) {
-            bullets[j].update(deltaTime, worldOctree, scene);
-            if (!bullets[j].alive) {
-                bullets.splice(j, 1);
-            }
-        }
+    if (orbitControls.enabled) {
+      orbitControls.update();
+    }
+    if (pointerControls.isLocked) {
+      moveControls(deltaTime);
+      physics.updatePlayer(deltaTime);
+      camera.position.copy(physics.playerCollider.end);
+      physics.teleportPlayerIfOob(camera);
     }
 
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
+    // balas atualizadas junto com a física
+    for (let j = bullets.length - 1; j >= 0; j--) {
+      bullets[j].update(deltaTime, worldOctree, scene);
+      if (!bullets[j].alive) {
+        bullets.splice(j, 1);
+      }
+    }
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(render);
 }
