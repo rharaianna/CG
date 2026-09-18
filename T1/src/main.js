@@ -62,26 +62,27 @@ document.body.addEventListener('keydown', function (event) { // alternate contro
   if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
     pointerControlsOn = !pointerControlsOn;
 
-    if (pointerControlsOn) { //
-      pointerControls.lock();
-      orbitControls.enabled = false;
-      podeAtirar = true;
-      gun.object.visible = true;
-      crosshair.style.display = ''
-    } else {
-      pointerControls.unlock();
-      orbitControls.enabled = true;
-      podeAtirar = false;
-      gun.object.visible = false;
-      crosshair.style.display = 'none'
+    if (pointerControlsOn) {         // se a camera pointer           
+      pointerControls.lock();        // habilita pointer            
+      orbitControls.enabled = false; // desabilita orbital
+      podeAtirar = true;             // habilita disparo              
+      gun.object.visible = true;     // volta a mostrar a arma        
+      crosshair.style.display = '';  // volta a mostrar a crosshair 
+    }
+    else {
+      pointerControls.unlock();         // desabilita pointer
+      orbitControls.enabled = true;     // habilita orbital
+      podeAtirar = false;               // desabilita disparo
+      gun.object.visible = false;       // esconde arma
+      crosshair.style.display = 'none'; // esconde crosshair
     }
   }
 });
 
-pointerControls.addEventListener('unlock', () => {
-  pointerControlsOn = false;
-  orbitControls.enabled = true;
-});
+// pointerControls.addEventListener('unlock', () => {
+//   pointerControlsOn = false;
+//   orbitControls.enabled = true;
+// });
 
 document.addEventListener('mousedown', (evento) => {// disparo
   if (pointerControlsOn) {
