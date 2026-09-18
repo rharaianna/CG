@@ -20,6 +20,7 @@ export class Model {
             0xffff00
         );
         this.object.add(this.boxHelper); 
+        this.boxHelper.visible = false;
     }
 
     add(model) {
@@ -61,7 +62,9 @@ export class Model {
 
     update(deltaTime) {
         for (const child of this.children) {
-            child.update(deltaTime);
+            if (typeof child.update === "function") {
+                child.update(deltaTime);
+            }
         }
 
         this.updateBoundingBox();
