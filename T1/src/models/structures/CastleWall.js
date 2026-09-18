@@ -4,27 +4,28 @@ import { Wall } from "./Wall.js";
 /** 
   * geometria similar a Wall mas tem os merlões posicionados em cima, precisa de receber o raio da torre para posicionar corretamente
 **/
-export class CastleWall extends Wall  {
+export class CastleWall extends Wall {
     constructor(x, y, z, material, width, height, depth, towerRadius, windowsConfig) {
         super(x, y, z, material, width, height, depth, windowsConfig);
+        this.towerRadius = towerRadius
+        this.drawMerlons(width, depth)
+    }
 
-       // const geometry = new THREE.BoxGeometry(width, height, depth)
-       // const mesh = new THREE.Mesh(geometry, this.material)
-
-        const brickSpacing = 0.02 * width
-        const brickWidth = 0.06 * width
-        const brickHeight = 0.04 * width
+    drawMerlons(width, depth) {
+        const brickSpacing = 0.3 * depth
+        const brickWidth = 0.8 * depth
+        const brickHeight = 0.5 * depth
         const brickDepth = depth
 
         // numeros de tijolo para cada metade de parede
-        const availableWidth = (width/2 -2*towerRadius)
+        const availableWidth = (width / 2 - 2 * this.towerRadius)
         const brickNumber = Math.ceil(availableWidth / (brickWidth + brickSpacing))
 
         const spacing = (
             availableWidth - brickNumber * brickWidth
         ) / (brickNumber + 1);
 
-        const brickStart = towerRadius + spacing + brickWidth / 2;
+        const brickStart = this.towerRadius + spacing + brickWidth;
 
         for (let i = 0; i < brickNumber; i++) {
             let merlon1 = new THREE.Mesh(
@@ -34,7 +35,7 @@ export class CastleWall extends Wall  {
 
             merlon1.position.set(
                 brickStart + i * (brickWidth + brickSpacing),
-                y+brickHeight / 2,
+                this.y + brickHeight / 2,
                 0
             );
 
@@ -45,16 +46,12 @@ export class CastleWall extends Wall  {
 
             merlon2.position.set(
                 -(brickStart + i * (brickWidth + brickSpacing)),
-                y+brickHeight / 2,
+                this.y + brickHeight / 2,
                 0
             );
 
             this.object.add(merlon1);
             this.object.add(merlon2);
         }
-
-        
-        //this.renderWindows(windowsConfig, mesh)
-        //this.object.add(mesh)
     }
 }

@@ -5,7 +5,7 @@ import { Wall } from "./Wall.js";
 export class DetailedWall extends Wall {
     constructor(x, y, z, material, width, height, depth, windowsConfig){
 
-        const mainWidth = 0.6*width
+        const mainWidth = 0.7*width
         const remaining = width - mainWidth
         const dente = remaining/2
 

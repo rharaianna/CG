@@ -56,7 +56,7 @@ let axesHelper = new THREE.AxesHelper(100);
 scene.add(axesHelper);
 
 // create the ground plane
-let plane = createGroundPlaneXZ(300, 300)
+let plane = createGroundPlaneXZ(300, 300,)
 scene.add(plane);
 
 // tamanhos aproximados do castelo
@@ -151,7 +151,7 @@ function render() {
 
 
 
-  console.log(nearDoor);
+  //console.log(nearDoor);
 
 
   
