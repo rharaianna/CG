@@ -294,18 +294,18 @@ export function initCamera(initialPosition) {
    return camera;
 }
 
-export function initDefaultBasicLight(scene, castShadow = false, position = new THREE.Vector3(2, 1, 1),
+export function initDefaultBasicLight(scene, castShadow = true, position = new THREE.Vector3(10, 10, 10),
    shadowSide = 16, shadowMapSize = 512, shadowNear = 0.1, shadowFar = 100) {
    let power = Math.PI;
    const ambientLight = new THREE.HemisphereLight(
-      'white', // bright sky color
-      'darkslategrey', // dim ground color
-      0.5 * power, // intensity
+      '#dfd5ca', // bright sky color
+      '#4d2f05', // dim ground color
+      1 * power, // intensity
    );
    scene.add(ambientLight);
    
-   const mainLight = new THREE.DirectionalLight('white', 0.7 * power);
-   mainLight.position.copy(position);
+   const mainLight = new THREE.DirectionalLight('#eaddcb', 1 * power);
+   mainLight.position.copy(new THREE.Vector3(0, 10, 10));
    mainLight.castShadow = castShadow;
    scene.add(mainLight);
 
@@ -484,10 +484,10 @@ export function addDefaultCubeAndSphere(scene) {
 /**
  * Create a simple XZ plane slightly translated in Y negative.
  */
-export function createGroundPlaneXZ(width, height, widthSegments = 10, heightSegments = 10, gcolor = null) {
+export function createGroundPlaneXZ(width, height, widthSegments = 10, heightSegments = 10, gcolor = "#295260") {
    if (!gcolor) gcolor = "rgb(200,200,200)";
    let planeGeometry = new THREE.PlaneGeometry(width, height, widthSegments, heightSegments);
-   let planeMaterial = new THREE.MeshLambertMaterial({ color: gcolor, side: THREE.DoubleSide });
+   let planeMaterial = new THREE.MeshStandardMaterial({ color: gcolor, roughness: 0});
 
    let mat4 = new THREE.Matrix4(); // Aux mat4 matrix   
    let plane = new THREE.Mesh(planeGeometry, planeMaterial);

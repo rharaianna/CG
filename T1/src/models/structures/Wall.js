@@ -6,6 +6,10 @@ export class Wall extends Model {
     constructor(x, y, z, material, width, height, depth, windowsConfig) {
         super(x, y, z, material);
 
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        //this.material = material;
         this.width = width;
         this.height = height;
         this.depth = depth;
