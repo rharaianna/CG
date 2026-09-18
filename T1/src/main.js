@@ -35,6 +35,7 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
 camera.rotation.order = 'YXZ'
 
 const gun = new Gun();
+const crosshair = document.getElementById('crosshair')
 camera.add(gun.object)
 scene.add(camera); // Add camera to the scene
 
@@ -57,7 +58,6 @@ document.body.addEventListener('click', function(event) {
     }
 });
 
-
 document.body.addEventListener('keydown', function (event) { // alternate controls
   if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
     pointerControlsOn = !pointerControlsOn;
@@ -66,11 +66,14 @@ document.body.addEventListener('keydown', function (event) { // alternate contro
       pointerControls.lock();
       orbitControls.enabled = false;
       podeAtirar =  true;
+      gun.object.visible = true;
+      crosshair.style.display = ''
     } else {
       pointerControls.unlock();
       orbitControls.enabled = true;
       podeAtirar = false;
-      //scene.attach(gun)
+      gun.object.visible = false;
+      crosshair.style.display = 'none'
     }
   }
 });
