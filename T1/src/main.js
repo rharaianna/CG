@@ -18,7 +18,6 @@ import {
 import { Castle } from './models/castle/Castle.js'
 import { PlayerController } from './player/PlayerController.js';
 import { PlayerPhysics } from './player/PlayerPhysics.js';
-import { Door } from './models/structures/Door.js';
 
 
 // ------------------------ Initial variables ------------------------
@@ -85,12 +84,16 @@ information.show();
 // ------------------------ COLLISION ------------------------
 
 // A porta continua visível, mas fica fora da malha estática de colisão.
-castle.object.remove(castle.castleDoor.object);
+for (const door of castle.doors) {
+  castle.object.remove(door.object);
+}
 
 const worldOctree = new Octree();
 worldOctree.fromGraphNode(scene);
 
-castle.object.add(castle.castleDoor.object);
+for (const door of castle.doors) {
+  castle.object.add(door.object);
+}
 
 const player = new PlayerController();
 const physics = new PlayerPhysics(worldOctree);
@@ -128,7 +131,9 @@ const clock = new THREE.Timer();
 
 //jogar aqui td que tem update
 const updatables = [];
-updatables.push(castle.castleDoor);
+updatables.push(...castle.doors)
+
+
 const doorPosition = new THREE.Vector3();
 const playerPosition = new THREE.Vector3();
 
@@ -141,20 +146,16 @@ function render() {
   const deltaTime1 = clock.getDelta();
   
   camera.getWorldPosition(playerPosition);
-  castle.castleDoor.object.getWorldPosition(doorPosition);
+  for (const door of castle.doors) {
+      door.object.getWorldPosition(doorPosition);
 
-  const nearDoor = playerPosition.distanceTo(doorPosition) < 4;
+      const nearDoor =
+          playerPosition.distanceTo(doorPosition) <= door.interactionDistance;
 
-  if (nearDoor !== castle.castleDoor.isOpen) {
-    castle.castleDoor.toggleDoor(nearDoor);
+      if (nearDoor !== door.isOpen) {
+          door.toggleDoor(nearDoor);
+      }
   }
-
-
-
-  //console.log(nearDoor);
-
-
-  
 
   updatables.forEach(object => {
     object.update(deltaTime1);

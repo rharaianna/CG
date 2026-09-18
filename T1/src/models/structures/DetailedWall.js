@@ -3,16 +3,16 @@ import { applyHolesToWall } from "../../utils/CSGModifiers.js";
 import { Wall } from "./Wall.js";
 
 export class DetailedWall extends Wall {
-    constructor(x, y, z, material, width, height, depth, windowsConfig){
+    constructor(x, y, z, material, width, height, depth, towerWidth, windowsConfig){
 
-        const mainWidth = 0.7*width
+        const mainWidth = 0.7*(width-towerWidth)
         const remaining = width - mainWidth
         const dente = remaining/2
 
         super(x, y, z, material, mainWidth, height, depth, windowsConfig);
 
         // volta para trás o que foi tirado
-        this.object.translateZ(-remaining/2)
+        this.object.translateZ(-remaining/2 +towerWidth/2)
 
         // anda um espaço para entrar o desvio
         this.object.translateX(-dente)  

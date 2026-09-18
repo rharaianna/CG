@@ -17,6 +17,8 @@ import { DetailedWall } from "../structures/DetailedWall.js";
 export class Castle extends Model {
     constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
         super(x, y, z, materials.bricks);
+        this.doors = [];
+        this.timer = 0;
 
         // parâmetros ajustáveis do castelo
         // são atualizados conforme a escala e alteraram todas as paredes e torres
@@ -78,17 +80,19 @@ export class Castle extends Model {
         const midTowerX = wallX
         const midTowerZ = wallZ
         const midTowerY = MIDTOWER_HEIGHT/2
-
+        
         // elementos
         const floorY = FLOOR_HEIGHT/2
         const floor = new Floor(0, floorY, 0, materials.grass, FLOOR_WIDTH, FLOOR_HEIGHT, FLOOR_DEPTH);
         
         this.add(floor)
-        this.timer = 0;
 
+        // portão
+        const DOOR_HEIGHT = (WALL_HEIGHT/2) 
+        const DOOR_WIDTH = (1 * TOWER_RADIUS)
+        const DOOR_DEPTH = DOOR_WIDTH * 0.1
 
         // escadas e teto vão ser parametrizados com esses:
-
         // distancia da midwall das paredes
         const DISTANCE = WIDTH/2 -(3/2)*FRONTTOWER_WIDTH/3
 
@@ -111,7 +115,6 @@ export class Castle extends Model {
             alturaPortao: (DISTANCE),
         }
         
-
         // posicionadas na parede do fundo, ou seja, paralelas ao X
         const STAIR_X = wallX -DISTANCE -STAIR_TOTAL_DEPTH -WALL_DEPTH/2 +STAIR_STEP_DEPTH/2
         const STAIR_Y = floorY + STAIR_STEP_HEIGHT/2
@@ -153,11 +156,8 @@ export class Castle extends Model {
         const ceil1 = new Ceil(CEIL_X, CEIL_Y, 0, materials.rotten_wood, DISTANCE, CEIL_HEIGHT, DEPTH)
         this.add(ceil1)
 
-       
         // paredes posicionadas no Z, paralelas ao X (vermelho)
         // largura delas é a mesma largura do terreno 
-
-        // de onde???
         const wall1 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         const wall2 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
     
@@ -166,11 +166,22 @@ export class Castle extends Model {
         // largura delas é a mesma profundidade do terreno e são rotacionadas
         const wall3 = new CastleWall(wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, windowsWallConfig)
         
-        const wall4 = new CastleWall(-wallX, wallY, -DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
-        
+        const wall4 = new CastleWall(-wallX, wallY, -DEPTH/4, this.material, DEPTH/2 - MIDTOWER_WIDTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
         // parede com detalhes
-        const wall44 = new DetailedWall(-wallX, wallY, DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
-
+        const wall44 = new DetailedWall(-wallX, wallY, DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, MIDTOWER_WIDTH, null)
+        
+        let doorWallConfig = { // passa pra wall
+            portao: true,
+            alturaPortao: DOOR_HEIGHT,
+            larguraPortao: DOOR_WIDTH,
+        };
+        
+        const doorConfig = {   //Passa pra door
+            width: DOOR_WIDTH,       
+            height: DOOR_HEIGHT,      
+            depth: DOOR_DEPTH     
+        };
+        
         wall3.object.rotateY(THREE.MathUtils.degToRad(90))
         wall4.object.rotateY(THREE.MathUtils.degToRad(90))
         wall44.object.rotateY(THREE.MathUtils.degToRad(90))
@@ -184,7 +195,7 @@ export class Castle extends Model {
         let windowsTowerConfig = {
             linhas: 2,          // n fileiras de janelas na altura
             colunas: 4,        // m colunas distribuídas em 360° ao redor da torre
-            raio: 1,
+            raio: 0.5,
         }
     
         // posicionadas nas extremidades das paredes
@@ -199,20 +210,14 @@ export class Castle extends Model {
         this.add(tower4)
         
         const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
-        const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
-        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
+        const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS,doorWallConfig);
+        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS,doorWallConfig);
 
         // correções
         const desvio = MIDTOWER_DEPTH/2 - WALL_DEPTH/2
         midTower2.object.translateZ(-desvio)
         midTower3.object.translateX(desvio)
         midTower4.object.translateX(-desvio)
-
-        //const midTower1 = new Tower(0, midTowerY, midTowerZ, this.material, towerConfig);
-        //const midTower2 = new Tower(0, midTowerY, -midTowerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
-        //const midTower3 = new Tower(midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
-        //const midTower4 = new Tower(-midTowerX, midTowerY, 0, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS);
-
         midTower3.object.rotateY(THREE.MathUtils.degToRad(90))
         midTower4.object.rotateY(THREE.MathUtils.degToRad(90))
 
@@ -220,36 +225,78 @@ export class Castle extends Model {
         this.add(midTower3)
         this.add(midTower4)
 
-        const doorConfig1 = {
-            portao: true,
-            alturaPortao: FRONTTOWER_HEIGHT/3,
-            larguraPortao: FRONTTOWER_WIDTH/4,  // Espessura das tábuas da porta
-        };
-        
+        // torre frontal
         const FRONTTOWER_Y = FRONTTOWER_HEIGHT/2
         const FRONTTOWER_Z = wallZ
 
-        const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorConfig1);
+        const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorWallConfig);
         this.add(frontTower)
-        
-        
-        const doorConfig = {
-            width: FRONTTOWER_WIDTH/2,       // Mesma largura do portão cavado na parede
-            height: FRONTTOWER_HEIGHT/3,      // Mesma altura
-            depth: 1     // Espessura das tábuas da porta
-        };
 
+    
+        //==== Portoes==========
+        const doorFX = 0;
+        const doorFY = doorConfig.height / 2;
+        const doorFZ = FRONTTOWER_Z;
         // Posiciona o portão na mesma coordenada da parede 1
-        const doorY = doorConfig.height / 2;
-        const doorZ = 0//-wallZ + WALL_DEPTH / 2; // Levemente ajustado para o vão
+        const door3X = midTowerX
+        const door3Y = doorConfig.height / 2;
+        const door3Z = 0
 
-        this.castleDoor = new Door(0, doorY, doorZ, materials.wood || this.material, doorConfig);
-        
-        // Se quiser testar o portão aberto logo na criação:
-        // this.castleDoor.toggleDoor(true);
+        const door4X = -midTowerX
+        const door4Y = doorConfig.height / 2;
+        const door4Z = 0
 
-        //this.add(this.castleDoor);
+        this.addDoor({
+            x: door3X,
+            y: door3Y,
+            z: door3Z,
+            width: doorConfig.width,
+            height: doorConfig.height,
+            depth: doorConfig.depth,
+            interactionDistance: 4 * SCALE,
+            rotationY: THREE.MathUtils.degToRad(90)
+        });
 
+        this.addDoor({
+            x: door4X,
+            y: door4Y,
+            z: door4Z,
+            width: doorConfig.width,
+            height: doorConfig.height,
+            depth: doorConfig.depth,
+            interactionDistance: 4 * SCALE,
+            rotationY: THREE.MathUtils.degToRad(-90)
+        });
+
+        this.addDoor({
+            x: doorFX,
+            y: doorFY,
+            z: doorFZ,
+            width: doorConfig.width,
+            height: doorConfig.height,
+            depth: doorConfig.depth,
+            interactionDistance: 4 * SCALE,
+            rotationY: THREE.MathUtils.degToRad(0)
+        });
     } 
+
+    addDoor(config) {
+        const door = new Door(
+            config.x,
+            config.y,
+            config.z,
+            this.material,
+            config
+        );
+
+        door.interactionDistance = config.interactionDistance ?? 4;
+        door.object.rotation.y = config.rotationY ?? 0;
+
+        this.doors.push(door);
+        this.add(door);
+
+        return door;
+    }
+
  
 }
