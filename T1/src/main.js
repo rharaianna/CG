@@ -35,7 +35,6 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
 camera.rotation.order = 'YXZ'
 
 const gun = new Gun();
-gun.object.add(new THREE.AxesHelper(0.3));
 camera.add(gun.object)
 scene.add(camera); // Add camera to the scene
 
@@ -44,47 +43,53 @@ const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable 
 orbitControls.enabled = false;
 let pointerControlsOn = true;
 
-const bullets = []
-
-const raycaster = new THREE.Raycaster();
-const alvosAtivos = []; // seus inimigos/objetos atingíveis
-const particulasImpacto = []; // pool simples de efeitos
-
-let podeAtirar = true;
+let podeAtirar = false;
 const CADENCIA_TIRO = 0.15; // segundos entre tiros
+const bullets = []
 
 
 //  ------------------------ LISTENERS ------------------------
 
-document.body.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter' && pointerControlsOn) {
+document.body.addEventListener('click', function(event) {
+    if (pointerControlsOn) {
         pointerControls.lock();
+        podeAtirar = true;
     }
 });
 
-// document.body.addEventListener('keydown', function (event) { // alternate controls
-//   if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
-//     pointerControlsOn = !pointerControlsOn;
 
-//     if (pointerControlsOn) { // 
-//       orbitControls.enabled = false;
-//       podeAtirar =  true;
-//     } else {
-//       pointerControls.unlock();
-//       orbitControls.enabled = true;
-//       podeAtirar = false;
-//     }
-//   }
-// });
+document.body.addEventListener('keydown', function (event) { // alternate controls
+  if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
+    pointerControlsOn = !pointerControlsOn;
 
-
-document.addEventListener('mousedown', (evento) => {
-  if (evento.button === 0) shoot(camera);
+    if (pointerControlsOn) { //
+      pointerControls.lock();
+      orbitControls.enabled = false;
+      podeAtirar =  true;
+    } else {
+      pointerControls.unlock();
+      orbitControls.enabled = true;
+      podeAtirar = false;
+      //scene.attach(gun)
+    }
+  }
 });
 
 pointerControls.addEventListener('unlock', () => {
     pointerControlsOn = false;
     orbitControls.enabled = true;
+});
+
+document.addEventListener('mousedown', (evento) => {// disparo
+  if(pointerControlsOn){
+    if (evento.button === 0 || evento.button === 2) {//0->botao esquerdo e 2->boato direito
+      shoot(camera);
+    }
+  }
+});
+
+document.addEventListener('contextmenu', (evento) => {
+  evento.preventDefault();// previne menu de contexto ao apertar botao direito
 });
 
 window.addEventListener('resize', function () { onWindowResize(camera, renderer) }, false);
