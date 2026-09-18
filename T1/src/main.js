@@ -238,8 +238,8 @@ function render() {
             moveControls(deltaTime);
             physics.updatePlayer(deltaTime);
             camera.position.copy(physics.playerCollider.end);
+            physics.teleportPlayerIfOob(camera);
         }
-        physics.teleportPlayerIfOob(camera);
 
         // balas atualizadas junto com a física
         for (let j = bullets.length - 1; j >= 0; j--) {
