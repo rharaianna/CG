@@ -173,7 +173,7 @@ function moveControls(deltaTime) {
 
   if (physics.playerOnFloor) {
     if (player.moveUp)
-      physics.playerVelocity.y = 40;
+      physics.playerVelocity.y = 25;
   }
 }
 

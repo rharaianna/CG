@@ -13,7 +13,7 @@ import { Capsule } from '../../../build/jsm/math/Capsule.js';
  * @property {bollean} playerOnFloor - Indica se o player está ou não no chão
  */
 
-const GRAVITY = 98
+const GRAVITY = 100
 
 export class PlayerPhysics {
     constructor(worldOctree) {
@@ -84,7 +84,7 @@ export class PlayerPhysics {
            -> 4 é uma constante que controla a "intensidade" do amortecimento (quanto maior, mais rápido 
               a velocidade é reduzida).
         */
-        let damping = Math.exp(-6 * deltaTime) - 1;
+        let damping = Math.exp(-7 * deltaTime) - 1;
 
         // física da queda
         if (!this.playerOnFloor) {
@@ -95,7 +95,7 @@ export class PlayerPhysics {
             /* Reduz o efeito do damping (multiplicando por 0.1) quando o jogador está no ar.
                No ar, o jogador perde bem menos velocidade horizontal do que quando está no chão.
             */
-            damping *= 0.1 //resitencia ao ar
+            damping *= 0.5 //resitencia ao ar
         }
 
 
