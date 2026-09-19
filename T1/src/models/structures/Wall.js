@@ -33,6 +33,7 @@ export class Wall extends Model {
                 portao = false,
                 alturaPortao = 0,
                 larguraPortao = 0,
+                offsetX = 0,
                 holes: customHoles = [], // Permite receber holes manuais se necessário
                 towerCuts = []
             } = windowsConfig;
@@ -43,7 +44,7 @@ export class Wall extends Model {
             // 1. Adiciona o portão em arco (U invertido) se ativado
             if (portao && alturaPortao > 0 && larguraPortao > 0) {
                 holes.push({
-                    x: (this.width / 2) - (larguraPortao / 2),
+                    x: (this.width / 2) - (larguraPortao / 2) + offsetX,
                     y: 0,
                     width: larguraPortao,
                     height: alturaPortao,
