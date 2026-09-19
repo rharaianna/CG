@@ -294,7 +294,7 @@ export function initCamera(initialPosition) {
    return camera;
 }
 
-export function initDefaultBasicLight(scene, castShadow = true, position = new THREE.Vector3(10, 10, 10),
+export function initDefaultBasicLight(scene, castShadow = true, position = new THREE.Vector3(10, 10, 0),
    shadowSide = 16, shadowMapSize = 512, shadowNear = 0.1, shadowFar = 100) {
    let power = Math.PI;
    const ambientLight = new THREE.HemisphereLight(
@@ -304,8 +304,8 @@ export function initDefaultBasicLight(scene, castShadow = true, position = new T
    );
    scene.add(ambientLight);
    
-   const mainLight = new THREE.DirectionalLight('#eaddcb', 1 * power);
-   mainLight.position.copy(new THREE.Vector3(0, 10, 10));
+   const mainLight = new THREE.DirectionalLight('#f5cf9b', 1 * power);
+   mainLight.position.copy(new THREE.Vector3(10, 10, 0));
    mainLight.castShadow = castShadow;
    scene.add(mainLight);
 
