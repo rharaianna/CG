@@ -67,14 +67,16 @@ document.body.addEventListener('keydown', function (event) { // alternate contro
   if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
     pointerControlsOn = !pointerControlsOn;
 
-    if (pointerControlsOn) {         // se a camera pointer           
+    if (pointerControlsOn) {         // se a camera pointer 
       pointerControls.lock();        // habilita pointer            
       orbitControls.enabled = false; // desabilita orbital
+      physics.restorePlayerDirection(camera)          
       podeAtirar = true;             // habilita disparo              
       gun.object.visible = true;     // volta a mostrar a arma        
       crosshair.style.display = '';  // volta a mostrar a crosshair 
     }
     else {
+      physics.storePlayerDirection(camera)
       pointerControls.unlock();         // desabilita pointer
       orbitControls.enabled = true;     // habilita orbital
       podeAtirar = false;               // desabilita disparo

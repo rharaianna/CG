@@ -24,6 +24,7 @@ export class PlayerPhysics {
         this.playerVelocity = new THREE.Vector3();
         this.playerDirection = new THREE.Vector3();
         this.playerOnFloor = false;
+        this.storedQuaternion = new THREE.Quaternion();// para guardar x, y, z e rotação da camera
     }
 
 
@@ -92,8 +93,8 @@ export class PlayerPhysics {
             // Diminui o y da velocidade proporcional ao tempo passado
             this.playerVelocity.y -= GRAVITY * deltaTime;
 
-            /* Reduz o efeito do damping (multiplicando por 0.1) quando o jogador está no ar.
-               No ar, o jogador perde bem menos velocidade horizontal do que quando está no chão.
+            /** Reduz o efeito do damping (multiplicando por 0.1) quando o jogador está no ar.
+             * No ar, o jogador perde bem menos velocidade horizontal do que quando está no chão.
             */
             damping *= 0.5 //resitencia ao ar
         }
@@ -185,5 +186,19 @@ export class PlayerPhysics {
             // Zera a rotação da câmera, olhando pra frente, sem inclinação
             camera.rotation.set(0, 0, 0);
         }
+    }
+
+
+    storePlayerDirection(camera) {
+        // guarda para onde a câmera está olhando
+        this.storedQuaternion.copy(camera.quaternion);
+    }
+
+    restorePlayerDirection(camera) {
+        // copia a posição do player
+        camera.position.copy(this.playerCollider.end);
+
+        // volta a olhar para o mesmo lugar de antes
+        camera.quaternion.copy(this.storedQuaternion);
     }
 }
