@@ -4,6 +4,7 @@ import { Model } from "../Model.js";
 export class Stair extends Model {
     constructor(x, y, z, material, stepWidth, stepHeight, stepDepth, stepNumber) {
         super(x, y, z, material);
+        console.log(x,y,z)
 
         const stair = new THREE.Group()
         
@@ -12,10 +13,16 @@ export class Stair extends Model {
             const step = new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth)
             const mesh = new THREE.Mesh(step, this.material)
 
-            mesh.position.set(0, i*stepHeight, i*stepDepth)
-            stair.add(mesh)
+            mesh.position.set(0, i * stepHeight, i * stepDepth);
+            // Marca como visual: será excluído da malha de colisão (Octree)
+            mesh.userData.stairVisual = false;
+
+            stair.add(mesh);
         }
- 
-        this.add(stair)
+
+        // Expõe o grupo para referência externa
+        this.stairGroup = stair;
+
+        this.add(stair);
     }
 }

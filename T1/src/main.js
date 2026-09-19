@@ -33,11 +33,17 @@ const renderer = initRenderer();    // Init a basic renderer
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.rotation.order = 'YXZ'
+camera.position.set(0, 80, 80)
 
 const gun = new Gun();
 const crosshair = document.getElementById('crosshair')
 camera.add(gun.object)
 scene.add(camera); // Add camera to the scene
+
+const raio = new THREE.Ray();
+const pontoAlvo = new THREE.Vector3();
+const camDir = new THREE.Vector3();
+const AIM_RANGE = 200;
 
 const pointerControls = new PointerLockControls(camera, renderer.domElement); //
 const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
@@ -51,40 +57,43 @@ const bullets = []
 
 //  ------------------------ LISTENERS ------------------------
 
-document.body.addEventListener('click', function(event) {
-    if (pointerControlsOn) {
-        pointerControls.lock();
-        podeAtirar = true;
-    }
+document.body.addEventListener('click', function (event) {
+  if (pointerControlsOn) {
+    pointerControls.lock();
+    podeAtirar = true;
+  }
 });
 
 document.body.addEventListener('keydown', function (event) { // alternate controls
   if (event.key.toLocaleLowerCase() === 'c') {// consertar onde a camera orbial começa quando muda, a pointer precisa de c + click
     pointerControlsOn = !pointerControlsOn;
 
-    if (pointerControlsOn) { //
-      pointerControls.lock();
-      orbitControls.enabled = false;
-      podeAtirar =  true;
-      gun.object.visible = true;
-      crosshair.style.display = ''
-    } else {
-      pointerControls.unlock();
-      orbitControls.enabled = true;
-      podeAtirar = false;
-      gun.object.visible = false;
-      crosshair.style.display = 'none'
+    if (pointerControlsOn) {         // se a camera pointer 
+      pointerControls.lock();        // habilita pointer            
+      orbitControls.enabled = false; // desabilita orbital
+      physics.restorePlayerDirection(camera)          
+      podeAtirar = true;             // habilita disparo              
+      gun.object.visible = true;     // volta a mostrar a arma        
+      crosshair.style.display = '';  // volta a mostrar a crosshair 
+    }
+    else {
+      physics.storePlayerDirection(camera)
+      pointerControls.unlock();         // desabilita pointer
+      orbitControls.enabled = true;     // habilita orbital
+      podeAtirar = false;               // desabilita disparo
+      gun.object.visible = false;       // esconde arma
+      crosshair.style.display = 'none'; // esconde crosshair
     }
   }
 });
 
-pointerControls.addEventListener('unlock', () => {
-    pointerControlsOn = false;
-    orbitControls.enabled = true;
-});
+// pointerControls.addEventListener('unlock', () => {
+//   pointerControlsOn = false;
+//   orbitControls.enabled = true;
+// });
 
 document.addEventListener('mousedown', (evento) => {// disparo
-  if(pointerControlsOn){
+  if (pointerControlsOn) {
     if (evento.button === 0 || evento.button === 2) {//0->botao esquerdo e 2->boato direito
       shoot(camera);
     }
@@ -133,17 +142,22 @@ information.show();
 
 // ------------------------ COLLISION ------------------------
 
-// A porta continua visível, mas fica fora da malha estática de colisão.
+
 for (const door of castle.doors) {
   castle.object.remove(door.object);
 }
+castle.object.remove(castle.stair.object);
 
 const worldOctree = new Octree();
 worldOctree.fromGraphNode(scene);
 
+
 for (const door of castle.doors) {
   castle.object.add(door.object);
 }
+castle.object.add(castle.stair.object);
+
+castle.collisionRamp.collisionMesh.visible = false;   // rampa volta a ser invisível
 
 const player = new PlayerController();
 const physics = new PlayerPhysics(worldOctree);
@@ -172,22 +186,39 @@ function moveControls(deltaTime) {
 
   if (physics.playerOnFloor) {
     if (player.moveUp)
-      physics.playerVelocity.y = 40;
+      physics.playerVelocity.y = 25;
   }
 }
 
 
-function shoot(camera){
-    if(!podeAtirar) return;
-    
-    podeAtirar = false;
-    setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 100);
+function shoot(camera) {
+  if (!podeAtirar) return;
 
-    const origin = gun.getPontaCilindro();
-    const direction = camera.getWorldDirection(new THREE.Vector3());
+  podeAtirar = false;
+  setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 1000);
 
-    const bullet = new Bullet(scene, origin, direction)
-    bullets.push(bullet)
+  // garante matrizes atualizadas (câmera e arma)
+  camera.updateMatrixWorld(true);
+
+  // raio saindo do centro da câmera
+  camera.getWorldPosition(raio.origin);
+  camera.getWorldDirection(camDir);
+  raio.direction.copy(camDir);
+
+  // ponto que a crosshair está vendo
+  const disparo = worldOctree.rayIntersect(raio);
+  const dist = disparo ? disparo.distance : AIM_RANGE;
+  pontoAlvo.copy(raio.origin).addScaledVector(camDir, dist);
+
+  // direção do cano até esse ponto
+  const origin = gun.getPontaCilindro();
+  const direction = pontoAlvo.clone().sub(origin);
+
+  // previne caso que se a parede está mais perto que o cano, a direção inverteria
+  if (direction.dot(camDir) <= 0) direction.copy(camDir);
+  direction.normalize();
+
+  bullets.push(new Bullet(scene, origin, direction));
 }
 
 const clock = new THREE.Timer();
@@ -204,52 +235,52 @@ const playerPosition = new THREE.Vector3();
 render();
 
 function render() {
-  
-  
+
+
   clock.update();
   const deltaTime1 = clock.getDelta();
-  
+
   camera.getWorldPosition(playerPosition);
   for (const door of castle.doors) {
-      door.object.getWorldPosition(doorPosition);
+    door.object.getWorldPosition(doorPosition);
 
-      const nearDoor =
-          playerPosition.distanceTo(doorPosition) <= door.interactionDistance;
+    const nearDoor =
+      playerPosition.distanceTo(doorPosition) <= door.interactionDistance;
 
-      if (nearDoor !== door.isOpen) {
-          door.toggleDoor(nearDoor);
-      }
+    if (nearDoor !== door.isOpen) {
+      door.toggleDoor(nearDoor);
+    }
   }
 
   updatables.forEach(object => {
     object.update(deltaTime1);
   });
-    //debugSphere.position.copy(gun.getPontaCilindro());
+  //debugSphere.position.copy(gun.getPontaCilindro());
 
   timer.update();
   const deltaTime = Math.min(0.05, timer.getDelta()) / STEPS_PER_FRAME
 
-    for (let i = 0; i < STEPS_PER_FRAME; i++) {
+  for (let i = 0; i < STEPS_PER_FRAME; i++) {
 
-        if (orbitControls.enabled) {
-            orbitControls.update();
-        }
-        if (pointerControls.isLocked) {
-            moveControls(deltaTime);
-            physics.updatePlayer(deltaTime);
-            camera.position.copy(physics.playerCollider.end);
-        }
-        physics.teleportPlayerIfOob(camera);
-
-        // balas atualizadas junto com a física
-        for (let j = bullets.length - 1; j >= 0; j--) {
-            bullets[j].update(deltaTime, worldOctree, scene);
-            if (!bullets[j].alive) {
-                bullets.splice(j, 1);
-            }
-        }
+    if (orbitControls.enabled) {
+      orbitControls.update();
+    }
+    if (pointerControls.isLocked) {
+      moveControls(deltaTime);
+      physics.updatePlayer(deltaTime);
+      camera.position.copy(physics.playerCollider.end);
+      physics.teleportPlayerIfOob(camera);
     }
 
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
+    // balas atualizadas junto com a física
+    for (let j = bullets.length - 1; j >= 0; j--) {
+      bullets[j].update(deltaTime, worldOctree, scene);
+      if (!bullets[j].alive) {
+        bullets.splice(j, 1);
+      }
+    }
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(render);
 }

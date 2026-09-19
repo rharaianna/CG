@@ -1,26 +1,24 @@
 import * as THREE from 'three';
 
-const BULLET_RADIUS = 0.2
-const BULLET_VELOCITY = 100
+const BULLET_VELOCITY = 200
 const MAX_DISTANCE = 50
+
+const bulletGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+const bulletMaterial = new THREE.MeshStandardMaterial({
+    color: '#D70413',
+    roughness: 0.8,
+    metalness: 0.1
+});
 
 export class Bullet {
     constructor(scene, posicaoInicial, direction) {
-        const bulletGeometry = new THREE.SphereGeometry(0.1, 32, 32);
-        const bulletMaterial = new THREE.MeshStandardMaterial({
-            color: '#D70413',
-            roughness: 0.8,
-            metalness: 0.1
-        });
-
         this.mesh = new THREE.Mesh(bulletGeometry, bulletMaterial);
         this.mesh.position.copy(posicaoInicial);
-        scene.add(this.mesh)
-
         this.origin = posicaoInicial.clone();
-
         this.velocity = direction.clone().normalize().multiplyScalar(BULLET_VELOCITY);
         this.alive = true;
+
+        scene.add(this.mesh)
     }
 
     update(deltaTime, worldOctree, scene) {
