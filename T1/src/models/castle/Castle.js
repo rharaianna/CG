@@ -13,6 +13,7 @@ import { FrontTower } from "../structures/FrontTower.js";
 import { Stair } from "../structures/Stair.js";
 import { Ceil } from "../structures/Ceil.js";
 import { DetailedWall } from "../structures/DetailedWall.js";
+import { Ramp } from "../structures/Ramp.js";
 
 export class Castle extends Model {
     constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
@@ -117,9 +118,38 @@ export class Castle extends Model {
         
 
         STAIR_X = wallX -DISTANCE -STAIR_TOTAL_DEPTH -WALL_DEPTH/2 +STAIR_STEP_DEPTH/2
+        let windowsWallConfig = {
+            portao: true,
+            larguraPortao: (DISTANCE),
+            alturaPortao: (DISTANCE),
+        }
+
+
+
+        // // posicionadas na parede do fundo, ou seja, paralelas ao X
+        // const STAIR_X = wallX - DISTANCE - STAIR_TOTAL_DEPTH - WALL_DEPTH / 2 + STAIR_STEP_DEPTH / 2
+        // const STAIR_Y = floorY + STAIR_STEP_HEIGHT / 2
+        // const STAIR_Z = -wallZ + STAIR_STEP_WITDH / 2 + WALL_DEPTH / 2
+
+        const ramp = new Ramp(
+            STAIR_X, STAIR_Y, STAIR_Z,
+            materials.grass,
+            STAIR_STEP_WITDH,
+            STAIR_STEP_HEIGHT,
+            STAIR_STEP_DEPTH,
+            STEPS_NUMBER
+        )
+        // Mesma rotação que a escada visual (90° em Y)
+        ramp.object.rotateY(THREE.MathUtils.degToRad(90))
+        this.add(ramp)
+        // Expõe a referência para o main.js
+        this.collisionRamp = ramp;
+
         const stair = new Stair(STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
         stair.object.rotateY(THREE.MathUtils.degToRad(90))
         this.add(stair)
+        // Expõe a referência para o main.js
+        this.stair = stair;
 
         const stairleft = new Stair(-STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
         stairleft.object.rotateY(THREE.MathUtils.degToRad(-90))

@@ -133,17 +133,22 @@ information.show();
 
 // ------------------------ COLLISION ------------------------
 
-// A porta continua visível, mas fica fora da malha estática de colisão.
+
 for (const door of castle.doors) {
   castle.object.remove(door.object);
 }
+castle.object.remove(castle.stair.object);
 
 const worldOctree = new Octree();
 worldOctree.fromGraphNode(scene);
 
+
 for (const door of castle.doors) {
   castle.object.add(door.object);
 }
+castle.object.add(castle.stair.object);
+
+castle.collisionRamp.collisionMesh.visible = false;   // rampa volta a ser invisível
 
 const player = new PlayerController();
 const physics = new PlayerPhysics(worldOctree);
