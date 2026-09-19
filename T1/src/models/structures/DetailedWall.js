@@ -3,16 +3,22 @@ import { applyHolesToWall } from "../../utils/CSGModifiers.js";
 import { Wall } from "./Wall.js";
 
 export class DetailedWall extends Wall {
-    constructor(x, y, z, material, width, height, depth, towerWidth, windowsConfig){
+    constructor(x, y, z, material, width, height, depth, towerWidth, towerDepth, windowsConfig){
 
-        const mainWidth = 0.7*(width-towerWidth)
+        const availableWidth = width-towerWidth/2
+        const mainWidth = 0.8*availableWidth
+
+        // total disponível relativo
+        const availableRemaining = availableWidth - mainWidth
+        
+        // total real considerando o tamanho esperado da parede
         const remaining = width - mainWidth
-        const dente = remaining/2
+        const dente = towerDepth/2 - depth/2
 
         super(x, y, z, material, mainWidth, height, depth, windowsConfig);
 
         // volta para trás o que foi tirado
-        this.object.translateZ(-remaining/2 +towerWidth/2)
+        this.object.translateZ(-availableRemaining/2)
 
         // anda um espaço para entrar o desvio
         this.object.translateX(-dente)  
@@ -32,13 +38,11 @@ export class DetailedWall extends Wall {
         this.add(wall)
         this.add(wall1)
 
-
-        const floor = new THREE.BoxGeometry(mainWidth - depth/2, 0.3*height, dente);
+        const floor = new THREE.BoxGeometry(mainWidth - 2*depth, height, dente);
         let floor1 = new THREE.Mesh(floor, this.material);
         floor1.translateZ(dente/2 + depth/2)
-        floor1.translateY(-height/2 + 0.3*height/2)
-        //floor1.translateZ(3)
-        //floor1.translateX(depth/2)
+        floor1.translateX(-depth/2)
         this.add(floor1)
+        
     }   
 }
