@@ -39,6 +39,11 @@ const crosshair = document.getElementById('crosshair')
 camera.add(gun.object)
 scene.add(camera); // Add camera to the scene
 
+const raio = new THREE.Ray();
+const pontoAlvo = new THREE.Vector3();
+const camDir = new THREE.Vector3();
+const AIM_RANGE = 200;
+
 const pointerControls = new PointerLockControls(camera, renderer.domElement); //
 const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
 orbitControls.enabled = false;
@@ -182,13 +187,30 @@ function shoot(camera) {
   if (!podeAtirar) return;
 
   podeAtirar = false;
-  setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 100);
+  setTimeout(() => podeAtirar = true, CADENCIA_TIRO * 1000);
 
+  // garante matrizes atualizadas (câmera e arma)
+  camera.updateMatrixWorld(true);
+
+  // raio saindo do centro da câmera
+  camera.getWorldPosition(raio.origin);
+  camera.getWorldDirection(camDir);
+  raio.direction.copy(camDir);
+
+  // ponto que a crosshair está vendo
+  const disparo = worldOctree.rayIntersect(raio);
+  const dist = disparo ? disparo.distance : AIM_RANGE;
+  pontoAlvo.copy(raio.origin).addScaledVector(camDir, dist);
+
+  // direção do cano até esse ponto
   const origin = gun.getPontaCilindro();
-  const direction = camera.getWorldDirection(new THREE.Vector3());
+  const direction = pontoAlvo.clone().sub(origin);
 
-  const bullet = new Bullet(scene, origin, direction)
-  bullets.push(bullet)
+  // previne caso que se a parede está mais perto que o cano, a direção inverteria
+  if (direction.dot(camDir) <= 0) direction.copy(camDir);
+  direction.normalize();
+
+  bullets.push(new Bullet(scene, origin, direction));
 }
 
 const clock = new THREE.Timer();
