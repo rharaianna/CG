@@ -244,7 +244,7 @@ export class Castle extends Model {
         const wall3 = new CastleWall(wallX, wallY, 0, this.material, DEPTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, doorWallConfig)
         
         // lado da parede com detalhes
-        const wall4 = new CastleWall(-wallX, wallY, -DEPTH/4, this.material, DEPTH/2 - MIDTOWER_WIDTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
+        const wall4 = new CastleWall(-wallX, wallY, -DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
         const wall44 = new DetailedWall(-wallX, wallY, DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, MIDTOWER_WIDTH, MIDTOWER_DEPTH, null)
         
         wall3.object.rotateY(THREE.MathUtils.degToRad(90))
