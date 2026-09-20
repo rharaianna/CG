@@ -6,7 +6,7 @@ const evaluator = new Evaluator();
 
 export function applyHolesToTower(baseMesh, radius, innerRadius, height, config) {
     
-    let resultBrush = new Brush(baseMesh.geometry, baseMesh.material);
+    let resultBrush = new Brush(baseMesh.geometry, config.material);
 
     const {
         linhas = 0,
