@@ -20,7 +20,7 @@ export class PlayerPhysics {
         this.worldOctree = worldOctree;
         this.playerCollider = new Capsule(
             new THREE.Vector3(0, 0.15, 0),
-            new THREE.Vector3(0, 2, 0), 0.35);
+            new THREE.Vector3(0, 2, 0), 0.35); // ta com 1.85 de altura
         this.playerVelocity = new THREE.Vector3();
         this.playerDirection = new THREE.Vector3();
         this.playerOnFloor = false;

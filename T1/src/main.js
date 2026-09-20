@@ -213,16 +213,16 @@ function shoot(camera) {
   camera.getWorldDirection(camDir);
   raio.direction.copy(camDir);
 
-  // ponto que a crosshair está vendo
+  // ponto que a crosshair ta vendo
   const disparo = worldOctree.rayIntersect(raio);
   const dist = disparo ? disparo.distance : AIM_RANGE;
   pontoAlvo.copy(raio.origin).addScaledVector(camDir, dist);
 
-  // direção do cano até esse ponto
+  // direção do cano ate esse ponto
   const origin = gun.getPontaCilindro();
   const direction = pontoAlvo.clone().sub(origin);
 
-  // previne caso que se a parede está mais perto que o cano, a direção inverteria
+  // previne caso que se a parede ta mais perto que o cano, a direção inverteria
   if (direction.dot(camDir) <= 0) direction.copy(camDir);
   direction.normalize();
 
