@@ -7,8 +7,7 @@ import { Wall } from "./Wall.js";
 export class CastleWall extends Wall {
     constructor(x, y, z, material, width, height, depth, towerRadius, windowsConfig) {
         super(x, y, z, material, width, height, depth, windowsConfig);
-        console.log("windowsConfig prim:", windowsConfig)
-        
+
         this.towerRadius = towerRadius
         this.drawMerlons(width, depth)
     }

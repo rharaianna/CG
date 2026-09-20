@@ -22,7 +22,10 @@ export class Castle extends Model {
         this.stairs = []
         this.timer = 0;
 
-        // parâmetros ajustáveis do castelo
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////// PARÂMETROS /////////////////////////////
+
+        // ajustam configurações do castelo
         // são atualizados conforme a escala e alteraram todas as paredes e torres
         
         // largura -> eixo X (vermelho)
@@ -83,44 +86,47 @@ export class Castle extends Model {
         const midTowerZ = wallZ
         const midTowerY = MIDTOWER_HEIGHT/2
         
-        // elementos
-        const floorY = FLOOR_HEIGHT/2
-        const floor = new Floor(0, floorY, 0, materials.grass, FLOOR_WIDTH, FLOOR_HEIGHT, FLOOR_DEPTH);
-        
-        this.add(floor)
-
         // portão
         const DOOR_HEIGHT = (WALL_HEIGHT/2) 
         const DOOR_WIDTH = (1 * TOWER_RADIUS)
         const DOOR_DEPTH = DOOR_WIDTH * 0.1
 
-        // escadas e teto vão ser parametrizados com esses:
-        // distancia da midwall das paredes
+        // escadas e teto vão ser parametrizados com 
+        // => DISTANCE e CEIL_Y
+        
+        // distancia para escadas, largura do teto e das mid walls pra parede
+        const DISTANCE = 3 * SCALE
+        
+        // se quiser uma distancia encostada na fronttower
         //const DISTANCE = WIDTH/2 -(3/2)*FRONTTOWER_WIDTH/3 - (SCALE * 5)
-        const DISTANCE = (3 * SCALE )
-
-        // distancia para escadas
-        const CEIL_Y = 8
-
+        
+        // altura do teto -> calcula quantidade de degraus 
+        const CEIL_Y = 8 * SCALE
+        
         // escada: tamanhos reais
         const STAIR_STEP_WITDH = DISTANCE
-        const STAIR_STEP_HEIGHT = 0.18
-        const STAIR_STEP_DEPTH = 0.32
+        const STAIR_STEP_HEIGHT = 0.18 * SCALE
+        const STAIR_STEP_DEPTH = 0.32 * SCALE
 
         const STEPS_NUMBER = Math.floor(CEIL_Y / STAIR_STEP_HEIGHT)
         const STAIR_TOTAL_DEPTH = (STEPS_NUMBER) * STAIR_STEP_DEPTH
+
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////// CRIAÇÃO DOS OBJETOS /////////////////////////
         
-        // escadas 
+        // usam os parâmetros definidos acima mas alguns precisam de ajustes
+
+        const floorY = FLOOR_HEIGHT/2
+        const floor = new Floor(0, floorY, 0, materials.grass, FLOOR_WIDTH, FLOOR_HEIGHT, FLOOR_DEPTH);
+        
+        this.add(floor)
 
         // posicionadas na parede do fundo, ou seja, paralelas ao X
         let STAIR_X = wallX -DISTANCE -STAIR_TOTAL_DEPTH -WALL_DEPTH/2 +STAIR_STEP_DEPTH/2
         const STAIR_Y = floorY + STAIR_STEP_HEIGHT
         const STAIR_Z = -wallZ +STAIR_STEP_WITDH/2 +WALL_DEPTH/2
         
-
-        STAIR_X = wallX -DISTANCE -STAIR_TOTAL_DEPTH -WALL_DEPTH/2 +STAIR_STEP_DEPTH/2
-  
-        const ramp = new Ramp(
+        const rampRight = new Ramp(
             STAIR_X, STAIR_Y, STAIR_Z,
             materials.grass,
             STAIR_STEP_WITDH,
@@ -128,21 +134,20 @@ export class Castle extends Model {
             STAIR_STEP_DEPTH,
             STEPS_NUMBER
         )
+
         // Mesma rotação que a escada visual (90° em Y)
-        ramp.object.rotateY(THREE.MathUtils.degToRad(90))
-        this.add(ramp)
+        rampRight.object.rotateY(THREE.MathUtils.degToRad(90))
+        this.add(rampRight)
         // Expõe a referência para o main.js
-        this.collisionRamp = ramp;
+        this.collisionRamp = rampRight;
 
-        const stair = new Stair(STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
-        stair.object.rotateY(THREE.MathUtils.degToRad(90))
-        this.add(stair)
+        const stairRight = new Stair(STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
+        stairRight.object.rotateY(THREE.MathUtils.degToRad(90))
+        this.add(stairRight)
         // Expõe a referência para o main.js
-        this.stair = stair;
+        this.stairRight = stairRight;
 
-
-
-        const rampleft = new Ramp(
+        const rampLeft = new Ramp(
             -STAIR_X, STAIR_Y, STAIR_Z,
             materials.grass,
             STAIR_STEP_WITDH,
@@ -150,18 +155,19 @@ export class Castle extends Model {
             STAIR_STEP_DEPTH,
             STEPS_NUMBER
         )
+
         // Mesma rotação que a escada visual (90° em Y)
-        rampleft.object.rotateY(THREE.MathUtils.degToRad(-90))
-        this.add(rampleft)
+        rampLeft.object.rotateY(THREE.MathUtils.degToRad(-90))
+        this.add(rampLeft)
         // Expõe a referência para o main.js
-        this.collisionRamp2 = rampleft;
+        this.collisionRamp2 = rampLeft;
 
-        const stairleft = new Stair(-STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
-        stairleft.object.rotateY(THREE.MathUtils.degToRad(-90))
-        this.add(stairleft)
-        this.stairleft = stairleft;
+        const stairLeft = new Stair(-STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
+        stairLeft.object.rotateY(THREE.MathUtils.degToRad(-90))
+        this.add(stairLeft)
+        this.stairLeft = stairLeft;
 
-        // mid wall
+        // mid wall => parametros mudam para cada lado
         const MID_WALL_DEPTH = WALL_DEPTH/2
         let MID_WALL_WIDTH = STAIR_TOTAL_DEPTH 
         let MID_WALL_HEIGHT = STEPS_NUMBER * STAIR_STEP_HEIGHT + (1 * SCALE)
@@ -171,16 +177,15 @@ export class Castle extends Model {
         let MID_WALL_X = wallX - MID_WALL_WIDTH/2 - WALL_DEPTH/2 - DISTANCE
 
         // mid wall paralela ao eixo X
-        const midWall1 = new Wall(MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH)
-        const midWall1left = new Wall(-MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH)
+        const midWallRight = new Wall(MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH)
+        const midWallLeft = new Wall(-MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH)
         
         // atualizações no posicionamento da outra parede
         MID_WALL_WIDTH = DEPTH - DISTANCE
         MID_WALL_X = wallX -DISTANCE - WALL_DEPTH/2 - MID_WALL_DEPTH/2
         MID_WALL_Z = -wallZ + DISTANCE + WALL_DEPTH/2 + MID_WALL_WIDTH/2
         
-        // funciona, ta bonito mas nao sei pq ta assim e nao era pra ser assim tbm....
-
+        // portas das paredes intermediarias com deslocamentos
         let lateralDoors = {
             portao: true,
             alturaPortao: DOOR_HEIGHT,
@@ -189,26 +194,27 @@ export class Castle extends Model {
         }
 
         // mid wall paralela ao eixo Z
-        const midWall2 = new Wall(MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH, lateralDoors)
-        const midWall2left = new Wall(-MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH, lateralDoors)
+        // laterais ao teto
+        const midWallCeilRight = new Wall(MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH, lateralDoors)
+        const midWallCeilLeft = new Wall(-MID_WALL_X, MID_WALL_Y, MID_WALL_Z, this.material, MID_WALL_WIDTH, MID_WALL_HEIGHT, MID_WALL_DEPTH, lateralDoors)
         
-        midWall2.object.rotateY(THREE.MathUtils.degToRad(90))
-        midWall2left.object.rotateY(THREE.MathUtils.degToRad(90))
+        midWallCeilRight.object.rotateY(THREE.MathUtils.degToRad(90))
+        midWallCeilLeft.object.rotateY(THREE.MathUtils.degToRad(90))
 
-        this.add(midWall1)
-        this.add(midWall1left)
-        this.add(midWall2)
-        this.add(midWall2left)
+        this.add(midWallRight)
+        this.add(midWallLeft)
+        this.add(midWallCeilRight)
+        this.add(midWallCeilLeft)
 
-        // teto 
+        // criados aqui pq dependem de outras configurações
         const CEIL_HEIGHT = STAIR_STEP_HEIGHT*2
         const CEIL_X = wallX - DISTANCE/2 - WALL_DEPTH/2
 
-        const ceil1 = new Ceil(CEIL_X, CEIL_Y, 0, materials.rotten_wood, DISTANCE, CEIL_HEIGHT, DEPTH)
-        this.add(ceil1)
+        const ceilRight = new Ceil(CEIL_X, CEIL_Y, 0, materials.rotten_wood, DISTANCE, CEIL_HEIGHT, DEPTH)
+        this.add(ceilRight)
 
-        const ceilleft = new Ceil(-CEIL_X, CEIL_Y, 0, materials.rotten_wood, DISTANCE, CEIL_HEIGHT, DEPTH)
-        this.add(ceilleft)
+        const ceilLeft = new Ceil(-CEIL_X, CEIL_Y, 0, materials.rotten_wood, DISTANCE, CEIL_HEIGHT, DEPTH)
+        this.add(ceilLeft)
 
         let doorWallConfig = { // passa pra wall
             portao: true,
@@ -221,13 +227,13 @@ export class Castle extends Model {
             material: materials.bricks
         };
         
-        const doorConfig = {   //Passa pra door
+        const doorConfig = {   // passa pra door
             width: DOOR_WIDTH,       
             height: DOOR_HEIGHT,      
             depth: DOOR_DEPTH     
         };
 
-        // paredes posicionadas no Z, paralelas ao X (verdelho)
+        // paredes posicionadas no Z, paralelas ao X (vermelho)
         // largura delas é a mesma largura do terreno 
         const wall1 = new CastleWall(0, wallY, wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, doorWallConfig)
         const wall2 = new CastleWall(0, wallY, -wallZ, this.material, WIDTH, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS, doorWallConfig)
@@ -240,7 +246,6 @@ export class Castle extends Model {
         // lado da parede com detalhes
         const wall4 = new CastleWall(-wallX, wallY, -DEPTH/4, this.material, DEPTH/2 - MIDTOWER_WIDTH/2, WALL_HEIGHT, WALL_DEPTH, TOWER_RADIUS/2, null)
         const wall44 = new DetailedWall(-wallX, wallY, DEPTH/4, this.material, DEPTH/2, WALL_HEIGHT, WALL_DEPTH, MIDTOWER_WIDTH, MIDTOWER_DEPTH, null)
-        
         
         wall3.object.rotateY(THREE.MathUtils.degToRad(90))
         wall4.object.rotateY(THREE.MathUtils.degToRad(90))
@@ -293,12 +298,12 @@ export class Castle extends Model {
         const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorWallConfig);
         this.add(frontTower)
 
-    
-        //==== Portoes==========
+        // portões
         const doorFX = 0;
         const doorFY = doorConfig.height / 2;
         const doorFZ = FRONTTOWER_Z;
-        // Posiciona o portão na mesma coordenada da parede 1
+
+        // posiciona o portão na mesma coordenada da parede 1
         const door3X = midTowerX
         const door3Y = doorConfig.height / 2;
         const door3Z = 0
@@ -373,6 +378,4 @@ export class Castle extends Model {
 
         return stair;
     }
-
- 
 }
