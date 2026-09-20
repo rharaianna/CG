@@ -131,12 +131,13 @@ castle.hideBoundingBox()
 
 // Use this to show information onscreen
 let information = new InfoBox();
-information.add("Basic Scene");
+information.add("Trabalho versão 1.0");
 information.addParagraph();
-information.add("Use mouse to interact:");
-information.add("* Left button to rotate");
-information.add("* Right button to translate (pan)");
-information.add("* Scroll to zoom in/out.");
+information.add("- Use o mouse para visualizar");
+information.add("- Use WASD ou Arrows para movimentar");
+information.add("- Aperte c para trocar de câmera");
+information.addParagraph();
+information.add("por Isadora, João Pedro & Rhara");
 information.show();
 
 
