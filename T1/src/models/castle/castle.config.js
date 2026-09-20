@@ -47,7 +47,7 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
     const STEPS_NUMBER      = Math.floor(CEIL_Y / STAIR_STEP_HEIGHT);
     const STAIR_TOTAL_DEPTH = STEPS_NUMBER * STAIR_STEP_DEPTH;
 
-    // ─
+    // 
     return {
         // dimensões escaladas (usadas no layout de Castle.js)
         WIDTH, DEPTH, SCALE,

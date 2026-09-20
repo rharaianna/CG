@@ -9,14 +9,16 @@ export class Door extends Model {
         const { width = 4, height = 6, depth = 0.2 } = config;
         const panelWidth = width / 2;
 
-        // 1. Pivô da Folha Esquerda
+        // Pivô da Folha Esquerda
         this.leftPivot = new THREE.Group();
         const leftGeo = createArchDoorLeafGeometry(width, height, depth, "left");
         const leftMesh = new THREE.Mesh(leftGeo, this.material);
+        
+        //Colocamos a malha da porta dentro do pivô e movemos o grupo inteiro para a extremidade esquerda
         this.leftPivot.add(leftMesh);
         this.leftPivot.position.set(-panelWidth, 0, 0);
 
-        // 2. Pivô da Folha Direita
+        // Pivô da Folha Direita
         this.rightPivot = new THREE.Group();
         const rightGeo = createArchDoorLeafGeometry(width, height, depth, "right");
         const rightMesh = new THREE.Mesh(rightGeo, this.material);
@@ -29,7 +31,7 @@ export class Door extends Model {
 
         this.updateBoundingBox();
 
-        this.isOpen = false;
+
     }
 
     toggleDoor(open) {
@@ -39,7 +41,10 @@ export class Door extends Model {
     update(deltaTime) {
 
         let animationSpeed = 2
+
+        //fator de suavização (p diferentes fps)
         const factor = 1 - Math.exp(-animationSpeed * deltaTime);
+        
         const targetAngle = this.isOpen ? Math.PI / 2 : 0;
 
         // Incrementa o tempo a cada frame

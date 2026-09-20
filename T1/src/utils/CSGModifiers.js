@@ -21,7 +21,7 @@ export function applyHolesToTower(baseMesh, radius, innerRadius, height, config)
     if (linhas > 0 && colunas > 0 && raio > 0) {
 
         // A espessura da parede da torre é a diferença entre o raio externo e o interno
-        const wallThickness = radius - innerRadius + 3
+        const wallThickness = radius - innerRadius 
   
         // Espaçamento vertical ao longo da altura da torre
         const spacingY = height / (linhas + 1);

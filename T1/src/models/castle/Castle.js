@@ -250,6 +250,17 @@ export class Castle extends Model {
             interactionDistance: 4 * cfgScale,
             rotationY: THREE.MathUtils.degToRad(0)
         });
+
+        this.addDoor({
+            x: 0,
+            y: dCfg.height / 2,
+            z: -10,
+            width: dCfg.width,
+            height: dCfg.height,
+            depth: dCfg.depth,
+            interactionDistance: 4 * cfgScale,
+            rotationY: THREE.MathUtils.degToRad(0)
+        });
     } 
 
     addDoor(config) {
