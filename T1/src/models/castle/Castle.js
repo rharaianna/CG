@@ -122,50 +122,29 @@ export class Castle extends Model {
         this.add(floor)
 
         // posicionadas na parede do fundo, ou seja, paralelas ao X
-        let STAIR_X = wallX -DISTANCE -STAIR_TOTAL_DEPTH -WALL_DEPTH/2 +STAIR_STEP_DEPTH/2
+        const STAIR_X = wallX - DISTANCE - STAIR_TOTAL_DEPTH - WALL_DEPTH / 2 + STAIR_STEP_DEPTH / 2
         const STAIR_Y = floorY + STAIR_STEP_HEIGHT
-        const STAIR_Z = -wallZ +STAIR_STEP_WITDH/2 +WALL_DEPTH/2
-        
-        const rampRight = new Ramp(
-            STAIR_X, STAIR_Y, STAIR_Z,
-            materials.grass,
-            STAIR_STEP_WITDH,
-            STAIR_STEP_HEIGHT,
-            STAIR_STEP_DEPTH,
-            STEPS_NUMBER
-        )
+        const STAIR_Z = -wallZ + STAIR_STEP_WITDH / 2 + WALL_DEPTH / 2
 
-        // Mesma rotação que a escada visual (90° em Y)
-        rampRight.object.rotateY(THREE.MathUtils.degToRad(90))
-        this.add(rampRight)
-        // Expõe a referência para o main.js
-        this.collisionRamp = rampRight;
+        // escada direita (rotação +90° em Y)
+        this.addStair({
+            x: STAIR_X, y: STAIR_Y, z: STAIR_Z,
+            stepWidth: STAIR_STEP_WITDH,
+            stepHeight: STAIR_STEP_HEIGHT,
+            stepDepth: STAIR_STEP_DEPTH,
+            stepNumber: STEPS_NUMBER,
+            rotationY: THREE.MathUtils.degToRad(90),
+        });
 
-        const stairRight = new Stair(STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
-        stairRight.object.rotateY(THREE.MathUtils.degToRad(90))
-        this.add(stairRight)
-        // Expõe a referência para o main.js
-        this.stairRight = stairRight;
-
-        const rampLeft = new Ramp(
-            -STAIR_X, STAIR_Y, STAIR_Z,
-            materials.grass,
-            STAIR_STEP_WITDH,
-            STAIR_STEP_HEIGHT,
-            STAIR_STEP_DEPTH,
-            STEPS_NUMBER
-        )
-
-        // Mesma rotação que a escada visual (90° em Y)
-        rampLeft.object.rotateY(THREE.MathUtils.degToRad(-90))
-        this.add(rampLeft)
-        // Expõe a referência para o main.js
-        this.collisionRamp2 = rampLeft;
-
-        const stairLeft = new Stair(-STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
-        stairLeft.object.rotateY(THREE.MathUtils.degToRad(-90))
-        this.add(stairLeft)
-        this.stairLeft = stairLeft;
+        // escada esquerda (rotação -90° em Y, espelhada no eixo X)
+        this.addStair({
+            x: -STAIR_X, y: STAIR_Y, z: STAIR_Z,
+            stepWidth: STAIR_STEP_WITDH,
+            stepHeight: STAIR_STEP_HEIGHT,
+            stepDepth: STAIR_STEP_DEPTH,
+            stepNumber: STEPS_NUMBER,
+            rotationY: THREE.MathUtils.degToRad(-90),
+        });
 
         // mid wall => parametros mudam para cada lado
         const MID_WALL_DEPTH = WALL_DEPTH/2
@@ -368,18 +347,34 @@ export class Castle extends Model {
         return door;
     }
 
+    /*
+     Cria uma escada visual (Stair) e sua rampa de colisão invisível (Ramp)
+     com os mesmos parâmetros e posição, armazenando o par em this.stairs.
+     Retorna { stair, ramp } para uso externo se necessário.
+    */
     addStair(config) {
-        const stair = new Stair(
-            config.x,
-            config.y,
-            config.z,
-            materials.rotten_wood,
-            config
-        );
+        const {
+            x, y, z,
+            stepWidth, stepHeight, stepDepth, stepNumber,
+            rotationY = 0,
+            stairMaterial = materials.rotten_wood,
+            rampMaterial  = materials.grass,
+        } = config;
 
-        this.stairs.push(stair);
+        //  Escada visual 
+        const stair = new Stair(x, y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
+        stair.object.rotation.y = rotationY;
         this.add(stair);
 
-        return stair;
+        // Rampa de colisão invisível 
+        const ramp = new Ramp(x, y, z, rampMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
+        ramp.object.rotation.y = rotationY;
+        this.add(ramp);
+
+        // Armazena o par para o main.js iterar (igual ao padrão das doors) 
+        const pair = { stair, ramp };
+        this.stairs.push(pair);
+
+        return pair;
     }
 }

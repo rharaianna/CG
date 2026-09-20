@@ -144,28 +144,28 @@ information.show();
 // ------------------------ COLLISION ------------------------
 
 
+// Remove da cena tudo que não deve entrar na malha estática de colisão:
+//   • portas são dinâmicas (abrem/fecham)
+//   • degraus visuais a colisão é feita pela rampa invisível abaixo deles
 for (const door of castle.doors) {
   castle.object.remove(door.object);
 }
-// for (const stair of castle.stair){
-//   castle.object.remove(stair.object);
-// }
-
-castle.object.remove(castle.stairRight.object);
-castle.object.remove(castle.stairLeft.object);
+for (const { stair, ramp } of castle.stairs) {
+  castle.object.remove(stair.object);        // exclui degraus visuais
+  ramp.collisionMesh.visible = true;         // ativa rampa para o Octree capturar
+}
 
 const worldOctree = new Octree();
 worldOctree.fromGraphNode(scene);
 
-
+// Restaura o estado visual original após o bake
 for (const door of castle.doors) {
   castle.object.add(door.object);
 }
-castle.object.add(castle.stairRight.object);
-castle.object.add(castle.stairLeft.object);
-
-castle.collisionRamp.collisionMesh.visible = false;   // rampa volta a ser invisível
-castle.collisionRamp2.collisionMesh.visible = false; 
+for (const { stair, ramp } of castle.stairs) {
+  castle.object.add(stair.object);           // devolve degraus visuais
+  ramp.collisionMesh.visible = false;        // rampa volta a ser invisível
+}
 
 const player = new PlayerController();
 const physics = new PlayerPhysics(worldOctree);
