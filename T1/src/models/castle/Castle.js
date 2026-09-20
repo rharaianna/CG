@@ -19,6 +19,7 @@ export class Castle extends Model {
     constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
         super(x, y, z, materials.bricks);
         this.doors = [];
+        this.stairs = []
         this.timer = 0;
 
         // parâmetros ajustáveis do castelo
@@ -118,19 +119,7 @@ export class Castle extends Model {
         
 
         STAIR_X = wallX -DISTANCE -STAIR_TOTAL_DEPTH -WALL_DEPTH/2 +STAIR_STEP_DEPTH/2
-        let windowsWallConfig = {
-            portao: true,
-            larguraPortao: (DISTANCE),
-            alturaPortao: (DISTANCE),
-        }
-
-
-
-        // // posicionadas na parede do fundo, ou seja, paralelas ao X
-        // const STAIR_X = wallX - DISTANCE - STAIR_TOTAL_DEPTH - WALL_DEPTH / 2 + STAIR_STEP_DEPTH / 2
-        // const STAIR_Y = floorY + STAIR_STEP_HEIGHT / 2
-        // const STAIR_Z = -wallZ + STAIR_STEP_WITDH / 2 + WALL_DEPTH / 2
-
+  
         const ramp = new Ramp(
             STAIR_X, STAIR_Y, STAIR_Z,
             materials.grass,
@@ -151,9 +140,26 @@ export class Castle extends Model {
         // Expõe a referência para o main.js
         this.stair = stair;
 
+
+
+        const rampleft = new Ramp(
+            -STAIR_X, STAIR_Y, STAIR_Z,
+            materials.grass,
+            STAIR_STEP_WITDH,
+            STAIR_STEP_HEIGHT,
+            STAIR_STEP_DEPTH,
+            STEPS_NUMBER
+        )
+        // Mesma rotação que a escada visual (90° em Y)
+        rampleft.object.rotateY(THREE.MathUtils.degToRad(-90))
+        this.add(rampleft)
+        // Expõe a referência para o main.js
+        this.collisionRamp2 = rampleft;
+
         const stairleft = new Stair(-STAIR_X, STAIR_Y, STAIR_Z, materials.rotten_wood, STAIR_STEP_WITDH, STAIR_STEP_HEIGHT, STAIR_STEP_DEPTH, STEPS_NUMBER)
         stairleft.object.rotateY(THREE.MathUtils.degToRad(-90))
         this.add(stairleft)
+        this.stairleft = stairleft;
 
         // mid wall
         const MID_WALL_DEPTH = WALL_DEPTH/2
@@ -351,6 +357,21 @@ export class Castle extends Model {
         this.add(door);
 
         return door;
+    }
+
+    addStair(config) {
+        const stair = new Stair(
+            config.x,
+            config.y,
+            config.z,
+            materials.rotten_wood,
+            config
+        );
+
+        this.stairs.push(stair);
+        this.add(stair);
+
+        return stair;
     }
 
  

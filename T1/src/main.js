@@ -146,7 +146,12 @@ information.show();
 for (const door of castle.doors) {
   castle.object.remove(door.object);
 }
+// for (const stair of castle.stair){
+//   castle.object.remove(stair.object);
+// }
+
 castle.object.remove(castle.stair.object);
+castle.object.remove(castle.stairleft.object);
 
 const worldOctree = new Octree();
 worldOctree.fromGraphNode(scene);
@@ -156,8 +161,10 @@ for (const door of castle.doors) {
   castle.object.add(door.object);
 }
 castle.object.add(castle.stair.object);
+castle.object.add(castle.stairleft.object);
 
 castle.collisionRamp.collisionMesh.visible = false;   // rampa volta a ser invisível
+castle.collisionRamp2.collisionMesh.visible = false; 
 
 const player = new PlayerController();
 const physics = new PlayerPhysics(worldOctree);
