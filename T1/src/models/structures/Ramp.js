@@ -1,24 +1,10 @@
 import * as THREE from "three";
 import { Model } from "../Model.js";
 
-/**
- * Ramp — rampa de colisão invisível para escadas.
- *
- * Gera uma caixa (BoxGeometry) com espessura, inclinada no ângulo exato
- * da escada, posicionada logo abaixo da malha visual dos degraus.
- * Por ser volumétrica, o Octree detecta colisões de forma confiável,
- * eliminando o efeito de "trepidação" ao subir/descer escadas.
- *
- * Parâmetros espelham os de Stair para facilitar o alinhamento:
- *   stepWidth   — largura de cada degrau (eixo X)
- *   stepHeight  — altura de cada degrau
- *   stepDepth   — profundidade de cada degrau
- *   stepNumber  — número total de degraus
- */
+
 export class Ramp extends Model {
     constructor(x, y, z, material, stepWidth, stepHeight, stepDepth, stepNumber) {
         super(x, y, z, material);
-        console.log(x,y,z)
         const totalHeight = stepHeight * stepNumber; // altura total (cateto oposto)
         const totalDepth  = stepDepth  * stepNumber; // profundidade total (cateto adjacente)
         const slopeLen    = Math.sqrt(totalHeight ** 2 + totalDepth ** 2); // hipotenusa
@@ -45,7 +31,7 @@ export class Ramp extends Model {
             totalDepth  / 2 + (THICKNESS / 2) * Math.sin(angle)
         );
 
-        // Invisível — apenas a escada visual é renderizada
+        // Invisível - apenas a escada visual é renderizada
         mesh.visible = false;
 
         // Marca para identificação externa (ex.: exclusão do Octree se necessário)

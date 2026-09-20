@@ -4,7 +4,6 @@ import { Model } from "../Model.js";
 export class Stair extends Model {
     constructor(x, y, z, material, stepWidth, stepHeight, stepDepth, stepNumber) {
         super(x, y, z, material);
-        console.log(x,y,z)
 
         const stair = new THREE.Group()
         

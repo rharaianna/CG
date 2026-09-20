@@ -111,7 +111,7 @@ window.addEventListener('resize', function () { onWindowResize(camera, renderer)
 
 // Show axes (parameter is size of each axis)
 let axesHelper = new THREE.AxesHelper(100);
-scene.add(axesHelper);
+//scene.add(axesHelper);
 
 // create the ground plane
 let plane = createGroundPlaneXZ(300, 300,)

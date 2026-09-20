@@ -9,20 +9,20 @@ export class Wall extends Model {
         this.x = x;
         this.y = y;
         this.z = z;
-        //this.material = material;
+        this.material = material;
         this.width = width;
         this.height = height;
         this.depth = depth;
 
         const geometry = new THREE.BoxGeometry(width, height, depth);
-        let mesh = new THREE.Mesh(geometry, this.material);
+        let mesh = new THREE.Mesh(geometry, material);
                 
-        mesh = this.renderWindows(windowsConfig, mesh)
+        mesh = this.renderWindows(windowsConfig, mesh, material)
         this.object.add(mesh)
 
     }
 
-    renderWindows(windowsConfig, mesh) {
+    renderWindows(windowsConfig, mesh, material) {
         if(!!windowsConfig) {
             
             const {
@@ -34,6 +34,7 @@ export class Wall extends Model {
                 alturaPortao = 0,
                 larguraPortao = 0,
                 offsetX = 0,
+                material = null,
                 holes: customHoles = [], // Permite receber holes manuais se necessário
                 towerCuts = []
             } = windowsConfig;
@@ -51,9 +52,16 @@ export class Wall extends Model {
                     type: 'arch'
                 });
             }
-    
-            // 2. Adiciona as janelas em formato de grid se especificadas
+
+
+            console.log("linhas:",linhas)
+            console.log("colunas:",colunas)
+            
+            // Adiciona as janelas em formato de grid se especificadas
             if (linhas > 0 && colunas > 0 && altura > 0 && largura > 0) {
+                
+                console.log("chegou:")
+                
                 const spacingX = this.width / (colunas + 1);
                 const usableHeight = this.height - (portao ? alturaPortao : 0);
                 const spacingY = usableHeight / (linhas + 1);
@@ -76,12 +84,13 @@ export class Wall extends Model {
     
             // 3. Aplica os recortes apenas se houver buracos windowsConfigurados
             if (holes.length > 0) {
-                mesh = applyHolesToWall(mesh, this.width, this.height, this.depth, holes);
+                console.log("material:", windowsConfig.material)
+                mesh = applyHolesToWall(mesh, this.width, this.height, this.depth, holes, material);
             }
             //======== FIM  PARTE DAS JANELAS E PORTAO========
     
             if (towerCuts.length > 0) {
-                mesh = applyTowerCutoutsToWall(mesh, this.width, this.height, this.depth, towerCuts);
+                mesh = applyTowerCutoutsToWall(mesh, this.width, this.height, this.depth, towerCuts,material);
             }
         }
 

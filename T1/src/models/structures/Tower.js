@@ -10,7 +10,8 @@ export class Tower extends Model {
         super(x, y, z, material)
 
         const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments)
-        let cylinder = new THREE.Mesh(geometry, this.material)
+        let cylinder = new THREE.Mesh(geometry, material)
+
 
         const brickWidth = 0.2 * radius
         const brickDepth = 0.6 * radius
@@ -35,7 +36,7 @@ export class Tower extends Model {
         if(!!config) {
             // Cilindro externo
             const outerGeo = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
-            let towerBrush = new Brush(geometry, this.material);
+            let towerBrush = new Brush(geometry, material);
             
             // Se houver innerRadius válido, oca a torre diretamente
             if (innerRadius > 0) {
@@ -50,7 +51,7 @@ export class Tower extends Model {
             }
             
             if(!!config) 
-                cylinder = applyHolesToTower(towerBrush, radius, innerRadius > 0 ? innerRadius : 0, height, config);
+                 cylinder = applyHolesToTower(towerBrush, radius, innerRadius > 0 ? innerRadius : 0, height, config);
             
         }        
         

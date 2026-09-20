@@ -208,6 +208,11 @@ export class Castle extends Model {
             portao: true,
             alturaPortao: DOOR_HEIGHT,
             larguraPortao: DOOR_WIDTH,
+            linhas: 1,
+            colunas: 6,
+            altura:2,
+            largura:2,
+            material: materials.bricks
         };
         
         const doorConfig = {   //Passa pra door
@@ -242,9 +247,10 @@ export class Castle extends Model {
         this.add(wall44)
 
         let windowsTowerConfig = {
-            linhas: 2,          // n fileiras de janelas na altura
-            colunas: 4,        // m colunas distribuídas em 360° ao redor da torre
+            linhas: 0,          // n fileiras de janelas na altura
+            colunas: 0,        // m colunas distribuídas em 360° ao redor da torre
             raio: 0.5,
+            material: materials.bricks
         }
     
         // posicionadas nas extremidades das paredes
@@ -253,10 +259,10 @@ export class Castle extends Model {
         const tower3 = new Tower(towerX, towerY, -towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         const tower4 = new Tower(-towerX, towerY, -towerZ, this.material, TOWER_HEIGHT, TOWER_RADIUS, TOWER_INNER_RADIUS, TOWER_RADIAL_SEGMENTS, TOWER_BRICKS, windowsTowerConfig);
         
-        this.add(tower1)
-        this.add(tower2)
-        this.add(tower3)
-        this.add(tower4)
+        //this.add(tower1)
+        //this.add(tower2)
+        //this.add(tower3)
+        //this.add(tower4)
         
         const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS);
         const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, MIDTOWER_WIDTH, MIDTOWER_HEIGHT, MIDTOWER_DEPTH, MIDTOWER_BRICKS,doorWallConfig);
@@ -270,16 +276,16 @@ export class Castle extends Model {
         midTower3.object.rotateY(THREE.MathUtils.degToRad(90))
         midTower4.object.rotateY(THREE.MathUtils.degToRad(90))
 
-        this.add(midTower2)
-        this.add(midTower3)
-        this.add(midTower4)
+        //this.add(midTower2)
+        //this.add(midTower3)
+        //this.add(midTower4)
 
         // torre frontal
         const FRONTTOWER_Y = FRONTTOWER_HEIGHT/2
         const FRONTTOWER_Z = wallZ
 
         const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, FRONTTOWER_WIDTH, FRONTTOWER_HEIGHT, FRONTTOWER_DEPTH, FRONTTOWER_BRICKS, doorWallConfig);
-        this.add(frontTower)
+        //this.add(frontTower)
 
     
         //==== Portoes==========

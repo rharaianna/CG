@@ -19,8 +19,8 @@ export class PlayerPhysics {
     constructor(worldOctree) {
         this.worldOctree = worldOctree;
         this.playerCollider = new Capsule(
-            new THREE.Vector3(0, 0.35, 0),
-            new THREE.Vector3(0, 1, 0), 0.35);
+            new THREE.Vector3(0, 0.15, 0),
+            new THREE.Vector3(0, 2, 0), 0.35);
         this.playerVelocity = new THREE.Vector3();
         this.playerDirection = new THREE.Vector3();
         this.playerOnFloor = false;
@@ -169,10 +169,10 @@ export class PlayerPhysics {
         if (camera.position.y <= - 25) {
 
             // Reseta o ponto inicial da cápsula do jogador de volta pra origem (0, 0.35, 0)
-            this.playerCollider.start.set(0, 0.35, 0);
+            this.playerCollider.start.set(0, 0.15, 0);
 
             // Reseta o topo da cápsula pra (0, 1, 0)
-            this.playerCollider.end.set(0, 1, 0);
+            this.playerCollider.end.set(0, 2, 0);
 
 
             /* Redefine o raio da cápsula pra 0.35 (garantindo que, mesmo que algo tenha alterado 
