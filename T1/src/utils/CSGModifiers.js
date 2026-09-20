@@ -114,6 +114,6 @@ export function applyHolesToWall(baseMesh, wallWidth, wallHeight, wallDepth, hol
 
     return new THREE.Mesh(
         resultBrush.geometry,
-        resultBrush.material
+        baseMesh.material
     );
 }
