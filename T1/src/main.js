@@ -46,9 +46,16 @@ const camDir = new THREE.Vector3();
 const AIM_RANGE = 200;
 
 const pointerControls = new PointerLockControls(camera, renderer.domElement); //
-const orbitControls = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
-orbitControls.enabled = false;
 let pointerControlsOn = true;
+
+const orbitCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+const orbitControls = new OrbitControls(orbitCamera, renderer.domElement);
+const posicaoOrbital = new THREE.Vector3(0, 80, 80)
+const miraOrbital = new THREE.Vector3(0,0,0)
+orbitCamera.position.copy(posicaoOrbital);
+orbitControls.target.copy(miraOrbital);
+orbitControls.enabled = false;
+orbitControls.update();
 
 let podeAtirar = false;
 const CADENCIA_TIRO = 0.15; // segundos entre tiros
@@ -79,7 +86,10 @@ document.body.addEventListener('keydown', function (event) { // alternate contro
     else {
       physics.storePlayerDirection(camera)
       pointerControls.unlock();         // desabilita pointer
+      camera.position.copy(posicaoOrbital);  // posiciona no ponto definido
+      orbitControls.target.copy(miraOrbital); // define para onde vai olhar
       orbitControls.enabled = true;     // habilita orbital
+      orbitControls.update();           // atualiza posicao
       podeAtirar = false;               // desabilita disparo
       gun.object.visible = false;       // esconde arma
       crosshair.style.display = 'none'; // esconde crosshair
@@ -270,10 +280,7 @@ function render() {
 
   for (let i = 0; i < STEPS_PER_FRAME; i++) {
 
-    if (orbitControls.enabled) {
-      orbitControls.update();
-    }
-    if (pointerControls.isLocked) {
+    if (pointerControlsOn && pointerControls.isLocked) {
       moveControls(deltaTime);
       physics.updatePlayer(deltaTime);
       camera.position.copy(physics.playerCollider.end);
@@ -289,6 +296,10 @@ function render() {
     }
   }
 
-  renderer.render(scene, camera);
+    if (orbitControls.enabled) {
+      orbitControls.update();
+    }
+
+  renderer.render(scene, pointerControlsOn ? camera : orbitCamera);
   requestAnimationFrame(render);
 }
