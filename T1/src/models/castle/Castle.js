@@ -143,9 +143,9 @@ export class Castle extends Model {
             alturaPortao: dCfg.height,
             larguraPortao: dCfg.width,
             linhas: 1,
-            colunas: 6,
-            altura: 2,
-            largura: 2,
+            colunas: 8,
+            altura: 1,
+            largura: 1,
             material: materials.bricks
         };
         
