@@ -275,7 +275,8 @@ function render() {
   clock.update();
   const deltaTime1 = clock.getDelta();
 
-  enemy.update(deltaTime1)
+  // temporárioo!!!
+  enemy.update(deltaTime1, playerPosition)
 
   camera.getWorldPosition(playerPosition);
   for (const door of castle.doors) {

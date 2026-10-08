@@ -1,7 +1,8 @@
 export const STATUS = {
     "STILL": 0,
     "WALKING": 1,
-    "ATACK": 2, 
+    "ATTACK": 2, 
+    "READY": 3
 }
 
 export const BEHAVIOR = {

@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { materials } from './models/material.configs.js';
 import { STATUS, BEHAVIOR } from './enemy.enums.js';
 
-
 export class Enemy {
     constructor(scene, movementArea) {
 
@@ -68,7 +67,7 @@ export class Enemy {
 
             // nao se movimenta e buga tudo
             return;
-        }
+        } 
 
         // rotaciona na direção do movimento
         this.body.lookAt(this.position.clone().add(direction));
@@ -79,14 +78,63 @@ export class Enemy {
     }
 
     // recebe os ticks do jogo e coordena a logica
-    update(deltaTime) {
-        if (this.status === STATUS.STILL) {
+    update(deltaTime, playerPosition) {
+
+        this.detectPlayer(deltaTime, playerPosition)
+        
+        if (this.status === STATUS.STILL || this.status === STATUS.READY) {
             this.moveToAnotherPlace(deltaTime);
             return;
         }
 
-        if (this.status === STATUS.WALKING) {
+        if ([STATUS.WALKING, STATUS.ATTACK].includes(this.status)) {
             this.move(deltaTime);
+        }
+    }
+
+    changeToAttackMode(deltaTime, playerPosition) {
+
+        console.log("ATTACK");
+        this.status = STATUS["ATTACK"]
+
+        // olha pro jogador
+        const direction = new THREE.Vector3().subVectors(playerPosition, this.position).normalize()
+        this.body.lookAt(this.position.clone().add(direction));
+
+        const distance = this.position.distanceTo(playerPosition);
+
+        // nunca ultrapassar essa distancia 
+        const maxDistance = 10
+        const chasingTime = 3
+
+        if(distance >= maxDistance) {
+            this.destiny.copy(this.position).add(
+                direction.multiplyScalar(distance - maxDistance)
+            );
+        } 
+    }
+
+    // vai detectar se o jogador ta proximo do inimigo
+    detectPlayer(deltaTime, playerPosition) {
+
+        if(this.status == STATUS["READY"])
+            return
+
+        const distance = 15
+        const isNear = playerPosition.distanceTo(this.position) <= distance
+
+        if (isNear) {
+            if (this.status !== STATUS.ATTACK) {
+                this.changeToAttackMode(deltaTime, playerPosition);
+            }
+            return;
+        }
+
+        
+        // Só muda de ATTACK quando o jogador se afastar
+        if (this.status === STATUS.ATTACK) {
+            this.status = STATUS.STILL;
+            this.timer = 0;
         }
     }
 }

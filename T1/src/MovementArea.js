@@ -21,6 +21,8 @@ export class MovementArea {
 
     getRandomPosition(enemyDimensions, behavior) {
 
+        // pequena limitação de cobertura da área 
+        const coverage = 0.8
         const { width, depth, height } = enemyDimensions
 
         const minX = this.position.x - this.width / 2 + width / 2;
@@ -29,8 +31,8 @@ export class MovementArea {
         const minZ = this.position.z - this.depth / 2 + depth / 2;
         const maxZ = this.position.z + this.depth / 2 - depth / 2;
 
-        const x = minX + Math.random() * (maxX - minX);
-        const z = minZ + Math.random() * (maxZ - minZ);
+        const x = minX + Math.random() * (maxX - minX) * coverage;
+        const z = minZ + Math.random() * (maxZ - minZ) * coverage;
 
         // base do cubo ou chão dele 
         const baseY = this.position.y - this.height / 2;
@@ -40,7 +42,7 @@ export class MovementArea {
 
             // topo do cubo 
             const maxY = this.position.y + this.height/2;
-            y = baseY + height/2 + Math.random() * (maxY - baseY - height);
+            y = baseY + height/2 + Math.random() * (maxY - baseY - height) * coverage;
         
         } else {
             y = baseY + height / 2;
@@ -64,5 +66,4 @@ export class MovementArea {
         position.y = baseY + enemyHeight / 2;
         return position;
     }
-
 }
