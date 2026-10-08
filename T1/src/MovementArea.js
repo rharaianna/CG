@@ -58,12 +58,13 @@ export class MovementArea {
     }
 
     // retorna a base da area de movimento com o ajuste em y
-    getStartPosition(enemyHeight) {
+    getStartPosition(dimensions) {
 
+        const { height } = dimensions
         const position = this.position.clone();
         const baseY = this.position.y - this.height / 2;
 
-        position.y = baseY + enemyHeight / 2;
+        position.y = baseY + height / 2;
         return position;
     }
 }
