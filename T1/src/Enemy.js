@@ -3,12 +3,12 @@ import { materials } from './models/material.configs.js';
 import { STATUS, BEHAVIOR } from './enemy.enums.js';
 
 export class Enemy {
-    constructor(scene, movementArea) {
+    constructor(scene, movementArea, behavior) {
 
         this.enemyDimensions = {
-            width: 5,
-            height: 5,
-            depth: 5,
+            width: 2,
+            height: 2,
+            depth: 2,
         }
 
         this.life = 3
@@ -19,7 +19,9 @@ export class Enemy {
         this.status = STATUS["STILL"]
 
         // define area onde vai ter movimento
-        this.behavior = BEHAVIOR["WALKING"]
+        this.behavior = behavior
+
+        console.log(behavior);
         
         this.movementArea = movementArea
         this.center = movementArea.getStartPosition(this.enemyDimensions)
@@ -92,14 +94,15 @@ export class Enemy {
             return
 
         const distance = this.position.distanceTo(this.center);
-        const maxLimit = 20
+        
+        // distancia máxima que pode sair do raio
+        if(distance >= this.movementArea.maxDistance) {
 
-        if(distance >= maxLimit) {
-
-            //teste para morrer dps de sair da regiao
+            // teste para morrer dps de sair da regiao
             this.status = STATUS.DEAD
             return
 
+            // mas na verdade voltaria pro centro
             this.status = STATUS.STILL
             this.destiny.copy(this.center)
         }
@@ -115,7 +118,7 @@ export class Enemy {
 
         const distance = this.position.distanceTo(playerPosition);
 
-        // nunca ultrapassar essa distancia 
+        // distancia que fica do jogador
         const maxDistance = 10
       
         if(distance >= maxDistance) {
@@ -128,8 +131,8 @@ export class Enemy {
     // vai detectar se o jogador ta proximo do inimigo
     detectPlayer(deltaTime, playerPosition) {
 
-        const distance = 15
-        const isNear = playerPosition.distanceTo(this.position) <= distance
+        // distancia mínima de detecção do jogador
+        const isNear = playerPosition.distanceTo(this.position) <= this.movementArea.detectionRange
 
         if (isNear) {
             if (this.status !== STATUS.ATTACK) {

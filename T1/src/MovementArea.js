@@ -3,11 +3,13 @@ import { STATUS, BEHAVIOR } from './enemy.enums.js';
 
 export class MovementArea {
 
-    constructor(scene, position, dimensions) {
+    constructor(scene, position, dimensions, detectionRange, maxDistance) {
         this.position = position
         this.width = dimensions.width
         this.height = dimensions.height
         this.depth = dimensions.depth
+        this.detectionRange = detectionRange
+        this.maxDistance = maxDistance
 
         this.box = new THREE.Mesh(
             new THREE.BoxGeometry(this.width, this.height, this.depth), 
@@ -38,8 +40,7 @@ export class MovementArea {
         const baseY = this.position.y - this.height / 2;
         
         let y
-        if(behavior == BEHAVIOR["FLYING"]) {
-
+        if(behavior == BEHAVIOR.FLYING) {
             // topo do cubo 
             const maxY = this.position.y + this.height/2;
             y = baseY + height/2 + Math.random() * (maxY - baseY - height) * coverage;

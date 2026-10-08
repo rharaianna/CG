@@ -24,6 +24,7 @@ import { Door } from './models/structures/Door.js';
 import { Enemy } from './Enemy.js';
 import { MovementArea } from './MovementArea.js';
 import { Vector3 } from '../../build/three.core.js';
+import { BEHAVIOR } from './enemy.enums.js';
 
 // ------------------------ Initial variables ------------------------
 const timer = new THREE.Timer();
@@ -137,23 +138,14 @@ const SCALE = 1
 const CASTLE_X = 0
 const CASTLE_Y = 0
 const CASTLE_Z = 0
-let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
+let castle = new Castle(scene, CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
 scene.add(castle.object)
 castle.hideBoundingBox()
 //castle.showBoundingBox(scene);
 
-const movementAreaDimensions = {
-  width: 20,
-  height: 10,
-  depth: 30,
-}
 
-// isso deve ficar dentro do mundo e ser retornado pelo castelo pra ficar corretamente posicionado
-const movementAreaPosition = new Vector3(20, movementAreaDimensions.height/2 +2, 10)
-
-const movementArea = new MovementArea(scene, movementAreaPosition, movementAreaDimensions)
-
-const enemy = new Enemy(scene, movementArea)
+const enemy1 = new Enemy(scene, castle.movementArea1, BEHAVIOR.WALKING)
+const enemy2 = new Enemy(scene, castle.movementArea2, BEHAVIOR.FLYING)
 
 
 // Use this to show information onscreen
@@ -276,7 +268,8 @@ function render() {
   const deltaTime1 = clock.getDelta();
 
   // temporárioo!!!
-  enemy.update(deltaTime1, playerPosition)
+  enemy1.update(deltaTime1, playerPosition)
+  enemy2.update(deltaTime1, playerPosition)
 
   camera.getWorldPosition(playerPosition);
   for (const door of castle.doors) {

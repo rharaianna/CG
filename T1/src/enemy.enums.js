@@ -7,6 +7,6 @@ export const STATUS = {
 }
 
 export const BEHAVIOR = {
-    "FLYING": 0,
-    "WALKING": 1
+    "WALKING": 0,
+    "FLYING": 1,
 }
