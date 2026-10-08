@@ -21,6 +21,9 @@ import { PlayerPhysics } from './player/PlayerPhysics.js';
 import { Bullet } from './player/Bullet.js';
 import { Gun } from './models/Gun.js';
 import { Door } from './models/structures/Door.js';
+import { Enemy } from './Enemy.js';
+import { MovementArea } from './MovementArea.js';
+import { Vector3 } from '../../build/three.core.js';
 
 // ------------------------ Initial variables ------------------------
 const timer = new THREE.Timer();
@@ -128,8 +131,8 @@ let plane = createGroundPlaneXZ(300, 300,)
 scene.add(plane);
 
 // tamanhos aproximados do castelo
-const CASTLE_WIDTH = 40
-const CASTLE_DEPTH = 46
+const CASTLE_WIDTH = 70
+const CASTLE_DEPTH = 92
 const SCALE = 1
 const CASTLE_X = 0
 const CASTLE_Y = 0
@@ -138,6 +141,20 @@ let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE
 scene.add(castle.object)
 castle.hideBoundingBox()
 //castle.showBoundingBox(scene);
+
+const movementAreaDimensions = {
+  width: 20,
+  height: 10,
+  depth: 30,
+}
+
+// isso deve ficar dentro do mundo e ser retornado pelo castelo pra ficar corretamente posicionado
+const movementAreaPosition = new Vector3(20, movementAreaDimensions.height/2 +2, 10)
+
+const movementArea = new MovementArea(scene, movementAreaPosition, movementAreaDimensions)
+
+const enemy = new Enemy(scene, movementArea)
+
 
 // Use this to show information onscreen
 let information = new InfoBox();
@@ -257,6 +274,8 @@ function render() {
 
   clock.update();
   const deltaTime1 = clock.getDelta();
+
+  enemy.update(deltaTime1)
 
   camera.getWorldPosition(playerPosition);
   for (const door of castle.doors) {
