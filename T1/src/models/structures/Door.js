@@ -45,8 +45,6 @@ export class Door extends Model {
 
         const nearDoor = playerPosition.distanceTo(this.object.position) <= this.interactionDistance;
 
-        console.log(nearDoor);
-
         if (nearDoor !== this.isOpen) {
             this.toggleDoor(nearDoor);
         }
