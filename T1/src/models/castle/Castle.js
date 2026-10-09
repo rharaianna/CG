@@ -15,12 +15,17 @@ import { Ceil } from "../structures/Ceil.js";
 import { DetailedWall } from "../structures/DetailedWall.js";
 import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
+import { MovementArea } from "../../MovementArea.js";
+import { Vector3 } from "../../../../build/three.core.js";
 
 export class Castle extends Model {
-    constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
+    constructor(scene, x, y, z, material, WIDTH, DEPTH, SCALE) {
         super(x, y, z, materials.bricks);
         this.doors = [];
         this.stairs = []
+
+        //this.collisionEnabledGroup = new THREE.Group();
+        this.collisionDisabledGroup = new THREE.Group();
 
         // Obtém todos os parâmetros de tamanho e escala do arquivo de configuração
         const cfg = makeCastleConfig(WIDTH, DEPTH, SCALE);
@@ -251,6 +256,26 @@ export class Castle extends Model {
             rotationY: THREE.MathUtils.degToRad(0)
         });
 
+
+        // 
+        const movementArea1Dimensions = {
+            width: cCfg.distance,
+            height: CEIL_HEIGHT,
+            depth: DEPTH/3,
+        }
+
+        const movementArea1Position = new Vector3(CEIL_X, cCfg.y + movementArea1Dimensions.height/2, 0)
+        this.movementArea1 = new MovementArea(scene, movementArea1Position, movementArea1Dimensions, 15, 60)
+
+        const movementArea2Dimensions = {
+            width: 30,
+            depth: 30,
+            height: ftCfg.height,
+        }
+
+        const movementArea2Position = new Vector3(0, ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
+        this.movementArea2 = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
+
     } 
 
     addDoor(config) {
@@ -266,7 +291,7 @@ export class Castle extends Model {
         door.object.rotation.y = config.rotationY ?? 0;
 
         this.doors.push(door);
-        this.add(door);
+        this.collisionDisabledGroup.add(door.object);
 
         return door;
     }
@@ -288,7 +313,7 @@ export class Castle extends Model {
         //  Escada visual 
         const stair = new Stair(x, y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
         stair.object.rotation.y = rotationY;
-        this.add(stair);
+        this.collisionDisabledGroup.add(stair.object);
 
         // Rampa de colisão invisível 
         const ramp = new Ramp(x, y, z, rampMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
@@ -300,5 +325,9 @@ export class Castle extends Model {
         this.stairs.push(pair);
 
         return pair;
+    }
+
+    update(deltaTime, playerPosition) {
+        this.doors.forEach(door => door.update(deltaTime, playerPosition))
     }
 }
