@@ -16,11 +16,13 @@ import { DetailedWall } from "../structures/DetailedWall.js";
 import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
 
+
 export class Castle extends Model {
     constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
         super(x, y, z, materials.bricks);
         this.doors = [];
-        this.stairs = []
+        this.stairs = [];
+        this.towers = [];
 
         // Obtém todos os parâmetros de tamanho e escala do arquivo de configuração
         const cfg = makeCastleConfig(WIDTH, DEPTH, SCALE);
@@ -196,15 +198,17 @@ export class Castle extends Model {
         };
     
         // posicionadas nas extremidades das paredes
-        const tower1 = new Tower(towerX, towerY, towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        const tower2 = new Tower(-towerX, towerY, towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        const tower3 = new Tower(towerX, towerY, -towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        const tower4 = new Tower(-towerX, towerY, -towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        
-        this.add(tower1)
-        this.add(tower2)
-        this.add(tower3)
-        this.add(tower4)
+        this.addTowers({
+            x: towerX,
+            y: towerY,
+            z: towerZ,
+            height: tCfg.height,
+            radius: tCfg.radius,
+            innerRadius: tCfg.innerRadius,
+            radialSegments: tCfg.radialSegments,
+            bricks: tCfg.bricks,
+            windowsConfig: windowsTowerConfig,
+        });
         
         // Torres intermediárias
         const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks);
@@ -313,5 +317,43 @@ export class Castle extends Model {
         this.stairs.push(pair);
 
         return pair;
+    }
+
+    // Cria as 4 torres dos cantos do castelo, posicionadas e rotacionadas.
+    // Retorna o array de torres criadas.
+    addTowers(config) {
+        const {
+            x, y, z,                // posição absoluta de cada torre (módulo, simétrico em X e Z)
+            height, radius, innerRadius, radialSegments, bricks,
+            windowsConfig,
+            material = this.material,
+        } = config;
+
+        // Cada canto: sinal em X, sinal em Z e rotação em Y (graus)
+        const corners = [
+            { sx:  1, sz:  1, rotY:  90 }, // tower1
+            { sx: -1, sz:  1, rotY:   0 }, // tower2
+            { sx:  1, sz: -1, rotY: 180 }, // tower3
+            { sx: -1, sz: -1, rotY: 270 }, // tower4
+        ];
+
+        const towers = corners.map(({ sx, sz, rotY }) => {
+            const tower = new Tower(
+                sx * x, y, sz * z,
+                material,
+                height, radius, innerRadius, radialSegments, bricks,
+                windowsConfig
+            );
+
+            if (rotY !== 0) {
+                tower.object.rotateY(THREE.MathUtils.degToRad(rotY));
+            }
+
+            this.add(tower);
+            return tower;
+        });
+
+        this.towers.push(...towers);
+        return towers;
     }
 }

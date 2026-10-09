@@ -17,7 +17,7 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
     const TOWER_HEIGHT          = 21  * SCALE;
     const TOWER_RADIUS          =  6  * SCALE;
     const TOWER_INNER_RADIUS    =  4.2 * SCALE;
-    const TOWER_RADIAL_SEGMENTS = 32;                   // sem escala — é uma contagem
+    const TOWER_RADIAL_SEGMENTS = 20;                   // sem escala — é uma contagem
     const TOWER_BRICKS          =  2  * SCALE;
     const TOWER_OFFSET          =  1  * SCALE;          // deslocamento das torres em relação às paredes
 
