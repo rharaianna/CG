@@ -146,8 +146,6 @@ export class Enemy {
         this.scale -= factor
         
         if(this.scale < 0) {
-            console.log("dead");
-
             this.scale = 0;
             this.body.scale.setScalar(0);
             this.timer = 0
