@@ -196,6 +196,9 @@ export class Castle extends Model {
             alturaJanela: wdCfg.height,
             material: materials.bricks
         };
+
+        const portaoBaseY = windowsTowerConfig.portao.y - windowsTowerConfig.portao.altura / 2;
+        const pocketDepth = tCfg.height / 2 - portaoBaseY;
     
         // posicionadas nas extremidades das paredes
         this.addTowers({
@@ -208,6 +211,7 @@ export class Castle extends Model {
             radialSegments: tCfg.radialSegments,
             bricks: tCfg.bricks,
             windowsConfig: windowsTowerConfig,
+            pocketDepth,
         });
         
         // Torres intermediárias
@@ -325,7 +329,7 @@ export class Castle extends Model {
         const {
             x, y, z,                // posição absoluta de cada torre (módulo, simétrico em X e Z)
             height, radius, innerRadius, radialSegments, bricks,
-            windowsConfig,
+            windowsConfig, pocketDepth,
             material = this.material,
         } = config;
 
@@ -342,7 +346,8 @@ export class Castle extends Model {
                 sx * x, y, sz * z,
                 material,
                 height, radius, innerRadius, radialSegments, bricks,
-                windowsConfig
+                windowsConfig,
+                pocketDepth
             );
 
             if (rotY !== 0) {
