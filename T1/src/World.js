@@ -5,13 +5,16 @@ import { createGroundPlaneXZ } from '../../libs/util/util.js';
 export class World {
     constructor(scene) {
 
+        this.collisionEnabledGroup = new THREE.Group();
+        this.collisionDisabledGroup = new THREE.Group();
+
         // Show axes (parameter is size of each axis)
         let axesHelper = new THREE.AxesHelper(100);
         //scene.add(axesHelper);
         
         // create the ground plane
         let plane = createGroundPlaneXZ(300, 300,)
-        scene.add(plane);
+        this.collisionEnabledGroup.add(plane);
         
         // tamanhos aproximados do castelo
         const CASTLE_WIDTH = 40
@@ -21,12 +24,17 @@ export class World {
         const CASTLE_Y = 0
         const CASTLE_Z = 0
 
-        let castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
-        scene.add(castle.object)
-        castle.hideBoundingBox()
+        this.castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
+        
+        this.collisionEnabledGroup.add(this.castle.object)
+        this.collisionDisabledGroup.add(this.castle.collisionDisabledGroup)
 
+        scene.add(this.collisionEnabledGroup)
+        scene.add(this.collisionDisabledGroup)
+    
     }
 
-    update(deltaTime) {
+    update(deltaTime, playerPosition) {
+        this.castle.update(deltaTime, playerPosition)
     }
 }
