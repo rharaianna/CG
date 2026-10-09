@@ -22,6 +22,9 @@ export class Castle extends Model {
         this.doors = [];
         this.stairs = []
 
+        //this.collisionEnabledGroup = new THREE.Group();
+        this.collisionDisabledGroup = new THREE.Group();
+
         // Obtém todos os parâmetros de tamanho e escala do arquivo de configuração
         const cfg = makeCastleConfig(WIDTH, DEPTH, SCALE);
 
@@ -266,7 +269,7 @@ export class Castle extends Model {
         door.object.rotation.y = config.rotationY ?? 0;
 
         this.doors.push(door);
-        this.add(door);
+        this.collisionDisabledGroup.add(door.object);
 
         return door;
     }
@@ -288,7 +291,7 @@ export class Castle extends Model {
         //  Escada visual 
         const stair = new Stair(x, y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
         stair.object.rotation.y = rotationY;
-        this.add(stair);
+        this.collisionDisabledGroup.add(stair.object);
 
         // Rampa de colisão invisível 
         const ramp = new Ramp(x, y, z, rampMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
@@ -300,5 +303,9 @@ export class Castle extends Model {
         this.stairs.push(pair);
 
         return pair;
+    }
+
+    update(deltaTime, playerPosition) {
+        this.doors.forEach(door => door.update(deltaTime, playerPosition))
     }
 }
