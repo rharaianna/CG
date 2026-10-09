@@ -15,8 +15,8 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
 
     //  Torres de canto 
     const TOWER_HEIGHT          = 21  * SCALE;
-    const TOWER_RADIUS          =  5  * SCALE;
-    const TOWER_INNER_RADIUS    =  2.7 * SCALE;
+    const TOWER_RADIUS          =  6  * SCALE;
+    const TOWER_INNER_RADIUS    =  4.2 * SCALE;
     const TOWER_RADIAL_SEGMENTS = 32;                   // sem escala — é uma contagem
     const TOWER_BRICKS          =  2  * SCALE;
     const TOWER_OFFSET          =  1  * SCALE;          // deslocamento das torres em relação às paredes
@@ -38,9 +38,13 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
     const DOOR_WIDTH  = TOWER_RADIUS;                   // largura igual ao raio das torres
     const DOOR_DEPTH  = DOOR_WIDTH * 0.1;
 
+    //  Janelas 
+    const WINDOW_HEIGHT = WALL_HEIGHT/10;
+    const WINDOW_WIDTH  = TOWER_RADIUS/5;                   // largura igual ao raio das torres
+
     //  Escadas e teto 
-    const DISTANCE          = 3    * SCALE;             // largura dos tetos e mid walls
-    const CEIL_Y            = 8    * SCALE;             // altura do teto (determina nº de degraus)
+    const DISTANCE          = 4    * SCALE;             // largura dos tetos e mid walls
+    const CEIL_Y            = 12    * SCALE;             // altura do teto (determina nº de degraus)
     const STAIR_STEP_WITDH  = DISTANCE;                 // largura do degrau = faixa lateral
     const STAIR_STEP_HEIGHT = 0.18 * SCALE;
     const STAIR_STEP_DEPTH  = 0.32 * SCALE;
@@ -70,6 +74,11 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
             radialSegments: TOWER_RADIAL_SEGMENTS,
             bricks:         TOWER_BRICKS,
             offset:         TOWER_OFFSET,
+        },
+
+        window:{
+            height:WINDOW_HEIGHT,
+            width:WINDOW_WIDTH,
         },
 
         midTower: {

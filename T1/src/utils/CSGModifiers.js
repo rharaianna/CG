@@ -5,67 +5,57 @@ import { createArchGeometry } from './ArchGeometry.js';
 const evaluator = new Evaluator();
 
 export function applyHolesToTower(baseMesh, radius, innerRadius, height, config) {
-    
     let resultBrush = new Brush(baseMesh.geometry, config.material);
-
     const {
-        linhas = 0,
-        colunas = 0,
-        raio = 1, 
-        holes: customHoles = []
+        janelas = [],
+        portao = null,
+        larguraJanela = 1,
+        alturaJanela = 1.5,
+        larguraPortao = 2,
+        alturaPortao = 4
     } = config;
 
-    const holes = [...customHoles];
+    const aberturas = [
+        ...janelas.map(posicao => ({ ...posicao, tipo: 'janela' })),
+        ...(portao ? [{ ...portao, tipo: 'portao' }] : [])
+    ];
 
-    // Se houver parâmetros de grid para janelas, calcula a distribuição angular e vertical
-    if (linhas > 0 && colunas > 0 && raio > 0) {
-
-        // A espessura da parede da torre é a diferença entre o raio externo e o interno
-        const wallThickness = radius - innerRadius 
-  
-        // Espaçamento vertical ao longo da altura da torre
-        const spacingY = height / (linhas + 1);
-        
-        for (let r = 0; r < linhas; r++) {
-            for (let c = 0; c < colunas; c++) {
-
-                const angle = (c / colunas) * Math.PI * 2
-
-                // Altura Y da janela centralizada na sua linha
-                const posY = (spacingY * (r + 1)) - (height / 2);
-
-                holes.push({
-                    angle: angle,
-                    y: posY,
-                    depth: wallThickness
-                });
-            }
-        }
-    }
-
-    // Executa as subtrações usando manipulação direta de geometria (sem updateMatrixWorld)
-    holes.forEach(hole => {
-        
-        const holeGeo = new THREE.SphereGeometry(raio, 16, 16);
+    aberturas.forEach(abertura => {
+        const profundidade = (radius - innerRadius) * 2 + 1;
+        const holeGeo = abertura.tipo === 'portao'
+            ? createArchGeometry(
+                abertura.largura ?? larguraPortao,
+                abertura.altura ?? alturaPortao,
+                profundidade
+            )
+            : createArchGeometry(
+                abertura.largura ?? larguraJanela,
+                abertura.altura ?? alturaJanela,
+                profundidade
+            );
         const holeBrush = new Brush(holeGeo, new THREE.MeshBasicMaterial());
 
-        // usa o raio do cilindro para posicionar
-        holeBrush.position.set(
-            Math.cos(hole.angle) * radius,
-            hole.y,
-            Math.sin(hole.angle) * radius
+        // Ângulo em radianos: 0 aponta para +Z e cresce em direção a +X.
+        // x/z e rotationY continuam como fallback para configurações antigas.
+        const angulo = abertura.angulo ?? (
+            abertura.x !== undefined && abertura.z !== undefined
+                ? Math.atan2(abertura.x, abertura.z)
+                : 0
         );
+        const x = abertura.angulo !== undefined
+            ? Math.sin(angulo) * radius
+            : abertura.x ?? Math.sin(angulo) * radius;
+        const z = abertura.angulo !== undefined
+            ? Math.cos(angulo) * radius
+            : abertura.z ?? Math.cos(angulo) * radius;
 
-        holeBrush.rotation.y = -hole.angle;
-        holeBrush.rotation.z = -hole.angle;
-        
+        holeBrush.position.set(x, abertura.y, z);
+        holeBrush.rotation.y = abertura.rotationY ?? angulo;
         holeBrush.updateMatrixWorld(true);
         resultBrush.updateMatrixWorld(true);
-
         resultBrush = evaluator.evaluate(resultBrush, holeBrush, SUBTRACTION);
     });
-    
-    // retorna a mesh recebida atualizada com os buracos
+
     return resultBrush;
 }
 

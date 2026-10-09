@@ -30,7 +30,8 @@ export class Castle extends Model {
             DEPTH: scaledDepth, 
             SCALE: cfgScale,
             floor: fCfg, 
-            wall: wCfg, 
+            wall: wCfg,
+            window: wdCfg, 
             tower: tCfg, 
             midTower: mtCfg, 
             frontTower: ftCfg,
@@ -144,19 +145,19 @@ export class Castle extends Model {
             larguraPortao: dCfg.width,
             linhas: 1,
             colunas: 8,
-            altura: 1,
-            largura: 1,
+            altura: wdCfg.height,
+            largura: wdCfg.width,
             material: materials.bricks
         };
         
         // Paredes principais
-        const wall1 = new CastleWall(0, wallY, wallZ, this.material, scaledWidth, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
-        const wall2 = new CastleWall(0, wallY, -wallZ, this.material, scaledWidth, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
+        const wall1 = new CastleWall(0, wallY, wallZ, this.material, scaledWidth -tCfg.radius, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
+        const wall2 = new CastleWall(0, wallY, -wallZ, this.material, scaledWidth -tCfg.radius, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
     
         // paredes posicionadas no X, paralelas ao Z (azul)
         // comprimento delas é a profundidade do terreno e rotacionadas
         // largura delas é a mesma profundidade do terreno e são rotacionadas
-        const wall3 = new CastleWall(wallX, wallY, 0, this.material, scaledDepth, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
+        const wall3 = new CastleWall(wallX, wallY, 0, this.material, scaledDepth -tCfg.radius , wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
         
         // lado da parede com detalhes
         const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4, this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.radius / 2, null);
@@ -176,9 +177,21 @@ export class Castle extends Model {
         this.add(wall44);
 
         let windowsTowerConfig = {
-            linhas: 0,          // n fileiras de janelas na altura
-            colunas: 0,        // m colunas distribuídas em 360° ao redor da torre
-            raio: 0.5,
+            janelas: [
+                { angulo: 0, y: 0 },
+                { angulo: Math.PI / 4, y: 3 },
+                { angulo: -Math.PI / 4, y: 3 },
+                { angulo: -Math.PI / 2, y: 0 },
+                { angulo: -3 * Math.PI / 4, y: 3 },
+            ],
+            portao: {
+                angulo: 3 * Math.PI / 4,
+                y: CEIL_HEIGHT+ (dCfg.height/2),
+                largura: dCfg.width / 2,
+                altura: dCfg.height / 1.5,
+            },
+            larguraJanela: wdCfg.width,
+            alturaJanela: wdCfg.height,
             material: materials.bricks
         };
     

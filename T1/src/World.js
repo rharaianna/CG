@@ -14,8 +14,8 @@ export class World {
         scene.add(plane);
         
         // tamanhos aproximados do castelo
-        const CASTLE_WIDTH = 40
-        const CASTLE_DEPTH = 46
+        const CASTLE_WIDTH = 70
+        const CASTLE_DEPTH = 92
         const SCALE = 1
         const CASTLE_X = 0
         const CASTLE_Y = 0
