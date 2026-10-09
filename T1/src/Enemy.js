@@ -20,8 +20,6 @@ export class Enemy {
 
         // define area onde vai ter movimento
         this.behavior = behavior
-
-        console.log(behavior);
         
         this.movementArea = movementArea
         this.center = movementArea.getStartPosition(this.enemyDimensions)

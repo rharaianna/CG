@@ -8,6 +8,8 @@ import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import { Gun } from './models/Gun.js';
 
 import { initRenderer, initDefaultBasicLight } from '../../libs/util/util.js';
+import { Enemy } from './Enemy.js';
+import { BEHAVIOR } from './enemy.enums.js';
 
 const STEPS_PER_FRAME = 5;
 export class Game {
@@ -52,6 +54,9 @@ export class Game {
             this.playerCamera, this.renderer.domElement
         )
 
+        this.enemy1 = new Enemy(this.scene, this.world.castle.movementArea1, BEHAVIOR.FLYING)
+        this.enemy2 = new Enemy(this.scene, this.world.castle.movementArea2, BEHAVIOR.WALKING)
+
         this.canShoot = false;
         this.timerToShoot = 0
         this.pointerControlsOn = true
@@ -89,6 +94,8 @@ export class Game {
         this.updatePlayer(deltaTime)
         this.updateOrbitControls()
         this.updateBullets(deltaTime)
+        this.enemy1.update(deltaTime, this.player.getPosition())
+        this.enemy2.update(deltaTime, this.player.getPosition())
     };
 
     updatePlayer(deltaTime) {
