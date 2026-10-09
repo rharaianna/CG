@@ -40,5 +40,9 @@ export class Player {
         this.camera.position.copy(this.physics.playerCollider.end);
         this.physics.teleportPlayerIfOob(this.camera);
     }
+
+    getPosition() {
+      return this.camera.position.clone()
+    }
 }
 

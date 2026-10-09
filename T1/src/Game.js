@@ -7,13 +7,18 @@ import { PointerLockControls } from '../../build/jsm/controls/PointerLockControl
 import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import { Gun } from './models/Gun.js';
 
+import { initRenderer, initDefaultBasicLight } from '../../libs/util/util.js';
+
 const STEPS_PER_FRAME = 5;
 export class Game {
-    constructor(scene, renderer) {
+    constructor() {
         
-        this.scene = scene
-        this.world = new World(scene) 
-        this.renderer = renderer
+        this.scene = new THREE.Scene();  
+        this.world = new World(this.scene) 
+        this.renderer = initRenderer()
+
+        // luz temporária
+        this.light = initDefaultBasicLight(this.scene); 
 
         this.clock = new THREE.Timer();
         this.clock.connect(document);
@@ -28,8 +33,7 @@ export class Game {
         this.orbitCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.orbitCamera.position.copy(this.orbitPosition);
         
-        
-        this.orbitControls = new OrbitControls(this.orbitCamera, renderer.domElement);
+        this.orbitControls = new OrbitControls(this.orbitCamera, this.renderer.domElement);
         this.orbitControls.target.copy(this.orbitTarget);
 
         this.orbitControls.enabled = false;
@@ -41,7 +45,7 @@ export class Game {
         this.crosshair = document.getElementById('crosshair');
 
         this.worldOctree = new Octree();
-        this.worldOctree.fromGraphNode(scene);
+        this.worldOctree.fromGraphNode(this.world.collisionEnabledGroup);
 
         this.player = new Player(this.worldOctree, this.playerCamera)
         this.pointerControls = new PointerLockControls(
@@ -57,11 +61,20 @@ export class Game {
     }
 
     start() {
-        this.render()
+        this.renderer.setAnimationLoop(() => this.render());
     }
 
     togglePlayerControl() {
         this.pointerControlsOn = !this.pointerControlsOn
+    }
+
+    render() {
+        this.update();
+
+        this.renderer.render(
+            this.scene,
+            this.getActiveCamera()
+        );
     }
 
     update() {
@@ -72,12 +85,10 @@ export class Game {
             this.clock.getDelta()
         );
 
-        this.world.update(deltaTime);
+        this.world.update(deltaTime, this.player.getPosition());
         this.updatePlayer(deltaTime)
         this.updateOrbitControls()
         this.updateBullets(deltaTime)
-    
-        return deltaTime
     };
 
     updatePlayer(deltaTime) {
