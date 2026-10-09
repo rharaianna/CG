@@ -54,8 +54,8 @@ export class Game {
             this.playerCamera, this.renderer.domElement
         )
 
-        this.enemy1 = new Enemy(this.scene, this.world.castle.movementArea1, BEHAVIOR.FLYING)
-        this.enemy2 = new Enemy(this.scene, this.world.castle.movementArea2, BEHAVIOR.WALKING)
+        this.enemy1 = new Enemy(this.scene, this.world.castle.movementArea1, BEHAVIOR.WALKING)
+        this.enemy2 = new Enemy(this.scene, this.world.castle.movementArea2, BEHAVIOR.FLYING)
 
         this.canShoot = false;
         this.timerToShoot = 0
