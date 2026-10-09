@@ -6,8 +6,11 @@ export class Door extends Model {
     constructor(x, y, z, material, config) {
         super(x, y, z, material);
 
-        const { width = 4, height = 6, depth = 0.2 } = config;
+        const { width = 4, height = 6, depth = 0.2, interactionDistance } = config;
         const panelWidth = width / 2;
+
+        this.interactionDistance = interactionDistance
+        this.isOpen = false
 
         // Pivô da Folha Esquerda
         this.leftPivot = new THREE.Group();
@@ -35,34 +38,36 @@ export class Door extends Model {
     }
 
     toggleDoor(open) {
-            this.isOpen = open;
+        this.isOpen = open;
     }
 
-    update(deltaTime) {
+    update(deltaTime, playerPosition) {
+
+        const nearDoor = playerPosition.distanceTo(this.object.position) <= this.interactionDistance;
+
+        console.log(nearDoor);
+
+        if (nearDoor !== this.isOpen) {
+            this.toggleDoor(nearDoor);
+        }
 
         let animationSpeed = 2
-
-        //fator de suavização (p diferentes fps)
+    
+        // fator de suavização
         const factor = 1 - Math.exp(-animationSpeed * deltaTime);
-        
         const targetAngle = this.isOpen ? Math.PI / 2 : 0;
 
         // Incrementa o tempo a cada frame
+        this.leftPivot.rotation.y = THREE.MathUtils.lerp(
+            this.leftPivot.rotation.y,
+            -targetAngle,
+            factor
+        );
 
-        this.leftPivot.rotation.y =
-            THREE.MathUtils.lerp(
-                this.leftPivot.rotation.y,
-                -targetAngle,
-                factor
-            );
         this.rightPivot.rotation.y = THREE.MathUtils.lerp(
             this.rightPivot.rotation.y,
             targetAngle,
             factor
         );
-
     }
-
-
-
 }
