@@ -17,14 +17,14 @@ export class World {
         this.collisionEnabledGroup.add(plane);
         
         // tamanhos aproximados do castelo
-        const CASTLE_WIDTH = 40
-        const CASTLE_DEPTH = 46
+        const CASTLE_WIDTH = 70
+        const CASTLE_DEPTH = 92
         const SCALE = 1
         const CASTLE_X = 0
         const CASTLE_Y = 0
         const CASTLE_Z = 0
 
-        this.castle = new Castle(CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
+        this.castle = new Castle(scene, CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
         
         this.collisionEnabledGroup.add(this.castle.object)
         this.collisionDisabledGroup.add(this.castle.collisionDisabledGroup)
