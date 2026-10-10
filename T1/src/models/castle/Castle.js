@@ -15,12 +15,19 @@ import { Ceil } from "../structures/Ceil.js";
 import { DetailedWall } from "../structures/DetailedWall.js";
 import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
+import { MovementArea } from "../../MovementArea.js";
+import { Vector3 } from "../../../../build/three.core.js";
+
 
 export class Castle extends Model {
-    constructor(x, y, z, material, WIDTH, DEPTH, SCALE) {
+    constructor(scene, x, y, z, material, WIDTH, DEPTH, SCALE) {
         super(x, y, z, materials.bricks);
         this.doors = [];
-        this.stairs = []
+        this.stairs = [];
+        this.towers = [];
+
+        //this.collisionEnabledGroup = new THREE.Group();
+        this.collisionDisabledGroup = new THREE.Group();
 
         // Obtém todos os parâmetros de tamanho e escala do arquivo de configuração
         const cfg = makeCastleConfig(WIDTH, DEPTH, SCALE);
@@ -30,7 +37,8 @@ export class Castle extends Model {
             DEPTH: scaledDepth, 
             SCALE: cfgScale,
             floor: fCfg, 
-            wall: wCfg, 
+            wall: wCfg,
+            window: wdCfg, 
             tower: tCfg, 
             midTower: mtCfg, 
             frontTower: ftCfg,
@@ -143,20 +151,20 @@ export class Castle extends Model {
             alturaPortao: dCfg.height,
             larguraPortao: dCfg.width,
             linhas: 1,
-            colunas: 6,
-            altura: 2,
-            largura: 2,
+            colunas: 8,
+            altura: wdCfg.height,
+            largura: wdCfg.width,
             material: materials.bricks
         };
         
         // Paredes principais
-        const wall1 = new CastleWall(0, wallY, wallZ, this.material, scaledWidth, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
-        const wall2 = new CastleWall(0, wallY, -wallZ, this.material, scaledWidth, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
+        const wall1 = new CastleWall(0, wallY, wallZ, this.material, scaledWidth -tCfg.radius, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
+        const wall2 = new CastleWall(0, wallY, -wallZ, this.material, scaledWidth -tCfg.radius, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
     
         // paredes posicionadas no X, paralelas ao Z (azul)
         // comprimento delas é a profundidade do terreno e rotacionadas
         // largura delas é a mesma profundidade do terreno e são rotacionadas
-        const wall3 = new CastleWall(wallX, wallY, 0, this.material, scaledDepth, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
+        const wall3 = new CastleWall(wallX, wallY, 0, this.material, scaledDepth -tCfg.radius , wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
         
         // lado da parede com detalhes
         const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4, this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.radius / 2, null);
@@ -176,22 +184,40 @@ export class Castle extends Model {
         this.add(wall44);
 
         let windowsTowerConfig = {
-            linhas: 0,          // n fileiras de janelas na altura
-            colunas: 0,        // m colunas distribuídas em 360° ao redor da torre
-            raio: 0.5,
+            janelas: [
+                { angulo: 0, y: 0 },
+                { angulo: Math.PI / 4, y: 3 },
+                { angulo: -Math.PI / 4, y: 3 },
+                { angulo: -Math.PI / 2, y: 0 },
+                { angulo: -3 * Math.PI / 4, y: 3 },
+            ],
+            portao: {
+                angulo: 3 * Math.PI / 4,
+                y: CEIL_HEIGHT+ (dCfg.height/2),
+                largura: dCfg.width / 2,
+                altura: dCfg.height / 1.5,
+            },
+            larguraJanela: wdCfg.width,
+            alturaJanela: wdCfg.height,
             material: materials.bricks
         };
+
+        const portaoBaseY = windowsTowerConfig.portao.y - windowsTowerConfig.portao.altura / 2;
+        const pocketDepth = tCfg.height / 2 - portaoBaseY;
     
         // posicionadas nas extremidades das paredes
-        const tower1 = new Tower(towerX, towerY, towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        const tower2 = new Tower(-towerX, towerY, towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        const tower3 = new Tower(towerX, towerY, -towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        const tower4 = new Tower(-towerX, towerY, -towerZ, this.material, tCfg.height, tCfg.radius, tCfg.innerRadius, tCfg.radialSegments, tCfg.bricks, windowsTowerConfig);
-        
-        this.add(tower1)
-        this.add(tower2)
-        this.add(tower3)
-        this.add(tower4)
+        this.addTowers({
+            x: towerX,
+            y: towerY,
+            z: towerZ,
+            height: tCfg.height,
+            radius: tCfg.radius,
+            innerRadius: tCfg.innerRadius,
+            radialSegments: tCfg.radialSegments,
+            bricks: tCfg.bricks,
+            windowsConfig: windowsTowerConfig,
+            pocketDepth,
+        });
         
         // Torres intermediárias
         const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks);
@@ -251,6 +277,26 @@ export class Castle extends Model {
             rotationY: THREE.MathUtils.degToRad(0)
         });
 
+
+        // 
+        const movementArea1Dimensions = {
+            width: cCfg.distance,
+            height: CEIL_HEIGHT,
+            depth: DEPTH/3,
+        }
+
+        const movementArea1Position = new Vector3(CEIL_X, cCfg.y + movementArea1Dimensions.height/2, 0)
+        this.movementArea1 = new MovementArea(scene, movementArea1Position, movementArea1Dimensions, 15, 60)
+
+        const movementArea2Dimensions = {
+            width: 30,
+            depth: 30,
+            height: ftCfg.height,
+        }
+
+        const movementArea2Position = new Vector3(0, ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
+        this.movementArea2 = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
+
     } 
 
     addDoor(config) {
@@ -266,7 +312,7 @@ export class Castle extends Model {
         door.object.rotation.y = config.rotationY ?? 0;
 
         this.doors.push(door);
-        this.add(door);
+        this.collisionDisabledGroup.add(door.object);
 
         return door;
     }
@@ -288,7 +334,7 @@ export class Castle extends Model {
         //  Escada visual 
         const stair = new Stair(x, y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
         stair.object.rotation.y = rotationY;
-        this.add(stair);
+        this.collisionDisabledGroup.add(stair.object);
 
         // Rampa de colisão invisível 
         const ramp = new Ramp(x, y, z, rampMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
@@ -300,5 +346,48 @@ export class Castle extends Model {
         this.stairs.push(pair);
 
         return pair;
+    }
+
+    update(deltaTime, playerPosition) {
+        this.doors.forEach(door => door.update(deltaTime, playerPosition))
+    }
+
+    // Cria as 4 torres dos cantos do castelo, posicionadas e rotacionadas.
+    // Retorna o array de torres criadas.
+    addTowers(config) {
+        const {
+            x, y, z,                // posição absoluta de cada torre (módulo, simétrico em X e Z)
+            height, radius, innerRadius, radialSegments, bricks,
+            windowsConfig, pocketDepth,
+            material = this.material,
+        } = config;
+
+        // Cada canto: sinal em X, sinal em Z e rotação em Y (graus)
+        const corners = [
+            { sx:  1, sz:  1, rotY:  90 }, // tower1
+            { sx: -1, sz:  1, rotY:   0 }, // tower2
+            { sx:  1, sz: -1, rotY: 180 }, // tower3
+            { sx: -1, sz: -1, rotY: 270 }, // tower4
+        ];
+
+        const towers = corners.map(({ sx, sz, rotY }) => {
+            const tower = new Tower(
+                sx * x, y, sz * z,
+                material,
+                height, radius, innerRadius, radialSegments, bricks,
+                windowsConfig,
+                pocketDepth
+            );
+
+            if (rotY !== 0) {
+                tower.object.rotateY(THREE.MathUtils.degToRad(rotY));
+            }
+
+            this.add(tower);
+            return tower;
+        });
+
+        this.towers.push(...towers);
+        return towers;
     }
 }

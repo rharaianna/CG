@@ -70,7 +70,8 @@ export class Wall extends Model {
                             x: hx,
                             y: hy,
                             width: largura,
-                            height: altura
+                            height: altura,
+                            type: 'arch'
                         });
                     }
                 }
