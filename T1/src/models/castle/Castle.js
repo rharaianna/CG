@@ -15,8 +15,8 @@ import { Ceil } from "../structures/Ceil.js";
 import { DetailedWall } from "../structures/DetailedWall.js";
 import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
-import { MovementArea } from "../../MovementArea.js";
-import { Vector3 } from "../../../../build/three.core.js";
+import { MovementArea } from "../MovementArea.js";
+import { CircleGeometry, Vector3 } from "../../../../build/three.core.js";
 
 export class Castle extends Model {
     constructor(scene, x, y, z, material, WIDTH, DEPTH, SCALE) {
@@ -267,15 +267,18 @@ export class Castle extends Model {
         const movementArea1Position = new Vector3(CEIL_X, cCfg.y + movementArea1Dimensions.height/2, 0)
         this.movementArea1 = new MovementArea(scene, movementArea1Position, movementArea1Dimensions, 15, 60)
 
+        
         const movementArea2Dimensions = {
             width: 30,
             depth: 30,
             height: ftCfg.height,
         }
-
+        
         const movementArea2Position = new Vector3(0, ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
         this.movementArea2 = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
-
+        
+        this.collisionDisabledGroup.add(this.movementArea1.object)
+        this.collisionDisabledGroup.add(this.movementArea2.object)
     } 
 
     addDoor(config) {
@@ -327,7 +330,9 @@ export class Castle extends Model {
         return pair;
     }
 
-    update(deltaTime, playerPosition) {
-        this.doors.forEach(door => door.update(deltaTime, playerPosition))
+    update(deltaTime, playerPosition, isPlayerMoving) {
+        if(isPlayerMoving) {
+            this.doors.forEach(door => door.update(deltaTime, playerPosition))
+        }
     }
 }

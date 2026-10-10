@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Castle } from './models/castle/Castle.js';
-import { createGroundPlaneXZ } from '../../libs/util/util.js';
+import { Castle } from '../models/castle/Castle.js';
+import { createGroundPlaneXZ } from '../../../libs/util/util.js';
 
 export class World {
     constructor(scene) {
@@ -34,7 +34,7 @@ export class World {
     
     }
 
-    update(deltaTime, playerPosition) {
-        this.castle.update(deltaTime, playerPosition)
+    update(deltaTime, playerPosition, isPlayerMoving) {
+        this.castle.update(deltaTime, playerPosition, isPlayerMoving)
     }
 }

@@ -1,19 +1,23 @@
 import * as THREE from 'three';
-import { materials } from './models/material.configs.js';
+import { materials } from '../models/material.configs.js';
 import { STATUS, BEHAVIOR } from './enemy.enums.js';
 
 export class Enemy {
-    constructor(scene, movementArea, behavior) {
+    constructor(scene, movementArea, config) {
 
-        this.enemyDimensions = {
-            width: 2,
-            height: 2,
-            depth: 2,
-        }
-
-        this.life = 3
+        const {
+            dimensions, 
+            color,
+            life,
+            behavior,
+            speed
+        } = config
 
         this.respawn = true
+        this.enemyDimensions = dimensions
+        this.speed = speed
+        this.life = life
+        this.color = color
 
         // inicia parado
         this.status = STATUS["STILL"]
@@ -26,15 +30,35 @@ export class Enemy {
         this.position = movementArea.getRandomPosition(this.enemyDimensions, this.behavior)
         this.destiny = movementArea.getRandomPosition(this.enemyDimensions, this.behavior)
         this.timer = 0
-        this.speed = 10
         this.scale = 1
     
+        const material = new THREE.MeshStandardMaterial({ 
+            color: 0x444444, 
+            transparent: true, 
+            opacity: 0.6, 
+        });
+
         this.body = new THREE.Mesh(
-            new THREE.BoxGeometry(this.enemyDimensions.width, this.enemyDimensions.height, this.enemyDimensions.depth), 
-            materials.rotten_wood
+            new THREE.BoxGeometry(
+                this.enemyDimensions.width, 
+                this.enemyDimensions.height, 
+                this.enemyDimensions.depth
+            ), 
+            material
         )
+
         this.body.position.copy(this.position)
         scene.add(this.body)
+
+        // hitbox
+        this.hitbox = new THREE.Box3()
+        this.updateHitbox()
+
+        this.light = new THREE.PointLight(this.color, 50, 50)
+        scene.add(this.light)
+        
+        this.light.castShadow = true
+     
     }
 
     // vai ser chamado quando chegar na direção
@@ -50,6 +74,23 @@ export class Enemy {
             this.timer = 0
             this.generateDestiny()
         }
+    }
+
+    updateHitbox() {
+        this.hitbox.setFromObject(this.body)
+    }
+
+    onHit(damage = 1) {
+
+        console.log("atingiu", this.life);
+
+        this.life -= damage
+
+        if (this.life <= 0) 
+            this.kill()
+        else this.status = STATUS.ATTACK
+
+        return this.life <= 0
     }
 
     // calcula uma posição pra ir e muda o seu comportamento
@@ -96,9 +137,9 @@ export class Enemy {
         // distancia máxima que pode sair do raio
         if(distance >= this.movementArea.maxDistance) {
 
-            // teste para morrer dps de sair da regiao
+        /*     // teste para morrer dps de sair da regiao
             this.status = STATUS.DEAD
-            return
+            return */
 
             // mas na verdade voltaria pro centro
             this.status = STATUS.STILL
@@ -141,18 +182,13 @@ export class Enemy {
     }
 
     kill(deltaTime) {
-
         const factor = 0.05
         this.scale -= factor
-        
+
         if(this.scale < 0) {
             this.scale = 0;
             this.body.scale.setScalar(0);
             this.timer = 0
-
-            if(this.respawn)
-                this.status = STATUS.READY
-
             return
         }
 
@@ -161,11 +197,10 @@ export class Enemy {
 
     // reinicia
     start(deltaTime) {
-
-        
         this.position.copy(this.center)
         this.destiny.copy(this.center)
         this.body.position.copy(this.center)
+        this.life = 3
         
         // depois de 2 segundos
         const stillTime = 1
@@ -177,43 +212,60 @@ export class Enemy {
             this.body.scale.setScalar(this.scale)
             this.timer = 0
             this.status = STATUS.STILL
+        } 
+    }
+
+    checkIsDead() {
+        if(this.status == STATUS.DEAD)
+            return
+
+        if(this.life <= 0) {
+            
+            if(this.respawn) {
+                this.status = STATUS.READY
+                return
+            }
+
+            this.status = STATUS.DEAD
         }
-        
     }
 
     // recebe os ticks do jogo e coordena a logica
-    update(deltaTime, playerPosition) {
-
-        // ve se o jogador ta num raio do inimigo
-        this.detectPlayer(deltaTime, playerPosition)
-
-        // ve se ele ta mt longe do centro da caixa dele
-        this.checkDistanceToCenter()
+    update(deltaTime, playerPosition, isPlayerMoving) {
         
-        if(this.status === STATUS.ATTACK) {
-            this.atack(deltaTime, playerPosition)
-            this.move(deltaTime);
-            return
+        this.light.position.copy(this.position)
+        
+        if(isPlayerMoving) {
+            this.detectPlayer(deltaTime, playerPosition)
+        }
+        
+        this.checkDistanceToCenter()
+        this.checkIsDead()
+
+        switch (this.status) {
+            case STATUS.ATTACK:
+                this.atack(deltaTime, playerPosition)
+                this.move(deltaTime)
+                break
+
+            case STATUS.STILL:
+                this.moveToAnotherPlace(deltaTime)
+                break
+
+            case STATUS.WALKING:
+                this.move(deltaTime)
+                break
+
+            case STATUS.DEAD:
+                this.kill(deltaTime)
+                break
+
+            case STATUS.READY:
+                this.start(deltaTime)
+                break
         }
 
-        if (this.status === STATUS.STILL) {
-            this.moveToAnotherPlace(deltaTime);
-            return;
-        }
-
-        if (this.status === STATUS.WALKING) {
-            this.move(deltaTime);
-            return
-        }
-
-        if(this.status === STATUS.DEAD) {
-            this.kill(deltaTime);
-            return
-        }
-
-        if(this.status === STATUS.READY) {
-            this.start(deltaTime);
-            return
-        }
+        // sempre roda, qualquer que seja o estado
+        this.updateHitbox()
     }
 }
