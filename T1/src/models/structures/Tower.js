@@ -6,7 +6,7 @@ import { applyHolesToTower } from "../../utils/CSGModifiers.js";
 const evaluator = new Evaluator();
 
 export class Tower extends Model {
-    constructor(x, y, z, material, height, radius, innerRadius, radialSegments, brickHeight, config) {
+    constructor(x, y, z, material, height, radius, innerRadius, radialSegments, brickHeight, config, pocketDepth = height / 3) {
         super(x, y, z, material)
 
         const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments)
@@ -35,7 +35,7 @@ export class Tower extends Model {
             
         if(!!config) {
             // Cilindro externo
-            const outerGeo = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
+
             let towerBrush = new Brush(geometry, material);
             
             // Se houver innerRadius válido, oca a torre diretamente
@@ -43,9 +43,18 @@ export class Tower extends Model {
                 const safeInnerRadius = Math.min(innerRadius, radius - 0.1);
                 
                 if (safeInnerRadius > 0) {
-                    const innerGeo = new THREE.CylinderGeometry(safeInnerRadius, safeInnerRadius, height + 0.1, radialSegments);
+                    const overshoot = 1;              // quanto passa do topo (garante corte limpo)
+                    const cutHeight = pocketDepth + overshoot;
+
+                    const innerGeo = new THREE.CylinderGeometry(
+                        safeInnerRadius, safeInnerRadius, cutHeight, radialSegments
+                    );
                     const innerBrush = new Brush(innerGeo);
-                    
+
+                    // base do corte em (height/2 - pocketDepth), topo acima da face superior da torre
+                    innerBrush.position.y = height / 2 - pocketDepth + cutHeight / 2;
+                    innerBrush.updateMatrixWorld();   // necessário para o CSG enxergar a posição
+
                     towerBrush = evaluator.evaluate(towerBrush, innerBrush, SUBTRACTION);
                 }
             }
