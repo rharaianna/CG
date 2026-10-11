@@ -11,7 +11,17 @@ export class Player {
     }
 
     moveControls(deltaTime) {
-      const speedDelta = deltaTime * (this.controller.playerOnFloor ? 100 : 50)
+      let speedDelta = deltaTime
+
+      if(this.physics.playerOnFloor){
+        if(this.controller.moveFaster){
+          speedDelta *= 200
+        } else {
+          speedDelta *= 100
+        }
+      } else {
+        speedDelta *= 50
+      }
     
       if (this.controller.moveForward) {
         this.physics.playerVelocity.add(this.physics.getForwardVector(this.camera).multiplyScalar(speedDelta))

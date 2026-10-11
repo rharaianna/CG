@@ -12,7 +12,7 @@ export class PlayerController {
         this.moveLeft = false;
         this.moveRight = false;
         this.moveUp = false;
-        this.moveDown = false;
+        this.moveFaster = false;
 
 
         /* listener global no window pro evento keydown (quando qualquer tecla é pressionada)
@@ -45,7 +45,7 @@ export class PlayerController {
                 this.moveUp = value; break;
 
             case 16: // shift
-                this.moveDown = value; break;
+                this.moveFaster = value; break;
         }
     }
 }
