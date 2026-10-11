@@ -217,6 +217,8 @@ export class Castle extends Model {
             bricks: tCfg.bricks,
             windowsConfig: windowsTowerConfig,
             pocketDepth,
+            ceilHeight: CEIL_HEIGHT,
+            floorY: cCfg.y
         });
         
         // Torres intermediárias
@@ -358,7 +360,7 @@ export class Castle extends Model {
         const {
             x, y, z,                // posição absoluta de cada torre (módulo, simétrico em X e Z)
             height, radius, innerRadius, radialSegments, bricks,
-            windowsConfig, pocketDepth,
+            windowsConfig, pocketDepth, ceilHeight, floorY,
             material = this.material,
         } = config;
 
@@ -376,7 +378,9 @@ export class Castle extends Model {
                 material,
                 height, radius, innerRadius, radialSegments, bricks,
                 windowsConfig,
-                pocketDepth
+                pocketDepth,
+                ceilHeight,
+                floorY
             );
 
             if (rotY !== 0) {

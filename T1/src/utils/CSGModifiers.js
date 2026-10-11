@@ -33,7 +33,7 @@ export function applyHolesToTower(baseMesh, radius, innerRadius, height, config)
                 abertura.altura ?? alturaJanela,
                 profundidade
             );
-        const holeBrush = new Brush(holeGeo, new THREE.MeshBasicMaterial());
+        const holeBrush = new Brush(holeGeo);
 
         // Ângulo em radianos: 0 aponta para +Z e cresce em direção a +X.
         // x/z e rotationY continuam como fallback para configurações antigas.
@@ -52,10 +52,13 @@ export function applyHolesToTower(baseMesh, radius, innerRadius, height, config)
         holeBrush.position.set(x, abertura.y, z);
         holeBrush.rotation.y = abertura.rotationY ?? angulo;
         holeBrush.updateMatrixWorld(true);
+
         resultBrush.updateMatrixWorld(true);
         resultBrush = evaluator.evaluate(resultBrush, holeBrush, SUBTRACTION);
     });
 
+    
+    resultBrush.material = config.material;
     return resultBrush;
 }
 

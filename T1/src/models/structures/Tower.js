@@ -2,15 +2,26 @@ import * as THREE from "three"
 import { Model } from "../Model.js"
 import { Evaluator, Brush, SUBTRACTION } from 'three-bvh-csg';
 import { applyHolesToTower } from "../../utils/CSGModifiers.js";
+import { materials } from "../material.configs.js";
 
 const evaluator = new Evaluator();
 
 export class Tower extends Model {
-    constructor(x, y, z, material, height, radius, innerRadius, radialSegments, brickHeight, config, pocketDepth = height / 3) {
+    constructor(x, y, z, material, height, radius, innerRadius, radialSegments, brickHeight, config, pocketDepth = height / 3, ceilHeight, floorY) {
         super(x, y, z, material)
 
         const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments)
+        const innerGeometry = new THREE.CylinderGeometry(innerRadius + (radius - innerRadius)/2, innerRadius + (radius - innerRadius)/2, ceilHeight, radialSegments)
+        
+
+
         let cylinder = new THREE.Mesh(geometry, material)
+        let floor = new THREE.Mesh(innerGeometry, materials.rotten_wood)
+
+        console.log(height, pocketDepth, ceilHeight, floorY);
+
+        
+        
 
 
         const brickWidth = 0.2 * radius
@@ -55,6 +66,9 @@ export class Tower extends Model {
                     innerBrush.position.y = height / 2 - pocketDepth + cutHeight / 2;
                     innerBrush.updateMatrixWorld();   // necessário para o CSG enxergar a posição
 
+                    floor.position.y = floorY - y;
+        
+
                     towerBrush = evaluator.evaluate(towerBrush, innerBrush, SUBTRACTION);
                 }
             }
@@ -65,5 +79,6 @@ export class Tower extends Model {
         }        
         
         this.object.add(cylinder)
+        this.object.add(floor)
     }
 }
