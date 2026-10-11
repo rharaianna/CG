@@ -1,6 +1,6 @@
 
 export class State {
     constructor() {
-        this.isDay = false;
+        this.isDay = true;
     }
 }

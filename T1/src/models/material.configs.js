@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 export const materials = {
     grass: new THREE.MeshLambertMaterial({
-        color: "#4f922f",
+        color: "#4b6c41",
         
     }),
     bricks: new THREE.MeshLambertMaterial({
