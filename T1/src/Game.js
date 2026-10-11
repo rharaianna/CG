@@ -7,20 +7,37 @@ import { PointerLockControls } from '../../build/jsm/controls/PointerLockControl
 import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import { Gun } from './models/Gun.js';
 
-import { initRenderer, initDefaultBasicLight } from '../../libs/util/util.js';
+import { initRenderer } from '../../libs/util/util.js';
 import { Enemy } from './Enemy.js';
 import { BEHAVIOR } from './enemy.enums.js';
+import { configureShadows } from './utils/ShadowUtils.js';
 
 const STEPS_PER_FRAME = 5;
 export class Game {
     constructor() {
         
-        this.scene = new THREE.Scene();  
-        this.world = new World(this.scene) 
-        this.renderer = initRenderer()
+        this.scene = new THREE.Scene();
+        this.renderer = initRenderer('rgb(0, 0, 0)', THREE.PCFSoftShadowMap);
+        this.world = new World(this.scene);
 
-        // luz temporária
-        this.light = initDefaultBasicLight(this.scene); 
+        this.ambientLight = new THREE.AmbientLight("rgb(255,255,255)", 0.4);
+        this.scene.add(this.ambientLight);
+
+        const lightPosition = new THREE.Vector3(10, 50, 15);
+        this.dirLight = new THREE.DirectionalLight("rgb(255,255,255)",2);
+        this.dirLight.position.copy(lightPosition);
+        this.dirLight.castShadow = true;
+        this.dirLight.shadow.mapSize.set(3000, 3000);
+        this.dirLight.shadow.camera.left = -70;
+        this.dirLight.shadow.camera.right = 70;
+        this.dirLight.shadow.camera.top = 70;
+        this.dirLight.shadow.camera.bottom = -70;
+        this.dirLight.shadow.camera.near = 0.1;
+        this.dirLight.shadow.camera.far = 200;
+        this.dirLight.shadow.bias = -0.0005;
+        this.dirLight.shadow.normalBias = 0.01;
+        this.dirLight.shadow.camera.updateProjectionMatrix();
+        this.scene.add(this.dirLight);
 
         this.clock = new THREE.Timer();
         this.clock.connect(document);
@@ -42,6 +59,7 @@ export class Game {
         this.orbitControls.update();
 
         this.gun = new Gun(); 
+        configureShadows(this.gun.object);
         this.playerCamera.add(this.gun.object);
 
         this.crosshair = document.getElementById('crosshair');
@@ -56,6 +74,8 @@ export class Game {
 
         this.enemy1 = new Enemy(this.scene, this.world.castle.movementArea1, BEHAVIOR.WALKING)
         this.enemy2 = new Enemy(this.scene, this.world.castle.movementArea2, BEHAVIOR.FLYING)
+
+        configureShadows(this.scene);
 
         this.canShoot = false;
         this.timerToShoot = 0
