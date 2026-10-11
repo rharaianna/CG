@@ -6,6 +6,7 @@ import { Octree } from '../../build/jsm/math/Octree.js';
 import { PointerLockControls } from '../../build/jsm/controls/PointerLockControls.js';
 import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import { Gun } from './models/Gun.js';
+import { Objects3D } from './models/Objects3D.js';
 
 import { initRenderer, initDefaultBasicLight } from '../../libs/util/util.js';
 import { Enemy } from './Enemy.js';
@@ -62,6 +63,9 @@ export class Game {
         this.pointerControlsOn = true
 
         this.bullets = []
+
+        this.loader = new Objects3D(this.scene)
+        this.loader.exportFBX()
         
     }
 
