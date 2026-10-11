@@ -11,7 +11,7 @@ export class Tower extends Model {
         super(x, y, z, material)
 
         const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments)
-        const innerGeometry = new THREE.CylinderGeometry(innerRadius, innerRadius, ceilHeight, radialSegments)
+        const innerGeometry = new THREE.CylinderGeometry(innerRadius + (radius - innerRadius)/2, innerRadius + (radius - innerRadius)/2, ceilHeight, radialSegments)
         
         let cylinder = new THREE.Mesh(geometry, material)
         let floor = new THREE.Mesh(innerGeometry, materials.rotten_wood)
@@ -19,7 +19,8 @@ export class Tower extends Model {
         console.log(height, pocketDepth, ceilHeight, floorY);
 
         //floor.position.set(0, , 0)
-        floor.translateY(pocketDepth)
+        floor.position.y = height / 2 - pocketDepth ;
+        //floor.translateY(pocketDepth)
         //floor.translateY(2)
 
 
