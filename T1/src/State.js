@@ -1,6 +1,6 @@
 
 export class State {
-    constructor(scene) {
-
+    constructor() {
+        this.isDay = false;
     }
 }
