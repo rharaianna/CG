@@ -171,11 +171,11 @@ export class Castle extends Model {
         const wall3 = new CastleWall(wallX, wallY, 0, this.material, scaledDepth -tCfg.radius , wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
         
         // lado da parede com detalhes
-        const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4, this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.radius / 2, null);
+        const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4 + tCfg.radius/2 , this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.innerRadius, null);
         // empurro ela pro local correto 
         wall4.object.translateZ(-mtCfg.width / 4);
         
-        const wall44 = new DetailedWall(-wallX, wallY, scaledDepth / 4, this.material, scaledDepth / 2, wCfg.height, wCfg.depth, mtCfg.width, mtCfg.depth, null);
+        const wall44 = new DetailedWall(-wallX, wallY, scaledDepth / 4, this.material, (scaledDepth / 2) , wCfg.height, wCfg.depth, mtCfg.width, mtCfg.depth, tCfg.radius, null);
         
         wall3.object.rotateY(THREE.MathUtils.degToRad(90));
         wall4.object.rotateY(THREE.MathUtils.degToRad(90));

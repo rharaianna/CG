@@ -3,16 +3,16 @@ import { applyHolesToWall } from "../../utils/CSGModifiers.js";
 import { Wall } from "./Wall.js";
 
 export class DetailedWall extends Wall {
-    constructor(x, y, z, material, width, height, depth, towerWidth, towerDepth, windowsConfig){
+    constructor(x, y, z, material, width, height, depth, towerWidth, towerDepth, towerRadius, windowsConfig){
 
         const availableWidth = width-towerWidth/2
         const mainWidth = 0.8*availableWidth
 
         // total disponível relativo
-        const availableRemaining = availableWidth - mainWidth
+        const availableRemaining = availableWidth - mainWidth 
         
         // total real considerando o tamanho esperado da parede
-        const remaining = width - mainWidth
+        const remaining = width - mainWidth - towerRadius
         const dente = towerDepth/2 - depth/2
 
         super(x, y, z, material, mainWidth, height, depth, windowsConfig);
