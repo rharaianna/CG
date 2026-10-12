@@ -15,28 +15,28 @@ const greatEnemyDimensions = {
 export const enemiesConfig = {
 
     FLYING_RED: {
-        color: "#a81c03",
+        color: "#e33617",
         dimensions: smallEnemyDimensions,
         life: 5,
         behavior: BEHAVIOR.FLYING,
-        speed: 15
+        speed: 15,
     },
     FLYING_BLUE: {
-        color: "#0342a8",
+        color: "#206aff",
         dimensions: smallEnemyDimensions,
         life: 5,
         behavior: BEHAVIOR.FLYING,
         speed: 15
     },
     WALKING_PURPLE: {
-        color: "#4d03a8",
+        color: "#7b21e9",
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
         speed: 5
     },
     WALKING_ORANGE: {
-        color: "#f1a131",
+        color: "#f19131",
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
