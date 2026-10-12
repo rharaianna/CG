@@ -15,14 +15,11 @@ import { Ceil } from "../structures/Ceil.js";
 import { DetailedWall } from "../structures/DetailedWall.js";
 import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
-<<<<<<< HEAD
+
 import { MovementArea } from "../MovementArea.js";
-import { CircleGeometry, Vector3 } from "../../../../build/three.core.js";
-=======
-import { MovementArea } from "../../MovementArea.js";
 import { Vector3 } from "../../../../build/three.core.js";
 import { Portal } from "../structures/Portal.js";
->>>>>>> portal
+
 
 
 export class Castle extends Model {
