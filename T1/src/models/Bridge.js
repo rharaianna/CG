@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Model } from "./Model.js";
 import { materials } from "./material.configs.js";
+import { createArchGeometry } from "../utils/ArchGeometry.js";
 
 export class Bridge extends Model {
     constructor(x, y, z, material, width, height, depth) {
@@ -33,6 +34,19 @@ export class Bridge extends Model {
 
         const walkway_geometry = new THREE.BoxGeometry(this.width / 3, this.height / 3, walkway_depth)
         const walkway = new THREE.Mesh(walkway_geometry, materials.bricks)
+        
+        const arc_height = 7
+        const arc_depth = (this.width / 3)-0.02
+        const arc_width = this.depth/5
+
+        const corridor_arc_geometry = createArchGeometry(arc_width , arc_height, arc_depth)
+        const corridor_arc = new THREE.Mesh(corridor_arc_geometry, materials.bricks)
+        
+        corridor.add(corridor_arc)
+        corridor_arc.rotateY(Math.PI/2)
+        corridor_arc.translateX(2 - 2*arc_width)
+        corridor_arc.translateY(this.height/2 + arc_height/2)
+        corridor_arc.translateZ(arc_depth)
 
         this.add(entrence)
         this.add(corridor)
