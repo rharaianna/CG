@@ -17,6 +17,7 @@ import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
 import { MovementArea } from "../../MovementArea.js";
 import { Vector3 } from "../../../../build/three.core.js";
+import { Portal } from "../structures/Portal.js";
 
 
 export class Castle extends Model {
@@ -244,6 +245,16 @@ export class Castle extends Model {
 
         const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, ftCfg.width, ftCfg.height, ftCfg.depth, ftCfg.bricks, doorWallConfig);
         this.add(frontTower);
+
+        // Portal tempor�rio de teste, posicionado do lado de fora da entrada frontal.
+        const portal = new Portal(
+            0,
+            0.5,
+            0,
+            materials.rotten_wood,
+            { radius: 2, height: 0.5 }
+        );
+        this.add(portal);
 
         // Portões
         this.addDoor({
