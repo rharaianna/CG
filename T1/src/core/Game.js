@@ -23,7 +23,7 @@ export class Game {
         this.scene = new THREE.Scene();  
         this.world = new World(this.scene) 
     
-        this.renderer = initRenderer('rgb(0, 0, 0)', THREE.PCFShadowMap);
+        this.renderer = initRenderer('rgba(0, 0, 0, 0.69)', THREE.PCFShadowMap);
         this.state = new State();
         this.lighting()
 
@@ -100,31 +100,21 @@ export class Game {
             this.dirLight2 = new THREE.DirectionalLight('rgb(250, 250, 250)');
             this.dirLight2.position.set(-10, 50, -15);
             this.dirLight2.castShadow = false;
-            this.dirLight2.shadow.mapSize.set(2048, 2048);
-            this.dirLight2.shadow.camera.left = -70;
-            this.dirLight2.shadow.camera.right = 70;
-            this.dirLight2.shadow.camera.top = 70;
-            this.dirLight2.shadow.camera.bottom = -70;
-            this.dirLight2.shadow.camera.near = 0.1;
-            this.dirLight2.shadow.camera.far = 200;
-            this.dirLight2.shadow.bias = -0.0005;
-            this.dirLight2.shadow.normalBias = 0.01;
-            this.dirLight2.shadow.camera.updateProjectionMatrix();
             this.scene.add(this.dirLight2);
 
             
             this.dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
             this.dirLight.position.set(10, 50, 15);
             this.dirLight.castShadow = true;
-            this.dirLight.shadow.mapSize.set(2048, 2048);
+            this.dirLight.shadow.mapSize.set(16384, 16384);
             this.dirLight.shadow.camera.left = -70;
             this.dirLight.shadow.camera.right = 70;
             this.dirLight.shadow.camera.top = 70;
             this.dirLight.shadow.camera.bottom = -70;
             this.dirLight.shadow.camera.near = 0.1;
             this.dirLight.shadow.camera.far = 200;
-            this.dirLight.shadow.bias = -0.0005;
-            this.dirLight.shadow.normalBias = 0.01;
+            this.dirLight.shadow.bias = -0.0015;
+            this.dirLight.shadow.normalBias = 0.07;
             this.dirLight.shadow.camera.updateProjectionMatrix();
             this.scene.add(this.dirLight);
         }
