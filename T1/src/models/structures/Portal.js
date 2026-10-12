@@ -1,6 +1,7 @@
 
 import * as THREE from "three";
 import { Model } from "../Model.js";
+import { enemiesConfig } from "../../entity/enemy.config.js";
 
 export class Portal extends Model {
     constructor(x, y, z, material, config = {}) {
@@ -30,10 +31,31 @@ export class Portal extends Model {
             true
         );
 
+        
         const body = new THREE.Mesh(bodyGeometry, this.material);
         body.position.y = -height / 2;
         this.object.add(body);
+        
+        this.lightRed = new THREE.PointLight(enemiesConfig.FLYING_RED.color, 50, 5,0.5)
+        this.object.add(this.lightRed)
+        this.lightRed.position.set(-1,0,-1)
 
+        this.lightPurple = new THREE.PointLight(enemiesConfig.WALKING_PURPLE.color, 50, 5, 0.5)
+        this.object.add(this.lightPurple)
+        this.lightPurple.position.set(1,0,-1)
+
+        this.lightBlue = new THREE.PointLight(enemiesConfig.FLYING_BLUE.color, 50, 5,0.5)
+        this.object.add(this.lightBlue)
+        this.lightBlue.position.set(1,0,1)
+
+        this.lightOrange = new THREE.PointLight(enemiesConfig.WALKING_ORANGE.color, 50, 5,0.5)
+        this.object.add(this.lightOrange)
+        this.lightOrange.position.set(-1,0,1)
+
+        this.lightBase = new THREE.PointLight('white', 10, 5,0.5)
+        this.object.add(this.lightBase)
+        this.lightBase.position.set(0,0,0)
+        
         // Aro fixo ao redor da abertura.
         const rimGeometry = new THREE.TorusGeometry(
             radius,
