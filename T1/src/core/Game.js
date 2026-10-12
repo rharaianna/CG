@@ -94,9 +94,25 @@ export class Game {
         );
 
         if (!this.ambientLight) {
-            this.ambientLight = new THREE.AmbientLight('rgb(255,255,255)');
-            this.scene.add(this.ambientLight);
+            // this.ambientLight = new THREE.AmbientLight('rgb(255,255,255)');
+            // this.scene.add(this.ambientLight);
 
+            this.dirLight2 = new THREE.DirectionalLight('rgb(250, 250, 250)');
+            this.dirLight2.position.set(-10, 50, -15);
+            this.dirLight2.castShadow = false;
+            this.dirLight2.shadow.mapSize.set(2048, 2048);
+            this.dirLight2.shadow.camera.left = -70;
+            this.dirLight2.shadow.camera.right = 70;
+            this.dirLight2.shadow.camera.top = 70;
+            this.dirLight2.shadow.camera.bottom = -70;
+            this.dirLight2.shadow.camera.near = 0.1;
+            this.dirLight2.shadow.camera.far = 200;
+            this.dirLight2.shadow.bias = -0.0005;
+            this.dirLight2.shadow.normalBias = 0.01;
+            this.dirLight2.shadow.camera.updateProjectionMatrix();
+            this.scene.add(this.dirLight2);
+
+            
             this.dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
             this.dirLight.position.set(10, 50, 15);
             this.dirLight.castShadow = true;
@@ -112,11 +128,16 @@ export class Game {
             this.dirLight.shadow.camera.updateProjectionMatrix();
             this.scene.add(this.dirLight);
         }
+
         const ambientColor = this.state.isDay ? 'rgb(254, 225, 251)' : 'rgb(220, 233, 255)';
         const directionalColor = this.state.isDay ? 'rgb(244, 225, 183)' : 'rgb(128, 172, 243)';
 
-        this.ambientLight.color.set(ambientColor);
-        this.ambientLight.intensity = this.state.isDay ? 0.4 : 0.15;
+        //this.ambientLight.color.set(ambientColor);
+        //this.ambientLight.intensity = this.state.isDay ? 0.4 : 0.15;
+
+        this.dirLight2.color.set(ambientColor);
+        this.dirLight2.intensity = this.state.isDay ? 0.8 : 0.4;
+
         this.dirLight.color.set(directionalColor);
         this.dirLight.intensity = this.state.isDay ? 2 : 0.5;
     }
