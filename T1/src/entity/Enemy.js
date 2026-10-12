@@ -57,10 +57,10 @@ export class Enemy extends Entity {
         this.hitbox = new THREE.Box3()
         this.updateHitbox()
 
-        this.light = new THREE.PointLight(this.color, 50, 50)
+        this.light = new THREE.PointLight(this.color, 100, 100)
         this.mesh.add(this.light)
         
-        this.light.castShadow = true
+        //this.light.castShadow = true
      
         this.scene.add(this.mesh)
     }
