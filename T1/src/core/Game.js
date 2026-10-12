@@ -10,6 +10,8 @@ import { Gun } from '../models/Gun.js';
 import { initRenderer, initDefaultBasicLight, SecondaryBox } from '../../../libs/util/util.js';
 import { Enemy } from '../entity/Enemy.js';
 import { enemiesConfig } from '../entity/enemy.config.js';
+import { Tooltip } from './Tooltip.js';
+import { Key } from '../entity/Key.js';
 
 const STEPS_PER_FRAME = 3;
 
@@ -55,24 +57,28 @@ export class Game {
             this.playerCamera, this.renderer.domElement
         )
 
-        this.enemy1 = new Enemy(this.scene, this.world.castle.movementArea1, enemiesConfig.WALKING_PURPLE)
-        this.enemy2 = new Enemy(this.scene, this.world.castle.movementArea2, enemiesConfig.FLYING_BLUE)
+        this.enemy1 = new Enemy(this.scene, this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_BLUE)
+        this.enemy2 = new Enemy(this.scene, this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_PURPLE)
+        this.enemy3 = new Enemy(this.scene, this.world.castle.towerMovementArea, enemiesConfig.FLYING_RED)
+        this.enemy4 = new Enemy(this.scene, this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
 
-        this.enemies = [this.enemy1, this.enemy2]
+        this.enemies = [this.enemy1, this.enemy2, this.enemy3, this.enemy4]
+        //this.enemies = [this.enemy1]
 
         this.canShoot = false;
         this.timerToShoot = 0
         this.pointerControlsOn = true
 
         this.bullets = []
-        this.keys = 0
+        this.keys = new Set()
+        this.keysEntity = []
 
 
         this.fps = 0;
         this.frames = 0;
         this.fpsTimer = 0;
 
-        this.tooltip = new SecondaryBox()
+        this.tooltip = new Tooltip()
 
     }
 
@@ -94,7 +100,11 @@ export class Game {
     }
 
     updateTooltip() {
-        this.tooltip.changeMessage(`${this.fps} FPS`)
+        this.tooltip.updateText(`${this.fps} FPS - ${this.keys.size}`)
+    }
+
+    updateKeys() {
+        this.tooltip.updateKeys(Array.from(this.keys))
     }
 
     update() {
@@ -125,9 +135,9 @@ export class Game {
 
         // atualiza a movimentação e detecção só se o jogador 
         // tiver se movendo
-        this.enemy1.update(deltaTime, this.player.getPosition(), this.player.isMoving)
-        this.enemy2.update(deltaTime, this.player.getPosition(), this.player.isMoving)
-        
+        this.updateEnemies(deltaTime)
+        this.updateKeysEntities(deltaTime)
+    
         // so se tiver balas ativas
         this.updateBullets(deltaTime)
     };
@@ -150,21 +160,64 @@ export class Game {
             this.orbitControls.update();
     }
 
+    updateEnemies(deltaTime) {
+
+        if (!this.enemies.length) return;
+
+        for (let i = this.enemies.length - 1; i >= 0; i--) {
+            const enemy = this.enemies[i];
+
+            enemy.update(
+                deltaTime,
+                this.player.getPosition(),
+                this.player.isMoving
+            );
+
+            if (!enemy.alive) {
+                this.enemies.splice(i, 1);
+            }
+        }
+
+    }
+
+    updateKeysEntities(deltaTime) {
+        if (!this.keysEntity.length) return;
+
+        for (let i = this.keysEntity.length - 1; i >= 0; i--) {
+            const key = this.keysEntity[i];
+
+            key.update(
+                deltaTime,
+                this.worldOctree,
+                this.player.getPosition(),
+                this.player.isMoving
+            );
+
+            // so adiciono a chave quando ela for coletada!!
+            if (!key.alive) {
+                this.keys.add(key.getKey())
+                this.updateKeys()
+                this.keysEntity.splice(i, 1);
+            }
+        }
+    }
+
     updateBullets(deltaTime) {
+        if (!this.bullets.length) return;
 
-        if(!this.bullets.length)
-            return
-
-        const physicsDelta = deltaTime / STEPS_PER_FRAME
+        const physicsDelta = deltaTime / STEPS_PER_FRAME;
 
         for (let i = 0; i < STEPS_PER_FRAME; i++) {
-            this.bullets.forEach((bullet, i) => {
-                bullet.update(physicsDelta)
-                this.resolveBulletCollision(bullet)
-    
-                if (!bullet.alive)
-                    this.bullets.splice(i, 1)
-            })
+            for (let j = this.bullets.length - 1; j >= 0; j--) {
+                const bullet = this.bullets[j];
+
+                bullet.update(physicsDelta);
+                this.resolveBulletCollision(bullet);
+
+                if (!bullet.alive) {
+                    this.bullets.splice(j, 1);
+                }
+            }
         }
     }
 
@@ -226,8 +279,16 @@ export class Game {
         const killed = enemy.onHit(bullet.damage)
         bullet.destroy()
 
+        const key = enemy.getKey()
+        const position = enemy.getPosition()
+
+        const config = {
+            color: key,
+            position
+        }
+
         if (killed) {
-            this.keys += 1
+            this.spawnKey(config)
         }
     }
 
@@ -312,5 +373,10 @@ export class Game {
             this.timerToShoot = 0
         }
         
+    }
+
+    spawnKey(config) {
+        const key = new Key(this.scene, config)
+        this.keysEntity.push(key)
     }
 }
