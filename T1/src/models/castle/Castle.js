@@ -15,8 +15,14 @@ import { Ceil } from "../structures/Ceil.js";
 import { DetailedWall } from "../structures/DetailedWall.js";
 import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
+<<<<<<< HEAD
 import { MovementArea } from "../MovementArea.js";
 import { CircleGeometry, Vector3 } from "../../../../build/three.core.js";
+=======
+import { MovementArea } from "../../MovementArea.js";
+import { Vector3 } from "../../../../build/three.core.js";
+import { Portal } from "../structures/Portal.js";
+>>>>>>> portal
 
 
 export class Castle extends Model {
@@ -25,6 +31,7 @@ export class Castle extends Model {
         this.doors = [];
         this.stairs = [];
         this.towers = [];
+        this.portals = [];
 
         //this.collisionEnabledGroup = new THREE.Group();
         this.collisionDisabledGroup = new THREE.Group();
@@ -245,6 +252,17 @@ export class Castle extends Model {
         const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, ftCfg.width, ftCfg.height, ftCfg.depth, ftCfg.bricks, doorWallConfig);
         this.add(frontTower);
 
+        // Portal
+        const portal = new Portal(
+            2,
+            0.5,
+            2,
+            materials.rotten_wood,
+            { radius: 2, innerRadius:1, height: 0.5 }
+        );
+        this.add(portal);
+        this.portals.push(portal)
+
         // Portões
         this.addDoor({
             x: midTowerX,
@@ -377,10 +395,10 @@ export class Castle extends Model {
         return pair;
     }
 
-    update(deltaTime, playerPosition, isPlayerMoving) {
-        if(isPlayerMoving) {
-            this.doors.forEach(door => door.update(deltaTime, playerPosition))
-        }
+
+    update(deltaTime, playerPosition) {
+        this.doors.forEach(door => door.update(deltaTime, playerPosition))
+        this.portals.forEach(portal => portal.update(deltaTime, playerPosition))
     }
 
     // Cria as 4 torres dos cantos do castelo, posicionadas e rotacionadas.
