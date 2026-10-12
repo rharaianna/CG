@@ -81,7 +81,8 @@ export class Game {
         this.frames = 0;
         this.fpsTimer = 0;
 
-        this.tooltip = new Tooltip()
+        this.tooltip = new Tooltip();
+        this.updateTooltip();
 
         configureShadows(this.scene)
 
@@ -106,7 +107,7 @@ export class Game {
             this.dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
             this.dirLight.position.set(10, 50, 15);
             this.dirLight.castShadow = true;
-            this.dirLight.shadow.mapSize.set(16384, 16384);
+            this.dirLight.shadow.mapSize.set(2048, 2048);
             this.dirLight.shadow.camera.left = -70;
             this.dirLight.shadow.camera.right = 70;
             this.dirLight.shadow.camera.top = 70;
@@ -163,9 +164,6 @@ export class Game {
     }
 
     update() {
-        
-        this.updateTooltip()
-
         this.clock.update();
         const deltaTime = Math.min(0.05, this.clock.getDelta());
         this.timerToShoot += deltaTime
@@ -178,6 +176,7 @@ export class Game {
 
             this.frames = 0;
             this.fpsTimer = 0;
+            this.updateTooltip();
         }
         
         // so se tiver na camera correta

@@ -70,10 +70,8 @@ export class Portal extends Model {
         this.object.add(rim);
 
         // Tampa circular que será redimensionada.
-        this.lid = new THREE.Mesh(
-            new THREE.CircleGeometry(radius, 48),
-            this.material
-        );
+        this.lidGeometry = new THREE.CircleGeometry(radius, 48);
+        this.lid = new THREE.Mesh(this.lidGeometry, this.material);
 
         this.lid.rotation.x = -Math.PI / 2;
         this.lid.position.y = 0.002;
@@ -109,10 +107,8 @@ export class Portal extends Model {
             factor
         );
 
-        this.lid.geometry = new THREE.CircleGeometry(
-            Math.max(this.currentRadius, 0.001),
-            48
-        );
+        const lidScale = Math.max(this.currentRadius / this.radius, 0.001);
+        this.lid.scale.set(lidScale, lidScale, 1);
 
     }
 }
