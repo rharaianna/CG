@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { STATUS, BEHAVIOR } from './enemy.enums.js';
+import { STATUS, BEHAVIOR } from '../entity/enemy.enums.js';
+import { Model } from './Model.js';
 
 export class MovementArea {
 
@@ -17,8 +18,7 @@ export class MovementArea {
         )
         
         this.box.position.copy(this.position);
-        scene.add(this.box)
-        
+        //scene.add(this.box)
     }
 
     getRandomPosition(enemyDimensions, behavior) {

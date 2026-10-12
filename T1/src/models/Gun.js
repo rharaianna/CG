@@ -1,8 +1,8 @@
 import * as THREE from "three"
-import { Bullet } from "../player/Bullet.js";
+import { Bullet } from "../entity/Bullet.js";
 
 export class Gun {
-    constructor() {
+    constructor(playerCamera) {
         const gunGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.2, 32);
         const gunMaterial = new THREE.MeshStandardMaterial({
             color: '#bebebe',
@@ -17,6 +17,8 @@ export class Gun {
         this.helper = new THREE.Object3D();
         this.helper.position.set(0, -0.1, 0); // no espaço LOCAL do cilindro (cru)
         this.object.add(this.helper);
+
+        playerCamera.add(this.object)
 
         this.podeAtirar = true
     }
