@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import { materials } from '../models/material.configs.js';
 import { STATUS, BEHAVIOR } from './enemy.enums.js';
+import { Entity } from './Entity.js';
 
-export class Enemy {
+export class Enemy extends Entity {
     constructor(scene, movementArea, config) {
+        super(scene)
 
         const {
             dimensions, 
@@ -13,7 +15,8 @@ export class Enemy {
             speed
         } = config
 
-        this.respawn = true
+        this.scene = scene
+        this.respawn = false
         this.enemyDimensions = dimensions
         this.speed = speed
         this.life = life
@@ -48,17 +51,18 @@ export class Enemy {
         )
 
         this.body.position.copy(this.position)
-        scene.add(this.body)
+        this.mesh.add(this.body)
 
         // hitbox
         this.hitbox = new THREE.Box3()
         this.updateHitbox()
 
         this.light = new THREE.PointLight(this.color, 50, 50)
-        scene.add(this.light)
+        this.mesh.add(this.light)
         
         this.light.castShadow = true
      
+        this.scene.add(this.mesh)
     }
 
     // vai ser chamado quando chegar na direção
@@ -81,9 +85,6 @@ export class Enemy {
     }
 
     onHit(damage = 1) {
-
-        console.log("atingiu", this.life);
-
         this.life -= damage
 
         if (this.life <= 0) 
@@ -100,6 +101,15 @@ export class Enemy {
             this.status = STATUS["WALKING"]
         }
     }      
+
+    // a chave tem a exata cor do inimigo
+    getKey() {
+        return this.color
+    }
+
+    getPosition() {
+        return this.position.clone()
+    }
 
     move(deltaTime) {
         // calcula a direção que deve ir e a distancia que está
@@ -167,28 +177,17 @@ export class Enemy {
         } 
     }
 
-    // vai detectar se o jogador ta proximo do inimigo
-    detectPlayer(deltaTime, playerPosition) {
-
-        // distancia mínima de detecção do jogador
-        const isNear = playerPosition.distanceTo(this.position) <= this.movementArea.detectionRange
-
-        if (isNear) {
-            if (this.status !== STATUS.ATTACK) {
-                this.status = STATUS.ATTACK
-            }
-            return;
-        }
-    }
-
     kill(deltaTime) {
         const factor = 0.05
         this.scale -= factor
 
         if(this.scale < 0) {
-            this.scale = 0;
-            this.body.scale.setScalar(0);
+            //this.scale = 0;
+            //this.body.scale.setScalar(0);
             this.timer = 0
+
+            this.destroy()
+
             return
         }
 
@@ -235,10 +234,11 @@ export class Enemy {
         
         this.light.position.copy(this.position)
         
-        if(isPlayerMoving) {
-            this.detectPlayer(deltaTime, playerPosition)
-        }
-        
+        if(isPlayerMoving && this.detectPlayer(deltaTime, playerPosition, this.movementArea.detectionRange))
+            if (this.status !== STATUS.ATTACK) {
+                this.status = STATUS.ATTACK
+            }
+
         this.checkDistanceToCenter()
         this.checkIsDead()
 

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Entity } from './Entity.js';
 
 const BULLET_VELOCITY = 150
 const BULLET_Y_VELOCITY_DECAY = 0.001
@@ -11,8 +12,10 @@ const bulletMaterial = new THREE.MeshStandardMaterial({
     metalness: 0.1
 });
 
-export class Bullet {
+export class Bullet extends Entity {
     constructor(scene, posicaoInicial, direction) {
+        super(scene)
+
         this.scene = scene
         this.mesh = new THREE.Mesh(bulletGeometry, bulletMaterial);
         this.mesh.position.copy(posicaoInicial);
@@ -24,7 +27,7 @@ export class Bullet {
 
         this.velocity = direction.clone().setY(direction.y - BULLET_Y_VELOCITY_DECAY).normalize().multiplyScalar(BULLET_VELOCITY);
         
-        this.alive = true;
+        //this.alive = true;
         this.damage = 1
 
         this.scene.add(this.mesh)
@@ -38,11 +41,6 @@ export class Bullet {
         // cuida do caso de sair da distancia máxima
         if (this.mesh.position.distanceTo(this.origin) >= MAX_DISTANCE) 
             this.destroy()
-    }
-
-    destroy() {
-        this.scene.remove(this.mesh)
-        this.alive = false
     }
 
     // raio e a distance percorrido no último update pra detectar se 
