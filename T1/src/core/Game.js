@@ -7,9 +7,11 @@ import { PointerLockControls } from '../../../build/jsm/controls/PointerLockCont
 import { OrbitControls } from '../../../build/jsm/controls/OrbitControls.js';
 import { Gun } from '../models/Gun.js';
 
-import { initRenderer, initDefaultBasicLight, SecondaryBox } from '../../../libs/util/util.js';
+import { initRenderer } from '../../../libs/util/util.js';
+import { configureShadows } from '../utils/ShadowUtils.js';
 import { Enemy } from '../entity/Enemy.js';
 import { enemiesConfig } from '../entity/enemy.config.js';
+import { State } from './State.js';
 import { Tooltip } from './Tooltip.js';
 import { Key } from '../entity/Key.js';
 
@@ -20,10 +22,10 @@ export class Game {
         
         this.scene = new THREE.Scene();  
         this.world = new World(this.scene) 
-        this.renderer = initRenderer()
-
-        // luz temporária
-        this.light = initDefaultBasicLight(this.scene); 
+    
+        this.renderer = initRenderer('rgb(0, 0, 0)', THREE.PCFShadowMap);
+        this.state = new State();
+        this.lighting()
 
         this.clock = new THREE.Timer();
         this.clock.connect(document);
@@ -45,6 +47,7 @@ export class Game {
         this.orbitControls.update();
 
         this.gun = new Gun(this.playerCamera); 
+        configureShadows(this.gun.object);
         //this.playerCamera.add(this.gun.object);
 
         this.crosshair = document.getElementById('crosshair');
@@ -80,6 +83,47 @@ export class Game {
 
         this.tooltip = new Tooltip()
 
+        configureShadows(this.scene)
+
+    }
+
+    lighting() {
+
+        this.scene.background = new THREE.Color(
+            this.state.isDay ? 'rgb(139, 197, 228)' : 'rgb(5, 4, 8)'
+        );
+
+        if (!this.ambientLight) {
+            this.ambientLight = new THREE.AmbientLight('rgb(255,255,255)');
+            this.scene.add(this.ambientLight);
+
+            this.dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
+            this.dirLight.position.set(10, 50, 15);
+            this.dirLight.castShadow = true;
+            this.dirLight.shadow.mapSize.set(2048, 2048);
+            this.dirLight.shadow.camera.left = -70;
+            this.dirLight.shadow.camera.right = 70;
+            this.dirLight.shadow.camera.top = 70;
+            this.dirLight.shadow.camera.bottom = -70;
+            this.dirLight.shadow.camera.near = 0.1;
+            this.dirLight.shadow.camera.far = 200;
+            this.dirLight.shadow.bias = -0.0005;
+            this.dirLight.shadow.normalBias = 0.01;
+            this.dirLight.shadow.camera.updateProjectionMatrix();
+            this.scene.add(this.dirLight);
+        }
+        const ambientColor = this.state.isDay ? 'rgb(254, 225, 251)' : 'rgb(220, 233, 255)';
+        const directionalColor = this.state.isDay ? 'rgb(244, 225, 183)' : 'rgb(128, 172, 243)';
+
+        this.ambientLight.color.set(ambientColor);
+        this.ambientLight.intensity = this.state.isDay ? 0.4 : 0.15;
+        this.dirLight.color.set(directionalColor);
+        this.dirLight.intensity = this.state.isDay ? 2 : 0.5;
+    }
+
+    setDay(isDay) {
+        this.state.isDay = isDay;
+        this.lighting();
     }
 
     start() {
