@@ -26,6 +26,7 @@ export class Castle extends Model {
         this.doors = [];
         this.stairs = [];
         this.towers = [];
+        this.portals = [];
 
         //this.collisionEnabledGroup = new THREE.Group();
         this.collisionDisabledGroup = new THREE.Group();
@@ -246,15 +247,16 @@ export class Castle extends Model {
         const frontTower = new FrontTower(0, FRONTTOWER_Y, FRONTTOWER_Z, this.material, ftCfg.width, ftCfg.height, ftCfg.depth, ftCfg.bricks, doorWallConfig);
         this.add(frontTower);
 
-        // Portal tempor�rio de teste, posicionado do lado de fora da entrada frontal.
+        // Portal
         const portal = new Portal(
-            0,
+            2,
             0.5,
-            0,
+            2,
             materials.rotten_wood,
-            { radius: 2, height: 0.5 }
+            { radius: 2, innerRadius:1, height: 0.5 }
         );
         this.add(portal);
+        this.portals.push(portal)
 
         // Portões
         this.addDoor({
@@ -363,6 +365,7 @@ export class Castle extends Model {
 
     update(deltaTime, playerPosition) {
         this.doors.forEach(door => door.update(deltaTime, playerPosition))
+        this.portals.forEach(portal => portal.update(deltaTime, playerPosition))
     }
 
     // Cria as 4 torres dos cantos do castelo, posicionadas e rotacionadas.
