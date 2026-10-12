@@ -3,7 +3,7 @@ import {
   onWindowResize,
 } from "../../libs/util/util.js";
 
-import { Game } from './Game.js';
+import { Game } from './core/Game.js';
 
 // listeners
 document.body.addEventListener('click', function (event) {
@@ -31,7 +31,7 @@ document.addEventListener('contextmenu', (evento) => {
 });
 
 window.addEventListener('resize', function () { 
-  onWindowResize(game.playerCamera, renderer) 
+  onWindowResize(game.getActiveCamera(), game.renderer) 
 }, false);
  
 // game

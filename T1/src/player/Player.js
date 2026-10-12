@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { PlayerController } from "./PlayerController.js";
 import { PlayerPhysics } from "./PlayerPhysics.js";
 
@@ -5,9 +6,11 @@ export class Player {
 
     constructor(worldOctree, camera) {
 
-        this.camera = camera
-        this.controller = new PlayerController();
-        this.physics = new PlayerPhysics(worldOctree);
+      this.camera = camera
+      this.controller = new PlayerController();
+      this.physics = new PlayerPhysics(worldOctree);
+      this.isMoving = false
+      this.speed = 1.8
     }
 
     moveControls(deltaTime) {
@@ -44,15 +47,23 @@ export class Player {
     }
 
     update(deltaTime) {
-        this.moveControls(deltaTime)
-        this.physics.updatePlayer(deltaTime)
+      
+      this.moveControls(deltaTime)
+      this.physics.updatePlayer(deltaTime)
+      this.isMoving = this.getIsPlayerMoving()
+      
+      this.camera.position.copy(this.physics.playerCollider.end);
+      this.physics.teleportPlayerIfOob(this.camera);
 
-        this.camera.position.copy(this.physics.playerCollider.end);
-        this.physics.teleportPlayerIfOob(this.camera);
     }
 
     getPosition() {
       return this.camera.position.clone()
+    }
+
+    getIsPlayerMoving() {
+      const velocity = this.physics.playerVelocity;
+      return Math.abs(velocity.x) > 0.1 || Math.abs(velocity.z) > 0.1
     }
 }
 

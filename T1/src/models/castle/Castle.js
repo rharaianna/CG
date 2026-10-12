@@ -15,8 +15,8 @@ import { Ceil } from "../structures/Ceil.js";
 import { DetailedWall } from "../structures/DetailedWall.js";
 import { Ramp } from "../structures/Ramp.js";
 import { makeCastleConfig } from "./castle.config.js";
-import { MovementArea } from "../../MovementArea.js";
-import { Vector3 } from "../../../../build/three.core.js";
+import { MovementArea } from "../MovementArea.js";
+import { CircleGeometry, Vector3 } from "../../../../build/three.core.js";
 
 
 export class Castle extends Model {
@@ -280,25 +280,52 @@ export class Castle extends Model {
         });
 
 
-        // 
+        // inimigo do segundo andar
         const movementArea1Dimensions = {
             width: cCfg.distance,
             height: CEIL_HEIGHT,
             depth: DEPTH/3,
         }
+        const movementArea1Position = new Vector3(CEIL_X, floorY + cCfg.y + movementArea1Dimensions.height/2, 0)
+        this.secondFloorMovementArea = new MovementArea(scene, movementArea1Position, movementArea1Dimensions, 15, 60)
+        
+        
 
-        const movementArea1Position = new Vector3(CEIL_X, cCfg.y + movementArea1Dimensions.height/2, 0)
-        this.movementArea1 = new MovementArea(scene, movementArea1Position, movementArea1Dimensions, 15, 60)
-
+        // inimigo da torre frontal 
         const movementArea2Dimensions = {
             width: 30,
             depth: 30,
             height: ftCfg.height,
         }
-
         const movementArea2Position = new Vector3(0, ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
-        this.movementArea2 = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
+        this.frontalTowerMovementArea = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
+        
+        
+        // inimigo que vai ficar na casa 
+        const movementArea3Dimensions = {
+            width: 15,
+            depth: 15,
+            height: 5,
+        }
+        const movementArea3Position = new Vector3(0, floorY + movementArea2Dimensions.height/2, 0)
+        this.internalBuildingMovementArea = new MovementArea(scene, movementArea3Position, movementArea3Dimensions, 15, 30)
+        
 
+
+        // inimigo na torre redonda
+        const movementArea4Dimensions = {
+            width: tCfg.radius * 2,
+            depth: tCfg.radius * 2,
+            height: tCfg.height,
+        }
+
+        const movementArea4Position = new Vector3(-towerX, movementArea4Dimensions.height, -towerZ)
+        this.towerMovementArea = new MovementArea(scene, movementArea4Position, movementArea4Dimensions, 15, 15)
+        
+        this.collisionDisabledGroup.add(this.secondFloorMovementArea.object)
+        this.collisionDisabledGroup.add(this.frontalTowerMovementArea.object)
+        this.collisionDisabledGroup.add(this.internalBuildingMovementArea.object)
+        this.collisionDisabledGroup.add(this.towerMovementArea.object)
     } 
 
     addDoor(config) {
@@ -350,8 +377,10 @@ export class Castle extends Model {
         return pair;
     }
 
-    update(deltaTime, playerPosition) {
-        this.doors.forEach(door => door.update(deltaTime, playerPosition))
+    update(deltaTime, playerPosition, isPlayerMoving) {
+        if(isPlayerMoving) {
+            this.doors.forEach(door => door.update(deltaTime, playerPosition))
+        }
     }
 
     // Cria as 4 torres dos cantos do castelo, posicionadas e rotacionadas.
