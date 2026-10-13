@@ -1,20 +1,20 @@
 import * as THREE from "three";
 
 export const materials = {
-    grass: new THREE.MeshStandardMaterial({
-        color: "#4f922f",
-        roughness: 0.8,
+    grass: new THREE.MeshLambertMaterial({
+        color: "#4b6c41",
+        
     }),
-    bricks: new THREE.MeshStandardMaterial({
+    bricks: new THREE.MeshLambertMaterial({
         color: "#a8987e",
-        roughness: 1,
+        
     }),
-    rotten_wood: new THREE.MeshStandardMaterial({
+    rotten_wood: new THREE.MeshLambertMaterial({
         color: "#312921",
-        roughness: 1,
+        
     }),
-    water: new THREE.MeshStandardMaterial({
+    water: new THREE.MeshLambertMaterial({
         color: "#2a5a85",
-        roughness: 0.1,
+
     })
 }
