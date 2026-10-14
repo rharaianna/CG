@@ -19,7 +19,7 @@ import { makeCastleConfig } from "./castle.config.js";
 import { MovementArea } from "../MovementArea.js";
 import { Vector3 } from "../../../../build/three.core.js";
 import { Portal } from "../structures/Portal.js";
-
+import { Bridge } from "../Bridge.js";
 
 
 export class Castle extends Model {
@@ -49,7 +49,8 @@ export class Castle extends Model {
             frontTower: ftCfg,
             door: dCfg, 
             stair: sCfg, 
-            ceil: cCfg
+            ceil: cCfg,
+            bridge: bCfg
         } = cfg;
 
         ///////////////////////////////////////////////////////////////////////
@@ -341,6 +342,12 @@ export class Castle extends Model {
         this.collisionDisabledGroup.add(this.frontalTowerMovementArea.object)
         this.collisionDisabledGroup.add(this.internalBuildingMovementArea.object)
         this.collisionDisabledGroup.add(this.towerMovementArea.object)
+        
+        const BRIDGE_Z = bCfg.bridgeDepth/2 + bCfg.bridgeDepth/6 + bCfg.bridgeDepth/4 + FRONTTOWER_Z
+        const BRIDGE_Y = bCfg.bridgeHeight/2
+
+        const bridge = new Bridge(0, BRIDGE_Y, BRIDGE_Z, materials.grass, bCfg.brigdeWitdh, bCfg.bridgeHeight, bCfg.bridgeDepth)
+        this.add(bridge)
     } 
 
     addDoor(config) {
