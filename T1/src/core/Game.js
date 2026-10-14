@@ -6,7 +6,7 @@ import { Octree } from '../../../build/jsm/math/Octree.js';
 import { PointerLockControls } from '../../../build/jsm/controls/PointerLockControls.js';
 import { OrbitControls } from '../../../build/jsm/controls/OrbitControls.js';
 import { Gun } from '../models/Gun.js';
-import { Objects3D } from './models/Objects3D.js';
+import { Objects3D } from '../models/Objects3D.js';
 
 import { initRenderer } from '../../../libs/util/util.js';
 import { configureShadows } from '../utils/ShadowUtils.js';
@@ -60,11 +60,18 @@ export class Game {
         this.pointerControls = new PointerLockControls(
             this.playerCamera, this.renderer.domElement
         )
+        
+        this.objects = new Objects3D(this.scene)
 
-        this.enemy1 = new Enemy(this.scene, this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_BLUE)
-        this.enemy2 = new Enemy(this.scene, this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_PURPLE)
-        this.enemy3 = new Enemy(this.scene, this.world.castle.towerMovementArea, enemiesConfig.FLYING_RED)
-        this.enemy4 = new Enemy(this.scene, this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
+        this.models = {
+            shy: this.objects.loadShyGhost(),  
+            happy: this.objects.loadHappyGhost(),
+        }
+
+        this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_BLUE)
+        this.enemy2 = this.createEnemy(this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_PURPLE)
+        this.enemy3 = this.createEnemy(this.world.castle.towerMovementArea, enemiesConfig.FLYING_RED)
+        this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
 
         this.enemies = [this.enemy1, this.enemy2, this.enemy3, this.enemy4]
         //this.enemies = [this.enemy1]
@@ -86,9 +93,13 @@ export class Game {
 
         configureShadows(this.scene)
 
-        this.loader = new Objects3D(this.scene)
-        this.loader.exportFBX()
+    }
 
+    createEnemy(area, config) {
+        return new Enemy(this.scene, area, {
+            ...config,
+            model: this.models[config.model],
+        })
     }
 
     lighting() {
