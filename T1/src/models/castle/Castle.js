@@ -19,7 +19,7 @@ import { makeCastleConfig } from "./castle.config.js";
 import { MovementArea } from "../MovementArea.js";
 import { Vector3 } from "../../../../build/three.core.js";
 import { Portal } from "../structures/Portal.js";
-
+import { Bridge } from "../Bridge.js";
 
 
 export class Castle extends Model {
@@ -49,7 +49,8 @@ export class Castle extends Model {
             frontTower: ftCfg,
             door: dCfg, 
             stair: sCfg, 
-            ceil: cCfg
+            ceil: cCfg,
+            bridge: bCfg
         } = cfg;
 
         ///////////////////////////////////////////////////////////////////////
@@ -168,7 +169,7 @@ export class Castle extends Model {
         const wall3 = new CastleWall(wallX, wallY, 0, this.material, scaledDepth -tCfg.radius , wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
         
         // lado da parede com detalhes
-        const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4, this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.radius / 2, null);
+        const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4 + tCfg.radius/2 , this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.innerRadius, null);
         // empurro ela pro local correto 
         wall4.object.translateZ(-mtCfg.width / 4);
         
@@ -341,6 +342,12 @@ export class Castle extends Model {
         this.collisionDisabledGroup.add(this.frontalTowerMovementArea.object)
         this.collisionDisabledGroup.add(this.internalBuildingMovementArea.object)
         this.collisionDisabledGroup.add(this.towerMovementArea.object)
+        
+        const BRIDGE_Z = bCfg.bridgeDepth/2 + bCfg.bridgeDepth/6 + bCfg.bridgeDepth/4 + FRONTTOWER_Z
+        const BRIDGE_Y = bCfg.bridgeHeight/2
+
+        const bridge = new Bridge(0, BRIDGE_Y, BRIDGE_Z, materials.grass, bCfg.brigdeWitdh, bCfg.bridgeHeight, bCfg.bridgeDepth)
+        this.add(bridge)
     } 
 
     addDoor(config) {
