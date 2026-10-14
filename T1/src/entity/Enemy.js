@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { materials } from '../models/material.configs.js';
 import { STATUS, BEHAVIOR } from './enemy.enums.js';
 import { Entity } from './Entity.js';
+import * as SkeletonUtils from "../../../build/jsm/utils/SkeletonUtils.js"
 
 export class Enemy extends Entity {
     constructor(scene, movementArea, config) {
@@ -12,7 +13,8 @@ export class Enemy extends Entity {
             color,
             life,
             behavior,
-            speed
+            speed,
+            model
         } = config
 
         this.scene = scene
@@ -21,6 +23,8 @@ export class Enemy extends Entity {
         this.speed = speed
         this.life = life
         this.color = color
+        this.model = model
+        this.ghost = null
 
         // inicia parado
         this.status = STATUS["STILL"]
@@ -51,6 +55,7 @@ export class Enemy extends Entity {
         )
 
         this.body.position.copy(this.position)
+        material.visible = !model 
         this.mesh.add(this.body)
 
         // hitbox
@@ -80,8 +85,16 @@ export class Enemy extends Entity {
         }
     }
 
-    updateHitbox() {
-        this.hitbox.setFromObject(this.body)
+    updateHitbox() {// se nao precisar volta pro jeito q tava antes
+        this.body.updateWorldMatrix(true, false)
+
+        if (!this.body.geometry.boundingBox) {
+            this.body.geometry.computeBoundingBox()
+        }
+
+        this.hitbox
+            .copy(this.body.geometry.boundingBox)
+            .applyMatrix4(this.body.matrixWorld)
     }
 
     onHit(damage = 1) {
@@ -231,6 +244,8 @@ export class Enemy extends Entity {
 
     // recebe os ticks do jogo e coordena a logica
     update(deltaTime, playerPosition, isPlayerMoving) {
+
+        this.attachModel()
         
         this.light.position.copy(this.position)
         
@@ -267,5 +282,25 @@ export class Enemy extends Entity {
 
         // sempre roda, qualquer que seja o estado
         this.updateHitbox()
+    }
+
+    attachModel() {
+        if (this.ghost || !this.model || !this.model.loaded) return
+
+        // clone() comum quebra modelos com esqueleto; SkeletonUtils.clone é seguro nos dois casos
+        this.ghost = SkeletonUtils.clone(this.model.object)
+
+        // ajusta o tamanho do fantasma para caber na caixa do inimigo
+        const box = new THREE.Box3().setFromObject(this.ghost)
+        const size = new THREE.Vector3()
+        box.getSize(size)
+        const fator = this.enemyDimensions.height / size.y
+        this.ghost.scale.multiplyScalar(fator)
+
+        // alinha os pés do fantasma com a base da caixa
+        box.setFromObject(this.ghost)
+        this.ghost.position.y = -this.enemyDimensions.height / 2 - box.min.y
+
+        this.body.add(this.ghost)
     }
 }
