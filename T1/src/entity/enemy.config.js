@@ -35,7 +35,7 @@ export const enemiesConfig = {
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
-        speed: 5,
+        speed: 10,
         model: 'shy'
     },
     WALKING_ORANGE: {
@@ -43,7 +43,7 @@ export const enemiesConfig = {
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
-        speed: 5,
+        speed: 10,
         model: 'happy'
     },
 }
