@@ -20,20 +20,20 @@ export class World {
         this.collisionEnabledGroup.add(plane);
         
         // tamanhos aproximados do castelo
-        const CASTLE_WIDTH = 70
-        const CASTLE_DEPTH = 92
-        const SCALE = 1
+        this.CASTLE_WIDTH = 70
+        this.CASTLE_DEPTH = 92
+        this.SCALE = 1
  
-        const FLOOR_HEIGHT = 10  * SCALE;
-        const FLOOR_WIDTH  = CASTLE_WIDTH * 1.5;
-        const FLOOR_DEPTH  = CASTLE_DEPTH * 1.5;
+        this.FLOOR_HEIGHT = 10  * this.SCALE;
+        this.FLOOR_WIDTH  = this.CASTLE_WIDTH * 1.5;
+        this.FLOOR_DEPTH  = this.CASTLE_DEPTH * 1.5;
 
         // para os objetos posicionados acima dele
-        const FLOOR_Y = FLOOR_HEIGHT
+        this.FLOOR_Y = this.FLOOR_HEIGHT
 
-        this.floor = new Floor(0, FLOOR_HEIGHT/2 + 0.01, 0, materials.grass, FLOOR_WIDTH, FLOOR_HEIGHT, FLOOR_DEPTH);
-        this.castle = new Castle(scene, 0, FLOOR_Y, 0, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
-        this.house = new House(scene, 0, FLOOR_Y, 0, materials.rotten_wood, 30, 30, 30, 1)
+        this.floor = new Floor(0, this.FLOOR_HEIGHT/2 + 0.01, 0, materials.grass, this.FLOOR_WIDTH, this.FLOOR_HEIGHT, this.FLOOR_DEPTH);
+        this.castle = new Castle(scene, 0, this.FLOOR_Y, 0, null, this.CASTLE_WIDTH, this.CASTLE_DEPTH, this.SCALE)
+        this.house = new House(scene, 0, this.FLOOR_Y, 0, materials.rotten_wood, 30, 30, 30, 1)
         
         // grupo de colisão
         this.collisionEnabledGroup.add(this.castle.object)
@@ -49,5 +49,9 @@ export class World {
 
     update(deltaTime, playerPosition, isPlayerMoving) {
         this.castle.update(deltaTime, playerPosition, isPlayerMoving)
+    }
+
+    getInicialPosition() {
+        return new THREE.Vector3(0, this.FLOOR_Y, 0)
     }
 }

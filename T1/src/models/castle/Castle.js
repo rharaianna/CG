@@ -218,9 +218,9 @@ export class Castle extends Model {
         });
         
         // Torres intermediárias
-        const midTower2 = new MidTower(0, midTowerY, -midTowerZ, null, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks);
-        const midTower3 = new MidTower(midTowerX, midTowerY, 0, null, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks, doorWallConfig);
-        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, null, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks, doorWallConfig);
+        const midTower2 = new MidTower(0, midTowerY, -midTowerZ, this.material, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks);
+        const midTower3 = new MidTower(midTowerX, midTowerY, 0, this.material, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks, doorWallConfig);
+        const midTower4 = new MidTower(-midTowerX, midTowerY, 0, this.material, mtCfg.width, mtCfg.height, mtCfg.depth, mtCfg.bricks, doorWallConfig);
         
         //correções
         const desvio = mtCfg.depth / 2 - wCfg.depth / 2;
@@ -276,15 +276,19 @@ export class Castle extends Model {
         });
 
 
+        /////////////////////////////////////
+        // sao criados aqui pela praticidade de posicionar
+        // preciso passar o y pq são posicionados na cena
+        // e não no castelo em si e preciso das posições relativas ao mundo
+
         // inimigo do segundo andar
         const movementArea1Dimensions = {
             width: cCfg.distance,
             height: CEIL_HEIGHT,
             depth: DEPTH/3,
         }
-        const movementArea1Position = new Vector3(CEIL_X, cCfg.y + movementArea1Dimensions.height/2, 0)
+        const movementArea1Position = new Vector3(CEIL_X, y + cCfg.y + movementArea1Dimensions.height/2, 0)
         this.secondFloorMovementArea = new MovementArea(scene, movementArea1Position, movementArea1Dimensions, 15, 60)
-        
         
 
         // inimigo da torre frontal 
@@ -293,7 +297,7 @@ export class Castle extends Model {
             depth: 30,
             height: ftCfg.height,
         }
-        const movementArea2Position = new Vector3(0, ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
+        const movementArea2Position = new Vector3(0, y + ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
         this.frontalTowerMovementArea = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
         
         
@@ -303,9 +307,8 @@ export class Castle extends Model {
             depth: 15,
             height: 5,
         }
-        const movementArea3Position = new Vector3(0, movementArea2Dimensions.height/2, 0)
+        const movementArea3Position = new Vector3(0, y + movementArea2Dimensions.height/2, 0)
         this.internalBuildingMovementArea = new MovementArea(scene, movementArea3Position, movementArea3Dimensions, 15, 30)
-        
 
 
         // inimigo na torre redonda
@@ -315,9 +318,9 @@ export class Castle extends Model {
             height: tCfg.height,
         }
 
-        const movementArea4Position = new Vector3(-towerX, movementArea4Dimensions.height, -towerZ)
+        const movementArea4Position = new Vector3(-towerX, y + movementArea4Dimensions.height, -towerZ)
         this.towerMovementArea = new MovementArea(scene, movementArea4Position, movementArea4Dimensions, 15, 15)
-        
+    
         this.collisionDisabledGroup.add(this.secondFloorMovementArea.object)
         this.collisionDisabledGroup.add(this.frontalTowerMovementArea.object)
         this.collisionDisabledGroup.add(this.internalBuildingMovementArea.object)

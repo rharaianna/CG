@@ -18,6 +18,8 @@ export class MovementArea {
         )
         
         this.box.position.copy(this.position);
+
+        // posiciona na cena
         //scene.add(this.box)
     }
 

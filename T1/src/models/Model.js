@@ -24,7 +24,7 @@ export class Model {
             0xffff00
         );
         this.object.add(this.boxHelper); 
-        this.boxHelper.visible = true;
+        this.boxHelper.visible = false;
     }
 
     add(model) {
@@ -63,7 +63,7 @@ export class Model {
     hideBoundingBox() {
         this.boxHelper.visible = false;
     }
-
+    
     update(deltaTime) {
         for (const child of this.children) {
             if (typeof child.update === "function") {

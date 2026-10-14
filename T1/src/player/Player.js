@@ -4,13 +4,15 @@ import { PlayerPhysics } from "./PlayerPhysics.js";
 
 export class Player {
 
-    constructor(worldOctree, camera) {
+    constructor(worldOctree, camera, inicialPosition) {
 
+      this.playerHeight = 2
       this.camera = camera
       this.controller = new PlayerController();
-      this.physics = new PlayerPhysics(worldOctree);
+      this.physics = new PlayerPhysics(worldOctree, inicialPosition, this.playerHeight);
       this.isMoving = false
       this.speed = 1.8
+
     }
 
     moveControls(deltaTime) {
