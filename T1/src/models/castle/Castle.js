@@ -27,9 +27,10 @@ export class Castle extends Model {
         this.towers = [];
 
         //this.collisionEnabledGroup = new THREE.Group();
-        this.collisionDisabledGroup = new THREE.Group();
-        this.collisionDisabledGroup.position.y = y
 
+        // corrijo para posicionar relativo a altura do castelo
+        this.collisionDisabledGroup = new THREE.Group();
+    
         // Obtém todos os parâmetros de tamanho e escala do arquivo de configuração
         const cfg = makeCastleConfig(WIDTH, DEPTH, SCALE);
 
@@ -330,7 +331,7 @@ export class Castle extends Model {
     addDoor(config) {
         const door = new Door(
             config.x,
-            config.y,
+            this.y + config.y,
             config.z,
             materials.rotten_wood,
             config
@@ -338,9 +339,11 @@ export class Castle extends Model {
 
         door.interactionDistance = config.interactionDistance ?? 4;
         door.object.rotation.y = config.rotationY ?? 0;
+        
+        //this.add(door)
+        this.collisionDisabledGroup.add(door.object);
 
         this.doors.push(door);
-        this.collisionDisabledGroup.add(door.object);
 
         return door;
     }
@@ -360,9 +363,9 @@ export class Castle extends Model {
         } = config;
 
         //  Escada visual 
-        const stair = new Stair(x, y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
+        // aqui a
+        const stair = new Stair(x, this.y + y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
         stair.object.rotation.y = rotationY;
-        this.add(stair)
         this.collisionDisabledGroup.add(stair.object);
 
         // Rampa de colisão invisível 
@@ -379,6 +382,8 @@ export class Castle extends Model {
 
     update(deltaTime, playerPosition, isPlayerMoving) {
         if(isPlayerMoving) {
+            let adjustedPosition = playerPosition.clone()
+            adjustedPosition.y -= this.y
             this.doors.forEach(door => door.update(deltaTime, playerPosition))
         }
     }
