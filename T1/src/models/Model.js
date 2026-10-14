@@ -3,6 +3,10 @@ import * as THREE from "three";
 export class Model {
     constructor(x = 0, y = 0, z = 0, material = null) {
 
+        this.x = x
+        this.y = y
+        this.z = z
+
         this.object = new THREE.Group();
         this.object.position.set(x, y, z);
 
@@ -20,7 +24,7 @@ export class Model {
             0xffff00
         );
         this.object.add(this.boxHelper); 
-        this.boxHelper.visible = false;
+        this.boxHelper.visible = true;
     }
 
     add(model) {

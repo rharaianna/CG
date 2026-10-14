@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { Castle } from '../models/castle/Castle.js';
 import { createGroundPlaneXZ } from '../../../libs/util/util.js';
+import { House } from '../models/buildings/House.js';
+import { materials } from '../models/material.configs.js';
+import { Floor } from '../models/structures/Floor.js';
 
 export class World {
     constructor(scene) {
@@ -13,25 +16,35 @@ export class World {
         //scene.add(axesHelper);
         
         // create the ground plane
-        let plane = createGroundPlaneXZ(300, 300,)
+        let plane = createGroundPlaneXZ(300, 300)
         this.collisionEnabledGroup.add(plane);
         
         // tamanhos aproximados do castelo
         const CASTLE_WIDTH = 70
         const CASTLE_DEPTH = 92
         const SCALE = 1
-        const CASTLE_X = 0
-        const CASTLE_Y = 0
-        const CASTLE_Z = 0
+ 
+        const FLOOR_HEIGHT = 10  * SCALE;
+        const FLOOR_WIDTH  = CASTLE_WIDTH * 1.5;
+        const FLOOR_DEPTH  = CASTLE_DEPTH * 1.5;
 
-        this.castle = new Castle(scene, CASTLE_X, CASTLE_Y, CASTLE_Z, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
+        // para os objetos posicionados acima dele
+        const FLOOR_Y = FLOOR_HEIGHT
+
+        this.floor = new Floor(0, FLOOR_HEIGHT/2 + 0.01, 0, materials.grass, FLOOR_WIDTH, FLOOR_HEIGHT, FLOOR_DEPTH);
+        this.castle = new Castle(scene, 0, FLOOR_Y, 0, null, CASTLE_WIDTH, CASTLE_DEPTH, SCALE)
+        this.house = new House(scene, 0, FLOOR_Y, 0, materials.rotten_wood, 30, 30, 30, 1)
         
+        // grupo de colisão
         this.collisionEnabledGroup.add(this.castle.object)
+        this.collisionEnabledGroup.add(this.house.object)
+        this.collisionEnabledGroup.add(this.floor.object)
+
+        // grupo que so tem a vista mas não tem colisão
         this.collisionDisabledGroup.add(this.castle.collisionDisabledGroup)
 
         scene.add(this.collisionEnabledGroup)
-        scene.add(this.collisionDisabledGroup)
-    
+        scene.add(this.collisionDisabledGroup)    
     }
 
     update(deltaTime, playerPosition, isPlayerMoving) {
