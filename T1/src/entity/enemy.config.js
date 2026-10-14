@@ -20,7 +20,7 @@ export const enemiesConfig = {
         life: 5,
         behavior: BEHAVIOR.FLYING,
         speed: 15,
-        model: 'shy'
+        model: 'tree'
     },
     FLYING_BLUE: {
         color: "#206aff",
@@ -28,7 +28,7 @@ export const enemiesConfig = {
         life: 5,
         behavior: BEHAVIOR.FLYING,
         speed: 15,
-        model: 'happy'
+        model: 'ghost'
     },
     WALKING_PURPLE: {
         color: "#7b21e9",
@@ -36,7 +36,7 @@ export const enemiesConfig = {
         life: 3,
         behavior: BEHAVIOR.WALKING,
         speed: 5,
-        model: 'shy'
+        model: 'tree'
     },
     WALKING_ORANGE: {
         color: "#f19131",
@@ -44,6 +44,6 @@ export const enemiesConfig = {
         life: 3,
         behavior: BEHAVIOR.WALKING,
         speed: 5,
-        model: 'happy'
+        model: 'ghost'
     },
 }
