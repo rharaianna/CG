@@ -24,7 +24,7 @@ export class Game {
         this.scene = new THREE.Scene();  
         this.world = new World(this.scene) 
     
-        this.renderer = initRenderer('rgb(0, 0, 0)', THREE.PCFShadowMap);
+        this.renderer = initRenderer('rgba(0, 0, 0, 0.69)', THREE.PCFShadowMap);
         this.state = new State();
         this.lighting()
 
@@ -89,7 +89,8 @@ export class Game {
         this.frames = 0;
         this.fpsTimer = 0;
 
-        this.tooltip = new Tooltip()
+        this.tooltip = new Tooltip();
+        this.updateTooltip();
 
         configureShadows(this.scene)
 
@@ -109,9 +110,15 @@ export class Game {
         );
 
         if (!this.ambientLight) {
-            this.ambientLight = new THREE.AmbientLight('rgb(255,255,255)');
-            this.scene.add(this.ambientLight);
+            // this.ambientLight = new THREE.AmbientLight('rgb(255,255,255)');
+            // this.scene.add(this.ambientLight);
 
+            this.dirLight2 = new THREE.DirectionalLight('rgb(250, 250, 250)');
+            this.dirLight2.position.set(-10, 50, -15);
+            this.dirLight2.castShadow = false;
+            this.scene.add(this.dirLight2);
+
+            
             this.dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
             this.dirLight.position.set(10, 50, 15);
             this.dirLight.castShadow = true;
@@ -122,16 +129,21 @@ export class Game {
             this.dirLight.shadow.camera.bottom = -70;
             this.dirLight.shadow.camera.near = 0.1;
             this.dirLight.shadow.camera.far = 200;
-            this.dirLight.shadow.bias = -0.0005;
-            this.dirLight.shadow.normalBias = 0.01;
+            this.dirLight.shadow.bias = -0.0015;
+            this.dirLight.shadow.normalBias = 0.07;
             this.dirLight.shadow.camera.updateProjectionMatrix();
             this.scene.add(this.dirLight);
         }
+
         const ambientColor = this.state.isDay ? 'rgb(254, 225, 251)' : 'rgb(220, 233, 255)';
         const directionalColor = this.state.isDay ? 'rgb(244, 225, 183)' : 'rgb(128, 172, 243)';
 
-        this.ambientLight.color.set(ambientColor);
-        this.ambientLight.intensity = this.state.isDay ? 0.4 : 0.15;
+        //this.ambientLight.color.set(ambientColor);
+        //this.ambientLight.intensity = this.state.isDay ? 0.4 : 0.15;
+
+        this.dirLight2.color.set(ambientColor);
+        this.dirLight2.intensity = this.state.isDay ? 0.8 : 0.4;
+
         this.dirLight.color.set(directionalColor);
         this.dirLight.intensity = this.state.isDay ? 2 : 0.5;
     }
@@ -167,9 +179,6 @@ export class Game {
     }
 
     update() {
-        
-        this.updateTooltip()
-
         this.clock.update();
         const deltaTime = Math.min(0.05, this.clock.getDelta());
         this.timerToShoot += deltaTime
@@ -182,6 +191,7 @@ export class Game {
 
             this.frames = 0;
             this.fpsTimer = 0;
+            this.updateTooltip();
         }
         
         // so se tiver na camera correta
