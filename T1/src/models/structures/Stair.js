@@ -1,12 +1,11 @@
 import * as THREE from "three"
 import { Model } from "../Model.js";
+import { Scene } from "../../../../build/three.core.js";
 
 export class Stair extends Model {
     constructor(x, y, z, material, stepWidth, stepHeight, stepDepth, stepNumber) {
         super(x, y, z, material);
 
-        const stair = new THREE.Group()
-        
         for(let i=0; i<stepNumber; i++) {
 
             const step = new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth)
@@ -16,12 +15,8 @@ export class Stair extends Model {
             // Marca como visual: será excluído da malha de colisão (Octree)
             mesh.userData.stairVisual = false;
 
-            stair.add(mesh);
+            this.add(mesh);
         }
 
-        // Expõe o grupo para referência externa
-        this.stairGroup = stair;
-
-        this.add(stair);
     }
 }

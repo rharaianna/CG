@@ -3,6 +3,10 @@ import * as THREE from "three";
 export class Model {
     constructor(x = 0, y = 0, z = 0, material = null) {
 
+        this.x = x
+        this.y = y
+        this.z = z
+
         this.object = new THREE.Group();
         this.object.position.set(x, y, z);
 
@@ -59,7 +63,7 @@ export class Model {
     hideBoundingBox() {
         this.boxHelper.visible = false;
     }
-
+    
     update(deltaTime) {
         for (const child of this.children) {
             if (typeof child.update === "function") {

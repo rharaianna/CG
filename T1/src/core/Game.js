@@ -55,7 +55,7 @@ export class Game {
         this.worldOctree = new Octree();
         this.worldOctree.fromGraphNode(this.world.collisionEnabledGroup);
 
-        this.player = new Player(this.worldOctree, this.playerCamera)
+        this.player = new Player(this.worldOctree, this.playerCamera, this.world.getInicialPosition())
         this.pointerControls = new PointerLockControls(
             this.playerCamera, this.renderer.domElement
         )
