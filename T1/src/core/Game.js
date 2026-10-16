@@ -64,8 +64,8 @@ export class Game {
         this.objects = new Objects3D(this.scene)
 
         this.models = {
-            shy: this.objects.loadShyGhost(),  
-            happy: this.objects.loadHappyGhost(),
+            ghost: this.objects.loadGhost(),  
+            tree: this.objects.loadTree(),
         }
 
         this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_BLUE)

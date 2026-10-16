@@ -1,9 +1,10 @@
 import { FBXLoader } from "../../../build/jsm/loaders/FBXLoader.js"
 import { OBJLoader } from "../../../build/jsm/loaders/OBJLoader.js"
+import { materials } from "./material.configs.js"
 import * as THREE from "three";
 
 const SHY_GHOST_PATH = new URL("../assets/shy_ghost.fbx", import.meta.url).href
-const HAPPY_GHOST_PATH = new URL("../assets/happy_ghost.fbx", import.meta.url).href
+const EVIL_TREE_PATH = new URL("../assets/evil_tree.fbx", import.meta.url).href
 const CROSSBOW_PATH = new URL("../assets/crossbow.fbx", import.meta.url).href
 const ARROW_PATH = new URL("../assets/arrow.obj", import.meta.url).href
 
@@ -12,7 +13,7 @@ export class Objects3D {
         this.scene = scene
     }
 
-    loadObject(loader, path, scale = 1, addToScene = true) {
+    loadObject(loader, path, material, scale, addToScene) {
         const asset = {
             object: null,
             loaded: false,
@@ -27,14 +28,7 @@ export class Objects3D {
                     if (child.isMesh) {
                         child.castShadow = true
 
-                        child.material = new THREE.MeshStandardMaterial({
-                            color: 0xdde6ff,
-                            transparent: !true,
-                            opacity: 0.75,
-                            emissive: 0x8899cc,   
-                            emissiveIntensity: 0.4,
-                            roughness: 0.5,
-                        })
+                        child.material = material
                     }
                 })
 
@@ -56,20 +50,20 @@ export class Objects3D {
         return asset
     }
 
-    loadFBX(path, scale = 1, addToScene = false) {
+    loadFBX(path, scale, addToScene) {
         return this.loadObject(new FBXLoader(), path, scale, addToScene)
     }
 
-    loadOBJ(path, scale = 1, addToScene = true) {
+    loadOBJ(path, scale, addToScene) {
         return this.loadObject(new OBJLoader(), path, scale, addToScene)
     }
 
-    loadShyGhost() {
-        return this.loadFBX(SHY_GHOST_PATH, 0.5)
+    loadGhost() {
+        return this.loadFBX(SHY_GHOST_PATH, materials.ghost, 0.5, false)
     }
 
-    loadHappyGhost() {
-        return this.loadFBX(HAPPY_GHOST_PATH, 0.5)
+    loadTree() {
+        return this.loadFBX(EVIL_TREE_PATH, materials.tree, 5, false)
     }
 
     loadCrossbow() {
@@ -77,7 +71,7 @@ export class Objects3D {
     }
 
     loadArrow() {
-        return this.loadOBJ(ARROW_PATH, 1, false)  // não entra na cena agora
+        return this.loadOBJ(ARROW_PATH, 1, false)
     }
 }
 
