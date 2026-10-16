@@ -1,15 +1,15 @@
 import { BEHAVIOR } from "./enemy.enums.js";
 
 const smallEnemyDimensions = {
-    width: 1,
-    height: 1,
-    depth: 1,
-}
-
-const greatEnemyDimensions = {
     width: 2,
     height: 2,
     depth: 2,
+}
+
+const greatEnemyDimensions = {
+    width: 3,
+    height: 3,
+    depth: 3,
 }
 
 export const enemiesConfig = {
