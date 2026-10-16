@@ -29,12 +29,10 @@ export class Door extends Model {
         this.rightPivot.position.set(panelWidth, 0, 0);
 
         // Adiciona ao objeto principal
-        this.object.add(this.leftPivot);
-        this.object.add(this.rightPivot);
+        this.add(this.leftPivot);
+        this.add(this.rightPivot);
 
-        this.updateBoundingBox();
-
-
+        //this.updateBoundingBox();
     }
 
     toggleDoor(open) {

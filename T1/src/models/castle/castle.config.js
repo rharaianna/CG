@@ -51,6 +51,11 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
     const STEPS_NUMBER      = Math.floor(CEIL_Y / STAIR_STEP_HEIGHT);
     const STAIR_TOTAL_DEPTH = STEPS_NUMBER * STAIR_STEP_DEPTH;
 
+    // Brigde - esse são os tamnhos do pedaço do meio, os outros estão sendo calculados a partir dele
+    const BRIDGE_WITDH = 10 * SCALE
+    const BRIDGE_HEIGHT = 1 * SCALE
+    const BRIDGE_DEPTH = 35 * SCALE
+
     // 
     return {
         // dimensões escaladas (usadas no layout de Castle.js)
@@ -113,5 +118,11 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
             y:        CEIL_Y,
             distance: DISTANCE,
         },
+
+        bridge: {
+            brigdeWitdh: BRIDGE_WITDH,
+            bridgeHeight: BRIDGE_HEIGHT,
+            bridgeDepth: BRIDGE_DEPTH
+        }
     };
 }

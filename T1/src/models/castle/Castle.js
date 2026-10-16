@@ -19,7 +19,7 @@ import { makeCastleConfig } from "./castle.config.js";
 import { MovementArea } from "../MovementArea.js";
 import { Vector3 } from "../../../../build/three.core.js";
 import { Portal } from "../structures/Portal.js";
-
+import { Bridge } from "../Bridge.js";
 
 
 export class Castle extends Model {
@@ -31,8 +31,10 @@ export class Castle extends Model {
         this.portals = [];
 
         //this.collisionEnabledGroup = new THREE.Group();
-        this.collisionDisabledGroup = new THREE.Group();
 
+        // corrijo para posicionar relativo a altura do castelo
+        this.collisionDisabledGroup = new THREE.Group();
+    
         // Obtém todos os parâmetros de tamanho e escala do arquivo de configuração
         const cfg = makeCastleConfig(WIDTH, DEPTH, SCALE);
 
@@ -40,7 +42,6 @@ export class Castle extends Model {
             WIDTH: scaledWidth, 
             DEPTH: scaledDepth, 
             SCALE: cfgScale,
-            floor: fCfg, 
             wall: wCfg,
             window: wdCfg, 
             tower: tCfg, 
@@ -48,7 +49,8 @@ export class Castle extends Model {
             frontTower: ftCfg,
             door: dCfg, 
             stair: sCfg, 
-            ceil: cCfg
+            ceil: cCfg,
+            bridge: bCfg
         } = cfg;
 
         ///////////////////////////////////////////////////////////////////////
@@ -72,14 +74,9 @@ export class Castle extends Model {
         ///////////////////////////////////////////////////////////////////////
         ///////////////////////// CRIAÇÃO DOS OBJETOS /////////////////////////
         
-        // Chão
-        const floorY = fCfg.height / 2;
-        const floor = new Floor(0, floorY, 0, materials.grass, fCfg.width, fCfg.height, fCfg.depth);
-        this.add(floor);
-
         // Escadas
         const STAIR_X = wallX - cCfg.distance - sCfg.totalDepth - wCfg.depth / 2 + sCfg.stepDepth / 2;
-        const STAIR_Y = floorY + sCfg.stepHeight;
+        const STAIR_Y = sCfg.stepHeight/2;
         const STAIR_Z = -wallZ + sCfg.stepWidth / 2 + wCfg.depth / 2;
 
         // escada direita (rotação +90° em Y)
@@ -141,13 +138,14 @@ export class Castle extends Model {
         this.add(midWallCeilLeft);
 
         // Tetos
-        const CEIL_HEIGHT = sCfg.stepHeight * 2;
+        const CEIL_HEIGHT = sCfg.stepHeight;
         const CEIL_X = wallX - cCfg.distance / 2 - wCfg.depth / 2;
+        const CEIL_Y = cCfg.y - CEIL_HEIGHT/2
 
-        const ceilRight = new Ceil(CEIL_X, cCfg.y, 0, materials.rotten_wood, cCfg.distance, CEIL_HEIGHT, scaledDepth);
+        const ceilRight = new Ceil(CEIL_X, CEIL_Y, 0, materials.rotten_wood, cCfg.distance, CEIL_HEIGHT, scaledDepth);
         this.add(ceilRight);
 
-        const ceilLeft = new Ceil(-CEIL_X, cCfg.y, 0, materials.rotten_wood, cCfg.distance, CEIL_HEIGHT, scaledDepth);
+        const ceilLeft = new Ceil(-CEIL_X, CEIL_Y, 0, materials.rotten_wood, cCfg.distance, CEIL_HEIGHT, scaledDepth);
         this.add(ceilLeft);
 
         let doorWallConfig = {
@@ -163,7 +161,7 @@ export class Castle extends Model {
         
         // Paredes principais
         const wall1 = new CastleWall(0, wallY, wallZ, this.material, scaledWidth -tCfg.radius, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
-        const wall2 = new CastleWall(0, wallY, -wallZ, this.material, scaledWidth -tCfg.radius, wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
+        const wall2 = new CastleWall(0, wallY, -wallZ, this.material, scaledWidth -tCfg.radius, wCfg.height, wCfg.depth, tCfg.radius, null);
     
         // paredes posicionadas no X, paralelas ao Z (azul)
         // comprimento delas é a profundidade do terreno e rotacionadas
@@ -171,11 +169,11 @@ export class Castle extends Model {
         const wall3 = new CastleWall(wallX, wallY, 0, this.material, scaledDepth -tCfg.radius , wCfg.height, wCfg.depth, tCfg.radius, doorWallConfig);
         
         // lado da parede com detalhes
-        const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4, this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.radius / 2, null);
+        const wall4 = new CastleWall(-wallX, wallY, -scaledDepth / 4 + tCfg.radius/2 , this.material, scaledDepth / 2 - mtCfg.width / 2, wCfg.height, wCfg.depth, tCfg.innerRadius, null);
         // empurro ela pro local correto 
         wall4.object.translateZ(-mtCfg.width / 4);
         
-        const wall44 = new DetailedWall(-wallX, wallY, scaledDepth / 4, this.material, scaledDepth / 2, wCfg.height, wCfg.depth, mtCfg.width, mtCfg.depth, null);
+        const wall44 = new DetailedWall(-wallX, wallY, scaledDepth / 4, this.material, scaledDepth / 2, wCfg.height, wCfg.depth, mtCfg.width, mtCfg.depth, tCfg.radius, null);
         
         wall3.object.rotateY(THREE.MathUtils.degToRad(90));
         wall4.object.rotateY(THREE.MathUtils.degToRad(90));
@@ -221,8 +219,8 @@ export class Castle extends Model {
             bricks: tCfg.bricks,
             windowsConfig: windowsTowerConfig,
             pocketDepth,
-            ceilHeight: CEIL_HEIGHT,
-            floorY: cCfg.y
+            ceilY: CEIL_Y,
+            ceilHeight: CEIL_HEIGHT
         });
         
         // Torres intermediárias
@@ -295,15 +293,19 @@ export class Castle extends Model {
         });
 
 
+        /////////////////////////////////////
+        // sao criados aqui pela praticidade de posicionar
+        // preciso passar o y pq são posicionados na cena
+        // e não no castelo em si e preciso das posições relativas ao mundo
+
         // inimigo do segundo andar
         const movementArea1Dimensions = {
             width: cCfg.distance,
             height: CEIL_HEIGHT,
             depth: DEPTH/3,
         }
-        const movementArea1Position = new Vector3(CEIL_X, floorY + cCfg.y + movementArea1Dimensions.height/2, 0)
+        const movementArea1Position = new Vector3(CEIL_X, y + cCfg.y + movementArea1Dimensions.height/2, 0)
         this.secondFloorMovementArea = new MovementArea(scene, movementArea1Position, movementArea1Dimensions, 15, 60)
-        
         
 
         // inimigo da torre frontal 
@@ -312,7 +314,7 @@ export class Castle extends Model {
             depth: 30,
             height: ftCfg.height,
         }
-        const movementArea2Position = new Vector3(0, ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
+        const movementArea2Position = new Vector3(0, y + ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
         this.frontalTowerMovementArea = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
         
         
@@ -322,9 +324,8 @@ export class Castle extends Model {
             depth: 15,
             height: 5,
         }
-        const movementArea3Position = new Vector3(0, floorY + movementArea2Dimensions.height/2, 0)
+        const movementArea3Position = new Vector3(0, y + movementArea2Dimensions.height/2, 0)
         this.internalBuildingMovementArea = new MovementArea(scene, movementArea3Position, movementArea3Dimensions, 15, 30)
-        
 
 
         // inimigo na torre redonda
@@ -334,19 +335,25 @@ export class Castle extends Model {
             height: tCfg.height,
         }
 
-        const movementArea4Position = new Vector3(-towerX, movementArea4Dimensions.height, -towerZ)
+        const movementArea4Position = new Vector3(-towerX, y + movementArea4Dimensions.height, -towerZ)
         this.towerMovementArea = new MovementArea(scene, movementArea4Position, movementArea4Dimensions, 15, 15)
-        
+    
         this.collisionDisabledGroup.add(this.secondFloorMovementArea.object)
         this.collisionDisabledGroup.add(this.frontalTowerMovementArea.object)
         this.collisionDisabledGroup.add(this.internalBuildingMovementArea.object)
         this.collisionDisabledGroup.add(this.towerMovementArea.object)
+        
+        const BRIDGE_Z = bCfg.bridgeDepth/2 + bCfg.bridgeDepth/6 + bCfg.bridgeDepth/4 + FRONTTOWER_Z
+        const BRIDGE_Y = bCfg.bridgeHeight/2
+
+        const bridge = new Bridge(0, BRIDGE_Y, BRIDGE_Z, materials.grass, bCfg.brigdeWitdh, bCfg.bridgeHeight, bCfg.bridgeDepth)
+        this.add(bridge)
     } 
 
     addDoor(config) {
         const door = new Door(
             config.x,
-            config.y,
+            this.y + config.y,
             config.z,
             materials.rotten_wood,
             config
@@ -354,9 +361,11 @@ export class Castle extends Model {
 
         door.interactionDistance = config.interactionDistance ?? 4;
         door.object.rotation.y = config.rotationY ?? 0;
+        
+        //this.add(door)
+        this.collisionDisabledGroup.add(door.object);
 
         this.doors.push(door);
-        this.collisionDisabledGroup.add(door.object);
 
         return door;
     }
@@ -376,7 +385,8 @@ export class Castle extends Model {
         } = config;
 
         //  Escada visual 
-        const stair = new Stair(x, y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
+        // aqui a
+        const stair = new Stair(x, this.y + y, z, stairMaterial, stepWidth, stepHeight, stepDepth, stepNumber);
         stair.object.rotation.y = rotationY;
         this.collisionDisabledGroup.add(stair.object);
 
@@ -392,7 +402,6 @@ export class Castle extends Model {
         return pair;
     }
 
-
     update(deltaTime, playerPosition) {
         this.doors.forEach(door => door.update(deltaTime, playerPosition))
         this.portals.forEach(portal => portal.update(deltaTime, playerPosition))
@@ -404,7 +413,7 @@ export class Castle extends Model {
         const {
             x, y, z,                // posição absoluta de cada torre (módulo, simétrico em X e Z)
             height, radius, innerRadius, radialSegments, bricks,
-            windowsConfig, pocketDepth, ceilHeight, floorY,
+            windowsConfig, pocketDepth, ceilY, ceilHeight,
             material = this.material,
         } = config;
 
@@ -423,8 +432,8 @@ export class Castle extends Model {
                 height, radius, innerRadius, radialSegments, bricks,
                 windowsConfig,
                 pocketDepth,
-                ceilHeight,
-                floorY
+                ceilY,
+                ceilHeight
             );
 
             if (rotY !== 0) {

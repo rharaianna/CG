@@ -27,6 +27,7 @@ export class Ramp extends Model {
         //     deslocado para baixo pela metade da espessura projetada
         mesh.position.set(
             0,
+            //y - stepHeight/2 - THICKNESS/2,
             totalHeight / 2 - (THICKNESS / 2) * Math.cos(angle),
             totalDepth  / 2 + (THICKNESS / 2) * Math.sin(angle)
         );

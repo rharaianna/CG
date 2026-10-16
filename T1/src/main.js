@@ -10,9 +10,16 @@ document.body.addEventListener('click', function (event) {
   game.shoot()
 });
 
-document.body.addEventListener('keydown', function (event) { 
-  if (event.key.toLocaleLowerCase() === 'c')
-    game.toggleCamera()
+document.body.addEventListener('keydown', function (event) {
+  const key = event.key.toLowerCase();
+
+  if (key === 'c') {
+    game.toggleCamera();
+  }
+
+  if (key === 'h') {
+    game.setDay(!game.state.isDay);
+  }
 });
 
 // disparo

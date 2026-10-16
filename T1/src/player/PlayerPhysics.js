@@ -16,11 +16,29 @@ import { Capsule } from '../../../build/jsm/math/Capsule.js';
 const GRAVITY = 100
 
 export class PlayerPhysics {
-    constructor(worldOctree) {
+    constructor(worldOctree, initialPosition, playerHeight) {
+
         this.worldOctree = worldOctree;
-        this.playerCollider = new Capsule(
+        this.initialPosition = initialPosition.clone()
+
+        /* this.playerCollider = new Capsule(
             new THREE.Vector3(0, 0.15, 0),
-            new THREE.Vector3(0, 2, 0), 0.35); // ta com 1.85 de altura
+            new THREE.Vector3(0, 2, 0), 0.35); // ta com 1.85 de altura */
+        
+        this.playerCollider = new Capsule(
+            new THREE.Vector3(
+                this.initialPosition.x,
+                this.initialPosition.y,
+                this.initialPosition.z
+            ),
+            new THREE.Vector3(
+                this.initialPosition.x,
+                this.initialPosition.y + playerHeight,
+                this.initialPosition.z
+            ),
+            0.35
+        );
+        
         this.playerVelocity = new THREE.Vector3();
         this.playerDirection = new THREE.Vector3();
         this.playerOnFloor = false;
@@ -168,22 +186,20 @@ export class PlayerPhysics {
         // Verifica se o y da camera é menor que um limite
         if (camera.position.y <= - 25) {
 
-            // Reseta o ponto inicial da cápsula do jogador de volta pra origem (0, 0.35, 0)
-            this.playerCollider.start.set(0, 0.15, 0);
-
-            // Reseta o topo da cápsula pra (0, 1, 0)
-            this.playerCollider.end.set(0, 2, 0);
-
-
+            // Reseta o ponto inicial da cápsula do jogador de volta pra origem
+            this.playerCollider.start.copy(this.initialPosition);
+            
+            this.playerCollider.end.copy(this.initialPosition);
+            this.playerCollider.end.y += 1.85;
+            
             /* Redefine o raio da cápsula pra 0.35 (garantindo que, mesmo que algo tenha alterado 
                essa propriedade, ela volte ao valor padrão).
             */
             this.playerCollider.radius = 0.35;
 
-            // Move a posição da câmera pra coincidir com o topo da cápsul, que acabou de ser resetado pra (0, 1, 0)
-            camera.position.copy(this.playerCollider.end);
-
+            
             // Zera a rotação da câmera, olhando pra frente, sem inclinação
+            camera.position.copy(this.playerCollider.end);
             camera.rotation.set(0, 0, 0);
         }
     }
