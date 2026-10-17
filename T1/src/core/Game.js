@@ -64,8 +64,8 @@ export class Game {
         this.objects = new Objects3D(this.scene)
 
         this.models = {
-            shy: this.objects.loadShyGhost(),  
-            happy: this.objects.loadHappyGhost(),
+            ghost: this.objects.loadGhost(),  
+            tree: this.objects.loadTree(),
         }
 
         this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_BLUE)
@@ -74,7 +74,7 @@ export class Game {
         this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
 
         this.enemies = [this.enemy1, this.enemy2, this.enemy3, this.enemy4]
-        //this.enemies = [this.enemy1]
+        //this.enemies = [this.enemy2]
 
         this.canShoot = false;
         this.timerToShoot = 0

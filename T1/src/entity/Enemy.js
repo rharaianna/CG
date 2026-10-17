@@ -14,7 +14,8 @@ export class Enemy extends Entity {
             life,
             behavior,
             speed,
-            model
+            model,
+            minProximity
         } = config
 
         this.scene = scene
@@ -25,6 +26,7 @@ export class Enemy extends Entity {
         this.color = color
         this.model = model
         this.ghost = null
+        this.minProximity = minProximity
 
         // inicia parado
         this.status = STATUS["STILL"]
@@ -36,8 +38,10 @@ export class Enemy extends Entity {
         this.center = movementArea.getStartPosition(this.enemyDimensions)
         this.position = movementArea.getRandomPosition(this.enemyDimensions, this.behavior)
         this.destiny = movementArea.getRandomPosition(this.enemyDimensions, this.behavior)
+        
         this.timer = 0
         this.scale = 1
+        this.walkTime = Math.random() * Math.PI * 2; // fase aleatória
     
         const material = new THREE.MeshStandardMaterial({ 
             color: 0x444444, 
@@ -64,16 +68,13 @@ export class Enemy extends Entity {
 
         this.light = new THREE.PointLight(this.color, 100, 100)
         this.mesh.add(this.light)
-        
-        //this.light.castShadow = true
-     
+             
         this.scene.add(this.mesh)
     }
 
     // vai ser chamado quando chegar na direção
     // inimigo fica parado por um tempo e dps gera outro local
     moveToAnotherPlace(deltaTime) {
-
         // um tempo de parada aleatório
         const stillTime = 1 + Math.random() * 3
 
@@ -102,7 +103,8 @@ export class Enemy extends Entity {
 
         if (this.life <= 0) 
             this.kill()
-        else this.status = STATUS.ATTACK
+        else if (this.status != STATUS.ATTACK)
+            this.status = STATUS.ATTACK
 
         return this.life <= 0
     }
@@ -125,10 +127,13 @@ export class Enemy extends Entity {
     }
 
     move(deltaTime) {
+
         // calcula a direção que deve ir e a distancia que está
         const direction = new THREE.Vector3().subVectors(this.destiny, this.position).normalize()
         const distance = this.position.distanceTo(this.destiny);
         const movement = this.speed * deltaTime;
+
+        const walkRotationAmplitude = 0.02
 
         // se tiver chegado, vai pro comportamento de outro lugar
         if (distance <= movement) {
@@ -137,33 +142,37 @@ export class Enemy extends Entity {
    
             this.status = STATUS.STILL;
             this.timer = 0;
-
+            this.walkTime = 0;
+            
             // nao se movimenta e buga tudo
             return;
         } 
 
         // rotaciona na direção do movimento
         this.body.lookAt(this.position.clone().add(direction));
-
+        
+        // oscilação durante a caminhada
+        this.walkTime += deltaTime;
+        this.body.rotation.z += Math.sin(this.walkTime * 10) * walkRotationAmplitude;
+        this.body.rotation.y += Math.sin(this.walkTime * 10) * walkRotationAmplitude;
+        
         // se movimenta
         this.position.add(direction.multiplyScalar(movement));
         this.body.position.copy(this.position);
     }
 
+    // quando o inimigo for walking ele vai ter uma distancia menor
     checkDistanceToCenter() {
 
         if(this.status != STATUS.ATTACK)
             return
 
+        const maxWalkingDistance = 10
         const distance = this.position.distanceTo(this.center);
-        
+    
         // distancia máxima que pode sair do raio
+        // da região 
         if(distance >= this.movementArea.maxDistance) {
-
-        /*     // teste para morrer dps de sair da regiao
-            this.status = STATUS.DEAD
-            return */
-
             // mas na verdade voltaria pro centro
             this.status = STATUS.STILL
             this.destiny.copy(this.center)
@@ -176,18 +185,28 @@ export class Enemy extends Entity {
         
         // olha pro jogador
         const direction = new THREE.Vector3().subVectors(playerPosition, this.position).normalize()
-        this.body.lookAt(this.position.clone().add(direction));
-
-        const distance = this.position.distanceTo(playerPosition);
+        this.body.lookAt(playerPosition.x, this.body.position.y, playerPosition.z)
 
         // distancia que fica do jogador
-        const maxDistance = 10
-      
-        if(distance >= maxDistance) {
+        const distance = this.position.distanceTo(playerPosition);
+        
+        if(this.behavior == BEHAVIOR.WALKING) {
+            
+            const maxDistance = 25
+
+            // desiste de atacar quando chega numa posição
+            if(distance > maxDistance) {
+                this.status = STATUS.STILL
+            }
+        }
+
+        // se for voador sempre segue o player até ele sair da região
+        if(this.behavior == BEHAVIOR.FLYING) {
             this.destiny.copy(this.position).add(
-                direction.multiplyScalar(distance - maxDistance)
+                direction.multiplyScalar(distance - 5)
             );
-        } 
+            this.move(deltaTime)
+        }
     }
 
     kill(deltaTime) {
@@ -244,15 +263,20 @@ export class Enemy extends Entity {
 
     // recebe os ticks do jogo e coordena a logica
     update(deltaTime, playerPosition, isPlayerMoving) {
-
+        
+        // sempre roda, qualquer que seja o estado
+        this.updateHitbox()
         this.attachModel()
         
+        this.body.scale.setScalar(this.scale);
+        this.body.rotation.x += Math.sin(this.timer * 10) * 0.001;
         this.light.position.copy(this.position)
-        
-        if(isPlayerMoving && this.detectPlayer(deltaTime, playerPosition, this.movementArea.detectionRange))
-            if (this.status !== STATUS.ATTACK) {
-                this.status = STATUS.ATTACK
-            }
+
+        // entra no modo de ataque pela proximidade da área
+        // continua no modo de ataque até que saia por se afastar
+        if(this.status == STATUS.ATTACK || (isPlayerMoving && this.detectPlayer(deltaTime, playerPosition, this.minProximity))) {
+            this.status = STATUS.ATTACK
+        }
 
         this.checkDistanceToCenter()
         this.checkIsDead()
@@ -260,7 +284,6 @@ export class Enemy extends Entity {
         switch (this.status) {
             case STATUS.ATTACK:
                 this.atack(deltaTime, playerPosition)
-                this.move(deltaTime)
                 break
 
             case STATUS.STILL:
@@ -279,9 +302,6 @@ export class Enemy extends Entity {
                 this.start(deltaTime)
                 break
         }
-
-        // sempre roda, qualquer que seja o estado
-        this.updateHitbox()
     }
 
     attachModel() {

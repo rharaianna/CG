@@ -24,9 +24,9 @@ export class World {
         this.CASTLE_DEPTH = 92
         this.SCALE = 1
  
-        this.FLOOR_HEIGHT = 10  * this.SCALE;
-        this.FLOOR_WIDTH  = this.CASTLE_WIDTH * 1.5;
-        this.FLOOR_DEPTH  = this.CASTLE_DEPTH * 1.5;
+        this.FLOOR_HEIGHT = 1  * this.SCALE;
+        this.FLOOR_WIDTH  = this.CASTLE_WIDTH * 1.05;
+        this.FLOOR_DEPTH  = this.CASTLE_DEPTH * 1.05;
 
         // para os objetos posicionados acima dele
         this.FLOOR_Y = this.FLOOR_HEIGHT

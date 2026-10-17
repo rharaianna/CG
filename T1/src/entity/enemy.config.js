@@ -1,15 +1,15 @@
 import { BEHAVIOR } from "./enemy.enums.js";
 
 const smallEnemyDimensions = {
-    width: 1,
-    height: 1,
-    depth: 1,
-}
-
-const greatEnemyDimensions = {
     width: 2,
     height: 2,
     depth: 2,
+}
+
+const greatEnemyDimensions = {
+    width: 3,
+    height: 3,
+    depth: 3,
 }
 
 export const enemiesConfig = {
@@ -20,7 +20,8 @@ export const enemiesConfig = {
         life: 5,
         behavior: BEHAVIOR.FLYING,
         speed: 15,
-        model: 'shy'
+        model: 'ghost',
+        minProximity: 25
     },
     FLYING_BLUE: {
         color: "#206aff",
@@ -28,22 +29,25 @@ export const enemiesConfig = {
         life: 5,
         behavior: BEHAVIOR.FLYING,
         speed: 15,
-        model: 'happy'
+        model: 'ghost',
+        minProximity: 25
     },
     WALKING_PURPLE: {
         color: "#7b21e9",
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
-        speed: 10,
-        model: 'shy'
+        speed: 5,
+        model: 'tree',
+        minProximity: 10
     },
     WALKING_ORANGE: {
         color: "#f19131",
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
-        speed: 10,
-        model: 'happy'
+        speed: 5,
+        model: 'tree',
+        minProximity: 10
     },
 }
