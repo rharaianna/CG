@@ -15,6 +15,7 @@ const greatEnemyDimensions = {
 export const enemiesConfig = {
 
     FLYING_RED: {
+        name: "Espirito do fogo",
         color: "#e33617",
         dimensions: smallEnemyDimensions,
         life: 5,
@@ -24,7 +25,8 @@ export const enemiesConfig = {
         minProximity: 25
     },
     FLYING_BLUE: {
-        color: "#206aff",
+        name: "Fantasma de notredame",
+        color: "#0088d7",
         dimensions: smallEnemyDimensions,
         life: 5,
         behavior: BEHAVIOR.FLYING,
@@ -33,7 +35,8 @@ export const enemiesConfig = {
         minProximity: 25
     },
     WALKING_PURPLE: {
-        color: "#7b21e9",
+        name: "Desgaça podi",
+        color: "#d037ff",
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
@@ -42,7 +45,8 @@ export const enemiesConfig = {
         minProximity: 10
     },
     WALKING_ORANGE: {
-        color: "#f19131",
+        name: "Andarilho do destino",
+        color: "#b05a05",
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,

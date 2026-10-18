@@ -3,12 +3,14 @@ import { materials } from '../models/material.configs.js';
 import { STATUS, BEHAVIOR } from './enemy.enums.js';
 import { Entity } from './Entity.js';
 import * as SkeletonUtils from "../../../build/jsm/utils/SkeletonUtils.js"
+import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 export class Enemy extends Entity {
     constructor(scene, movementArea, config) {
         super(scene)
 
         const {
+            name, 
             dimensions, 
             color,
             life,
@@ -18,6 +20,7 @@ export class Enemy extends Entity {
             minProximity
         } = config
 
+        this.config = config
         this.scene = scene
         this.respawn = false
         this.enemyDimensions = dimensions
@@ -68,8 +71,44 @@ export class Enemy extends Entity {
 
         this.light = new THREE.PointLight(this.color, 100, 100)
         this.mesh.add(this.light)
-             
+                    
+        const hud = document.createElement('div');
+        hud.className = 'hud';
+            hud.innerHTML = `
+            <div class="name" style="color: ${this.color}">${name}</div>
+            <div class="name">${this.behavior == BEHAVIOR.WALKING ? "Rastejante" : "Voador" }</div>
+            <div class="health-bar">
+                <div class="fill"></div>
+            </div>
+        `;
+        
+        this.hudObject = new CSS2DObject(hud);
+        this.hudObject.position.set(0, 3, 0); 
+        this.hudTimer = 0
+        
+        this.mesh.add(this.hudObject)
         this.scene.add(this.mesh)
+    }
+
+    updateHud(deltaTime) {
+
+        // vai mostrar por alguns segundos
+        const visibleTime = 3
+        if(this.hudObject.visible) 
+            this.hudTimer += deltaTime
+        
+        const pos = this.position.clone()
+        pos.y += this.enemyDimensions.height
+        this.hudObject.position.copy(pos)
+
+        const fill = this.hudObject.element.querySelector(".fill")
+        const perc = Math.floor((this.life / this.config.life) * 100);
+        fill.style.width = `${perc}%`
+
+        if(this.hudTimer > visibleTime) {
+            this.hudObject.visible = false
+            this.hudTimer = 0
+        }
     }
 
     // vai ser chamado quando chegar na direção
@@ -212,18 +251,13 @@ export class Enemy extends Entity {
     kill(deltaTime) {
         const factor = 0.05
         this.scale -= factor
+        this.body.scale.setScalar(this.scale);
 
         if(this.scale < 0) {
-            //this.scale = 0;
-            //this.body.scale.setScalar(0);
             this.timer = 0
-
             this.destroy()
-
             return
         }
-
-        this.body.scale.setScalar(this.scale);
     }
 
     // reinicia
@@ -257,6 +291,7 @@ export class Enemy extends Entity {
                 return
             }
 
+            this.hudObject.visible = false
             this.status = STATUS.DEAD
         }
     }
@@ -267,16 +302,19 @@ export class Enemy extends Entity {
         // sempre roda, qualquer que seja o estado
         this.updateHitbox()
         this.attachModel()
+        this.updateHud(deltaTime)
         
         this.body.scale.setScalar(this.scale);
         this.body.rotation.x += Math.sin(this.timer * 10) * 0.001;
         this.light.position.copy(this.position)
 
+        // mostra a hud quando está proximo ou no estado de ataque
         // entra no modo de ataque pela proximidade da área
         // continua no modo de ataque até que saia por se afastar
         if(this.status == STATUS.ATTACK || (isPlayerMoving && this.detectPlayer(deltaTime, playerPosition, this.minProximity))) {
             this.status = STATUS.ATTACK
-        }
+            this.hudObject.visible = true
+        } 
 
         this.checkDistanceToCenter()
         this.checkIsDead()

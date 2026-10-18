@@ -15,6 +15,9 @@ import { enemiesConfig } from '../entity/enemy.config.js';
 import { State } from './State.js';
 import { Tooltip } from './Tooltip.js';
 import { Key } from '../entity/Key.js';
+import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
+
+
 
 const STEPS_PER_FRAME = 3;
 
@@ -94,6 +97,18 @@ export class Game {
 
         configureShadows(this.scene)
 
+
+        this.labelRenderer = new CSS2DRenderer();
+
+        this.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+
+        this.labelRenderer.domElement.style.position = 'absolute';
+        this.labelRenderer.domElement.style.top = '0';
+        this.labelRenderer.domElement.style.left = '0';
+        this.labelRenderer.domElement.style.pointerEvents = 'none';
+
+        document.body.appendChild(this.labelRenderer.domElement);
+
     }
 
     createEnemy(area, config) {
@@ -163,11 +178,8 @@ export class Game {
 
     render() {
         this.update();
-
-        this.renderer.render(
-            this.scene,
-            this.getActiveCamera()
-        );
+        this.renderer.render(this.scene, this.getActiveCamera());
+        this.labelRenderer.render(this.scene, this.getActiveCamera());
     }
 
     updateTooltip() {
