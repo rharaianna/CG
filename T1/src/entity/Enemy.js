@@ -23,6 +23,7 @@ export class Enemy extends Entity {
         this.config = config
         this.scene = scene
         this.respawn = false
+        this.enabled = true
         this.enemyDimensions = dimensions
         this.speed = speed
         this.life = life
@@ -296,8 +297,14 @@ export class Enemy extends Entity {
         }
     }
 
+    setEnabled(enabled) {
+        this.enabled = enabled
+        this.mesh.visible = enabled
+    }
+
     // recebe os ticks do jogo e coordena a logica
     update(deltaTime, playerPosition, isPlayerMoving) {
+        if (!this.enabled) return
         
         // sempre roda, qualquer que seja o estado
         this.updateHitbox()

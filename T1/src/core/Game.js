@@ -77,6 +77,7 @@ export class Game {
         this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
 
         this.enemies = [this.enemy1, this.enemy2, this.enemy3, this.enemy4]
+        this.updateEnemiesDayState()
         //this.enemies = [this.enemy2]
 
         this.canShoot = false;
@@ -133,21 +134,44 @@ export class Game {
             this.dirLight2.castShadow = false;
             this.scene.add(this.dirLight2);
 
-            
             this.dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
-            this.dirLight.position.set(10, 50, 15);
             this.dirLight.castShadow = true;
-            this.dirLight.shadow.mapSize.set(2048, 2048);
-            this.dirLight.shadow.camera.left = -70;
-            this.dirLight.shadow.camera.right = 70;
-            this.dirLight.shadow.camera.top = 70;
-            this.dirLight.shadow.camera.bottom = -70;
-            this.dirLight.shadow.camera.near = 0.1;
-            this.dirLight.shadow.camera.far = 200;
-            this.dirLight.shadow.bias = -0.0015;
-            this.dirLight.shadow.normalBias = 0.07;
-            this.dirLight.shadow.camera.updateProjectionMatrix();
+
+            //tamanho da textura da sombra (largura × altura em pixels). Mais pixels = sombra mais nítida
+            //tem que ter proporção similar ao frustum
+            this.dirLight.shadow.mapSize.set(2048, 4096);
+            
+
+            //tem direção, não posição real. A direção é o vetor que vai de position até target
+            const cx = 0, cz = 40;
+            this.dirLight.target.position.set(cx, 0, cz);
+            this.dirLight.position.set(cx+3, 50, cz + 15);
+            this.scene.add(this.dirLight.target);
+
+            //Frustum da câmera, É o tamanho do retângulo (em unidades do mundo) que recebe sombra, medido a partir do centro da câmera.
+            //Quanto menor o retângulo, mais nítida a sombra
+            const cam = this.dirLight.shadow.camera;
+            cam.left = -60;
+            cam.right = 60;
+            cam.top = 110;
+            cam.bottom = -110;
+
+            //É a faixa de profundidade, medida a partir da position da luz ao longo da direção dela. Só objetos entre 0.1 e 100 de distância entram no shadow map
+            cam.near = 0.1;
+            cam.far = 100;
+            cam.updateProjectionMatrix();
+
+            //bias: um pequeno deslocamento na profundidade ao comparar. Evita que uma superfície “se sombreie sozinha”
+            //normalBias: empurra o ponto de teste para fora ao longo da normal da superfície
+            //radius: o quanto a borda da sombra é borrada
+            this.dirLight.shadow.bias = -0.0007;
+            this.dirLight.shadow.normalBias = 0.2;
+            this.dirLight.shadow.radius = 2.5;
+
             this.scene.add(this.dirLight);
+            
+            //Camera p debugar a luz
+            //this.scene.add(new THREE.CameraHelper(this.dirLight.shadow.camera));
         }
 
         const ambientColor = this.state.isDay ? 'rgb(254, 225, 251)' : 'rgb(220, 233, 255)';
@@ -166,6 +190,12 @@ export class Game {
     setDay(isDay) {
         this.state.isDay = isDay;
         this.lighting();
+        this.updateEnemiesDayState();
+    }
+
+    updateEnemiesDayState() {
+        const enemiesEnabled = !this.state.isDay
+        this.enemies.forEach(enemy => enemy.setEnabled(enemiesEnabled))
     }
 
     start() {
@@ -381,6 +411,8 @@ export class Game {
 
         // verifica para cada inimigo se tem algum inimigo que foi atingido nesse frame
         for (const enemy of this.enemies) {
+            if (!enemy.enabled)
+                continue
             
             if (enemy.life <= 0)
                 continue
@@ -460,4 +492,5 @@ export class Game {
         const key = new Key(this.scene, config)
         this.keysEntity.push(key)
     }
+
 }
