@@ -4,6 +4,7 @@ import { createGroundPlaneXZ } from '../../../libs/util/util.js';
 import { House } from '../models/buildings/House.js';
 import { materials } from '../models/material.configs.js';
 import { Floor } from '../models/structures/Floor.js';
+import { config as houseConfig } from '../models/buildings/house.config.js';
 
 export class World {
     constructor(scene) {
@@ -33,11 +34,27 @@ export class World {
 
         this.floor = new Floor(0, this.FLOOR_HEIGHT/2 + 0.01, 0, materials.grass, this.FLOOR_WIDTH, this.FLOOR_HEIGHT, this.FLOOR_DEPTH);
         this.castle = new Castle(scene, 0, this.FLOOR_Y, 0, null, this.CASTLE_WIDTH, this.CASTLE_DEPTH, this.SCALE)
-        this.house = new House(scene, 0, this.FLOOR_Y, 0, materials.rotten_wood, 30, 30, 30, 1)
+        
+        this.house1 = new House(
+            scene, 
+            -20, 
+            this.FLOOR_Y, 
+            -20, 
+            houseConfig.MAIN_HOUSE
+        )
+        
+        this.house2 = new House(
+            scene, 
+            20, 
+            this.FLOOR_Y, 
+            20,
+            houseConfig.SECOND_HOUSE
+        )
         
         // grupo de colisão
         this.collisionEnabledGroup.add(this.castle.object)
-        this.collisionEnabledGroup.add(this.house.object)
+        this.collisionEnabledGroup.add(this.house1.object)
+        this.collisionEnabledGroup.add(this.house2.object)
         this.collisionEnabledGroup.add(this.floor.object)
 
         // grupo que so tem a vista mas não tem colisão

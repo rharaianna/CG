@@ -310,21 +310,21 @@ export class Castle extends Model {
 
         // inimigo da torre frontal 
         const movementArea2Dimensions = {
-            width: 30,
-            depth: 30,
+            width: 10,
+            depth: 10,
             height: ftCfg.height,
         }
-        const movementArea2Position = new Vector3(0, y + ftCfg.height + movementArea2Dimensions.height/2, FRONTTOWER_Z)
-        this.frontalTowerMovementArea = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 35, 50)
+        const movementArea2Position = new Vector3(20, y + movementArea2Dimensions.height/2, 20)
+        this.frontalTowerMovementArea = new MovementArea(scene, movementArea2Position, movementArea2Dimensions, 15, 30)
         
         
         // inimigo que vai ficar na casa 
         const movementArea3Dimensions = {
-            width: 15,
-            depth: 15,
-            height: 5,
+            width: 8,
+            depth: 8,
+            height: 0,
         }
-        const movementArea3Position = new Vector3(0, y + movementArea2Dimensions.height/2, 0)
+        const movementArea3Position = new Vector3(-20, y + movementArea3Dimensions.height/2, -20)
         this.internalBuildingMovementArea = new MovementArea(scene, movementArea3Position, movementArea3Dimensions, 15, 30)
 
 
