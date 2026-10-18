@@ -8,7 +8,6 @@ export class Entity {
     }
 
     destroy() {
-        console.log("destruindo ", this);
         this.scene.remove(this.mesh)
         this.alive = false
     }
@@ -17,8 +16,6 @@ export class Entity {
     detectPlayer(deltaTime, playerPosition, minDistance) {
         // distancia mínima de detecção do jogador
         const isNear = playerPosition.distanceTo(this.position) <= minDistance
-    
-        //console.log("detectando ", isNear);
         return isNear
     }
 }
