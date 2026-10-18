@@ -188,10 +188,10 @@ export class Castle extends Model {
         let windowsTowerConfig = {
             janelas: [
                 { angulo: 0, y: 0 },
-                { angulo: Math.PI / 4, y: 3 },
-                { angulo: -Math.PI / 4, y: 3 },
+                { angulo: Math.PI / 4, y: 3.5 },
+                { angulo: -Math.PI / 4, y: 3.5 },
                 { angulo: -Math.PI / 2, y: 0 },
-                { angulo: -3 * Math.PI / 4, y: 3 },
+                { angulo: -3 * Math.PI / 4, y: 3.5 },
             ],
             portao: {
                 angulo: 3 * Math.PI / 4,
