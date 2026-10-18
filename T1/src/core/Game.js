@@ -77,6 +77,7 @@ export class Game {
         this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
 
         this.enemies = [this.enemy1, this.enemy2, this.enemy3, this.enemy4]
+        this.updateEnemiesDayState()
         //this.enemies = [this.enemy2]
 
         this.canShoot = false;
@@ -166,6 +167,12 @@ export class Game {
     setDay(isDay) {
         this.state.isDay = isDay;
         this.lighting();
+        this.updateEnemiesDayState();
+    }
+
+    updateEnemiesDayState() {
+        const enemiesEnabled = !this.state.isDay
+        this.enemies.forEach(enemy => enemy.setEnabled(enemiesEnabled))
     }
 
     start() {
@@ -381,6 +388,8 @@ export class Game {
 
         // verifica para cada inimigo se tem algum inimigo que foi atingido nesse frame
         for (const enemy of this.enemies) {
+            if (!enemy.enabled)
+                continue
             
             if (enemy.life <= 0)
                 continue
@@ -460,4 +469,5 @@ export class Game {
         const key = new Key(this.scene, config)
         this.keysEntity.push(key)
     }
+
 }
