@@ -125,9 +125,7 @@ export class Game {
             this.state.isDay ? 'rgb(139, 197, 228)' : 'rgb(5, 4, 8)'
         );
 
-        if (!this.ambientLight) {
-            // this.ambientLight = new THREE.AmbientLight('rgb(255,255,255)');
-            // this.scene.add(this.ambientLight);
+        if (!this.dirLight) {
 
             this.dirLight2 = new THREE.DirectionalLight('rgb(250, 250, 250)');
             this.dirLight2.position.set(-10, 50, -15);
@@ -176,9 +174,6 @@ export class Game {
 
         const ambientColor = this.state.isDay ? 'rgb(254, 225, 251)' : 'rgb(220, 233, 255)';
         const directionalColor = this.state.isDay ? 'rgb(244, 225, 183)' : 'rgb(128, 172, 243)';
-
-        //this.ambientLight.color.set(ambientColor);
-        //this.ambientLight.intensity = this.state.isDay ? 0.4 : 0.15;
 
         this.dirLight2.color.set(ambientColor);
         this.dirLight2.intensity = this.state.isDay ? 0.8 : 0.4;
