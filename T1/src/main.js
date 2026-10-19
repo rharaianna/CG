@@ -20,6 +20,10 @@ document.body.addEventListener('keydown', function (event) {
   if (key === 'h') {
     game.setDay(!game.state.isDay);
   }
+
+  if (key === 'k') {
+    game.collectAllKeys();
+  }
 });
 
 // disparo
@@ -52,7 +56,9 @@ information.addParagraph();
 information.add("- Use o mouse para visualizar");
 information.add("- Use WASD ou Arrows para movimentar");
 information.add("- Use SHIFT para correr");
-information.add("- Aperte c para trocar de câmera");
+information.add("- Aperte C para trocar de câmera");
+information.add("- Aperte K para coletar todas as chaves");
+information.add("- Aperte H para alternar entre dia/noite");
 information.addParagraph();
 information.add("por Isadora, João Pedro & Rhara");
 information.show();
