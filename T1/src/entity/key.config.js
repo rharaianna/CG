@@ -1,7 +1,7 @@
 export const KEYS = {
-    FIRST: "RED",
+    FIRST: "GREEN",
     SECOND: "BLUE",
-    THIRD: "PURPLE",
+    THIRD: "RED",
     FOURTH: "ORANGE",
 } 
 

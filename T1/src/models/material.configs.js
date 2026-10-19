@@ -32,15 +32,15 @@ export const materials = {
         color: "#EB5E28"
     }),
     light_wood: new THREE.MeshLambertMaterial({
-        color: "#927456"
+        color: "#a29283"
     }),
     blue: new THREE.MeshLambertMaterial({
         color: "#0c5566"
     }),
-    moss: new THREE.MeshLambertMaterial({
-        color: "#9ab682"
+    moss_brick: new THREE.MeshLambertMaterial({
+        color: "#545e57"
     }),
     roof_brick: new THREE.MeshLambertMaterial({
-        color: "rgb(100, 144, 130)"
+        color: "rgb(168, 76, 64)"
     }),
 }
