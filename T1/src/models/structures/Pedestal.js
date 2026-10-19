@@ -34,31 +34,30 @@ export class Pedestal extends Model {
         const receptacleHeight = receptacle.height ?? 10;
 
         // Meia-diagonal do receptáculo (distância do centro dele até a quina)
-        const halfDiag = Math.hypot(receptacleWidth, receptacleDepth) / 2;
+        const Diag = Math.hypot(receptacleWidth, receptacleDepth);
 
         // Os vértices do octógono (cilindro com 8 lados) ficam a `radius` do centro.
         // Posicionamos o receptáculo para que a quina externa fique um pouco
         // recuada em relação ao vértice do octógono.
-        const dist = radius - halfDiag - 0.5;
+        const dist = radius - (2*Diag) ;
 
-        const angles = [45, 135, 225, 315].map(a => THREE.MathUtils.degToRad(a));
+        const ry = height / 2 + receptacleHeight / 2;
+        const offsets = [
+            { x:  dist, z:  dist, rot: Math.PI * 0.5 },  // 45°
+            { x: -dist, z:  dist, rot: Math.PI },        // 135°
+            { x: -dist, z: -dist, rot: Math.PI * 1.5 },  // 225°
+            { x:  dist, z: -dist, rot: 0 }               // 315°
+        ];
 
-        this.receptacles = angles.map((a) => {
-            const rx = Math.sin(a) * dist;
-            const rz = Math.cos(a) * dist;
+        this.receptacles = [];
 
-            const item = new Receptacle(
-                rx,
-                height / 2 + receptacleHeight / 2,
-                rz,
-                this.material,
-                receptacle
-            );
-            // Vértice (quina) voltado para o centro: gira 45° em relação à face
-            item.object.rotation.y = a + Math.PI / 4;
+        for (const { x, z, rot } of offsets) {
+            const item = new Receptacle(x, ry, z, this.material, receptacle);
+            item.object.rotation.y = rot;
+            
             this.add(item);
-            return item;
-        });
+            this.receptacles.push(item);
+        };
         this.portal = new Portal(0, height / 2 + portal.height / 2, 0, this.material, portal);
         this.add(this.portal);
 
