@@ -56,10 +56,29 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
     const BRIDGE_HEIGHT = 1 * SCALE
     const BRIDGE_DEPTH = 35 * SCALE
 
+    // Pedestal 
+    const BASE_HEIGHT = 0.2 * SCALE
+    const BASE_RADIUS = 10 * SCALE
+
+    //Receptacle
+    const RECEPTACLE_HEIGHT = 3*SCALE
+    const RECEPTACLE_WIDTH = 1.5*SCALE
+
+
     // 
     return {
         // dimensões escaladas (usadas no layout de Castle.js)
         WIDTH, DEPTH, SCALE,
+
+        receptacle:{
+            receptacle_height:RECEPTACLE_HEIGHT,
+            receptacle_width:RECEPTACLE_WIDTH
+        },
+
+        pedestal: {
+            base_height:  BASE_HEIGHT,
+            base_radius:  BASE_RADIUS,
+        },
 
         floor: {
             width:  FLOOR_WIDTH,

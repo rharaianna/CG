@@ -26,7 +26,7 @@ export class Portal extends Model {
             radius,
             radius,
             height,
-            48,
+            8,
             1,
             true
         );
@@ -61,7 +61,7 @@ export class Portal extends Model {
             radius,
             Math.max(radius * 0.04, 0.08),
             8,
-            48
+            8
         );
 
         const rim = new THREE.Mesh(rimGeometry, this.material);
@@ -70,7 +70,7 @@ export class Portal extends Model {
         this.object.add(rim);
 
         // Tampa circular que será redimensionada.
-        this.lidGeometry = new THREE.CircleGeometry(radius, 48);
+        this.lidGeometry = new THREE.CircleGeometry(radius, 8);
         this.lid = new THREE.Mesh(this.lidGeometry, this.material);
 
         this.lid.rotation.x = -Math.PI / 2;

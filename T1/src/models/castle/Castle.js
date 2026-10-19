@@ -18,8 +18,8 @@ import { makeCastleConfig } from "./castle.config.js";
 
 import { MovementArea } from "../MovementArea.js";
 import { Vector3 } from "../../../../build/three.core.js";
-import { Portal } from "../structures/Portal.js";
 import { Bridge } from "../Bridge.js";
+import { Pedestal } from "../structures/Pedestal.js";
 
 
 export class Castle extends Model {
@@ -50,7 +50,9 @@ export class Castle extends Model {
             door: dCfg, 
             stair: sCfg, 
             ceil: cCfg,
-            bridge: bCfg
+            bridge: bCfg,
+            pedestal:pCfg,
+            receptacle:rCfg
         } = cfg;
 
         ///////////////////////////////////////////////////////////////////////
@@ -248,15 +250,30 @@ export class Castle extends Model {
         this.add(frontTower);
 
         // Portal
-        const portal = new Portal(
-            2,
-            0.5,
-            2,
+        const pedestal = new Pedestal(
+            5,
+            pCfg.base_height*2,
+            9,
             materials.rotten_wood,
-            { radius: 2, innerRadius:1, height: 0.5 }
+            {
+                radius: pCfg.base_radius,
+                height: pCfg.base_height,
+                baseThickness: pCfg.base_height,
+                receptacle: {
+                    width: rCfg.receptacle_width,
+                    height: rCfg.receptacle_height,
+                    depth: rCfg.receptacle_width,
+                },
+                portal: {
+                    radius: pCfg.base_radius/5,
+                    height: 0.5 * cfgScale,
+                    interactionDistance: 5 * cfgScale,
+                    animationSpeed: 5,
+                },
+            }
         );
-        this.add(portal);
-        this.portals.push(portal)
+        this.add(pedestal);
+        this.portals.push(pedestal.portal)
 
         // Portões
         this.addDoor({
