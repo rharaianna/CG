@@ -250,7 +250,8 @@ export class Castle extends Model {
         this.add(frontTower);
 
         // Portal
-        const pedestal = new Pedestal(
+        this.pedestal = new Pedestal(
+            scene, 
             5,
             pCfg.base_height*2,
             9,
@@ -272,8 +273,8 @@ export class Castle extends Model {
                 },
             }
         );
-        this.add(pedestal);
-        this.portals.push(pedestal.portal)
+        this.add(this.pedestal);
+        this.portals.push(this.pedestal.portal)
 
         // Portões
         this.addDoor({
@@ -419,9 +420,12 @@ export class Castle extends Model {
         return pair;
     }
 
-    update(deltaTime, playerPosition) {
+    update(deltaTime, playerPosition, isPlayerMoving, handleEvent) {
         this.doors.forEach(door => door.update(deltaTime, playerPosition))
         this.portals.forEach(portal => portal.update(deltaTime, playerPosition))
+        
+        // refatorar => portal vai receber atualização do pedestal 
+        this.pedestal.update(deltaTime, playerPosition, handleEvent)
     }
 
     // Cria as 4 torres dos cantos do castelo, posicionadas e rotacionadas.

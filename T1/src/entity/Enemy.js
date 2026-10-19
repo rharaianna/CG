@@ -4,6 +4,7 @@ import { STATUS, BEHAVIOR } from './enemy.enums.js';
 import { Entity } from './Entity.js';
 import * as SkeletonUtils from "../../../build/jsm/utils/SkeletonUtils.js"
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { KEYS_CONFIG } from './key.config.js';
 
 export class Enemy extends Entity {
     constructor(scene, movementArea, config) {
@@ -12,7 +13,7 @@ export class Enemy extends Entity {
         const {
             name, 
             dimensions, 
-            color,
+            key,
             life,
             behavior,
             speed,
@@ -27,7 +28,11 @@ export class Enemy extends Entity {
         this.enemyDimensions = dimensions
         this.speed = speed
         this.life = life
-        this.color = color
+
+        // pega a chave e a cor correspondente
+        this.key = key;
+        this.color = KEYS_CONFIG[key].color;
+
         this.model = model
         this.ghost = null
         this.minProximity = minProximity
@@ -159,7 +164,7 @@ export class Enemy extends Entity {
 
     // a chave tem a exata cor do inimigo
     getKey() {
-        return this.color
+        return this.key
     }
 
     getPosition() {

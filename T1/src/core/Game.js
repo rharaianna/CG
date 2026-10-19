@@ -16,6 +16,8 @@ import { State } from './State.js';
 import { Tooltip } from './Tooltip.js';
 import { Key } from '../entity/Key.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
+import { EVENTS } from './events.enum.js';
+import { KEYS, KEYS_CONFIG } from '../entity/key.config.js';
 
 
 
@@ -71,10 +73,10 @@ export class Game {
             tree: this.objects.loadTree(),
         }
 
-        this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_BLUE)
-        this.enemy2 = this.createEnemy(this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_PURPLE)
-        this.enemy3 = this.createEnemy(this.world.castle.towerMovementArea, enemiesConfig.FLYING_RED)
-        this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
+        this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_SECOND)
+        this.enemy2 = this.createEnemy(this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_SECOND)
+        this.enemy3 = this.createEnemy(this.world.castle.towerMovementArea, enemiesConfig.FLYING_FIRST)
+        this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_FIRST)
 
         this.enemies = [this.enemy1, this.enemy2, this.enemy3, this.enemy4]
         this.updateEnemiesDayState()
@@ -228,16 +230,16 @@ export class Game {
 
             this.frames = 0;
             this.fpsTimer = 0;
-            this.updateTooltip();
         }
         
+        this.updateTooltip();
         // so se tiver na camera correta
         this.updatePlayer(deltaTime)
         this.updateOrbitControls()
 
         // cuida de atualizar todos os casos do mundo
         // e interações so se o jogador tiver se movendo
-        this.world.update(deltaTime, this.player.getPosition(), this.player.isMoving)
+        this.world.update(deltaTime, this.player.getPosition(), this.player.isMoving, (event) => this.handleEvent(event))
 
         // atualiza a movimentação e detecção só se o jogador 
         // tiver se movendo
@@ -389,7 +391,7 @@ export class Game {
         const position = enemy.getPosition()
 
         const config = {
-            color: key,
+            key,
             position
         }
 
@@ -484,8 +486,43 @@ export class Game {
     }
 
     spawnKey(config) {
+
         const key = new Key(this.scene, config)
         this.keysEntity.push(key)
+    }
+
+    // função para a gente poder organizar melhor os eventos do jogo
+    // criado pra tratar caso do receptaculo consumir as chaves
+    handleEvent(event) {
+        
+        const { type, body } = event
+        console.log(event);
+
+        // identifica cada caso e retorna para onde a função foi chamada
+        switch(type) {
+            case EVENTS.CONSUME_KEY:
+                return this.handleConsumeKey(body)
+
+        }
+    }
+
+    handleConsumeKey(body) {
+        const { key } = body 
+
+        // remove a chave e retorna se deu certo
+        if(this.keys.has(key)) {
+            this.keys.delete(key)
+            this.updateKeys()
+            return true
+        } else return false
+    }
+
+    collectAllKeys() {
+        Object.values(KEYS).forEach(key => {
+            this.keys.add(key);
+        });
+
+        this.updateKeys();
     }
 
 }

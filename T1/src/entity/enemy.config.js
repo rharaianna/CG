@@ -1,4 +1,5 @@
 import { BEHAVIOR } from "./enemy.enums.js";
+import { KEYS } from "./key.config.js";
 
 const smallEnemyDimensions = {
     width: 2,
@@ -14,9 +15,9 @@ const greatEnemyDimensions = {
 
 export const enemiesConfig = {
 
-    FLYING_RED: {
-        name: "Espirito do fogo",
-        color: "#e33617",
+    FLYING_FIRST: {
+        name: "Maldição da Esperança",
+        key: KEYS.FIRST,
         dimensions: smallEnemyDimensions,
         life: 5,
         behavior: BEHAVIOR.FLYING,
@@ -24,9 +25,9 @@ export const enemiesConfig = {
         model: 'ghost',
         minProximity: 25
     },
-    FLYING_BLUE: {
-        name: "Fantasma de notredame",
-        color: "#0088d7",
+    FLYING_SECOND: {
+        name: "Fantasma da Torre",
+        key: KEYS.SECOND,
         dimensions: smallEnemyDimensions,
         life: 5,
         behavior: BEHAVIOR.FLYING,
@@ -34,9 +35,9 @@ export const enemiesConfig = {
         model: 'ghost',
         minProximity: 25
     },
-    WALKING_PURPLE: {
-        name: "Desgaça podi",
-        color: "#d037ff",
+    WALKING_FIRST: {
+        name: "Caminhante",
+        key: KEYS.THIRD,
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,
@@ -44,9 +45,9 @@ export const enemiesConfig = {
         model: 'tree',
         minProximity: 10
     },
-    WALKING_ORANGE: {
-        name: "Andarilho do destino",
-        color: "#b05a05",
+    WALKING_SECOND: {
+        name: "Andarilho",
+        key: KEYS.FOURTH,
         dimensions: greatEnemyDimensions,
         life: 3,
         behavior: BEHAVIOR.WALKING,

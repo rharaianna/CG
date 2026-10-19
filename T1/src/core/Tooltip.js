@@ -1,3 +1,5 @@
+import { KEYS_CONFIG } from "../entity/key.config.js";
+
 export class Tooltip {
     constructor() {
         this.box = document.createElement('div');
@@ -40,7 +42,7 @@ export class Tooltip {
         this.keys.forEach((key, i) => {
             const textnode = document.createTextNode(i+1)
             const keyDiv = document.createElement('div')
-                keyDiv.style.backgroundColor = key
+                keyDiv.style.backgroundColor = KEYS_CONFIG[key].color;
                 keyDiv.style.width = "15px"
                 keyDiv.style.height = "15px"
                 keyDiv.style.borderRadius = "50%"
