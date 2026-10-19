@@ -51,7 +51,7 @@ game.start()
 
 // tooltip na tela
 let information = new InfoBox();
-information.add("Trabalho versão 1.0");
+information.add("Trabalho versão 2.0");
 information.addParagraph();
 information.add("- Use o mouse para visualizar");
 information.add("- Use WASD ou Arrows para movimentar");
