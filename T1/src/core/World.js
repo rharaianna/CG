@@ -64,8 +64,8 @@ export class World {
         scene.add(this.collisionDisabledGroup)    
     }
 
-    update(deltaTime, playerPosition, isPlayerMoving) {
-        this.castle.update(deltaTime, playerPosition, isPlayerMoving)
+    update(deltaTime, playerPosition, isPlayerMoving, handleEvent) {
+        this.castle.update(deltaTime, playerPosition, isPlayerMoving, handleEvent)
     }
 
     getInicialPosition() {

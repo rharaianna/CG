@@ -4,7 +4,7 @@ export const config = {
     
     MAIN_HOUSE: {
         floor_material: materials.light_wood,
-        wall_material: materials.moss,
+        wall_material: materials.light_wood,
         roof_material: materials.roof_brick,
         WIDTH: 10,
         DEPTH: 10,
@@ -28,7 +28,7 @@ export const config = {
     },
     SECOND_HOUSE: {
         floor_material: materials.light_wood,
-        wall_material: materials.moss,
+        wall_material: materials.moss_brick,
         roof_material: materials.blue,
         WIDTH: 7,
         DEPTH: 7,
@@ -39,14 +39,14 @@ export const config = {
             portao: true,
             alturaPortao: 5,
             larguraPortao: 2,
-            material: materials.orange
+            material: materials.moss_brick
         },
         windows: {
             linhas: 3,
             colunas: 1,
             altura: 1,
             largura: 2,
-            material: materials.orange
+            material: materials.moss_brick
         },
         roofRotation: Math.PI / 4
     }
