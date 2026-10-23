@@ -52,7 +52,7 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
     const STAIR_TOTAL_DEPTH = STEPS_NUMBER * STAIR_STEP_DEPTH;
 
     // Brigde - esse são os tamnhos do pedaço do meio, os outros estão sendo calculados a partir dele
-    const BRIDGE_WITDH = 10 * SCALE
+    const BRIDGE_WITDH = 9.8 * SCALE
     const BRIDGE_HEIGHT = 1 * SCALE
     const BRIDGE_DEPTH = 35 * SCALE
 

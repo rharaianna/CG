@@ -344,7 +344,7 @@ export class Castle extends Model {
         this.collisionDisabledGroup.add(this.towerMovementArea.object)
         
         const BRIDGE_Z = bCfg.bridgeDepth/2 + bCfg.bridgeDepth/6 + bCfg.bridgeDepth/4 + FRONTTOWER_Z
-        const BRIDGE_Y = bCfg.bridgeHeight/2
+        const BRIDGE_Y = -bCfg.bridgeHeight/2+0.01
 
         const bridge = new Bridge(0, BRIDGE_Y, BRIDGE_Z, materials.grass, bCfg.brigdeWitdh, bCfg.bridgeHeight, bCfg.bridgeDepth)
         this.add(bridge)

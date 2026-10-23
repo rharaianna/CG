@@ -18,9 +18,9 @@ export class Bridge extends Model {
 
         const entrence_depth = this.depth / 4
         const corridor_depth = this.depth
-        const platform_depth = this.depth
+        const platform_depth = this.depth / 3
         const gap_depth = this.depth / 6
-        const walkway_depth = entrence_depth + corridor_depth + platform_depth + 2 * gap_depth
+        const walkway_depth = entrence_depth + (3*corridor_depth)/2 + platform_depth/2 + gap_depth
 
 
         const entrence_geometry = new THREE.BoxGeometry(this.width, this.height, entrence_depth)
@@ -29,7 +29,9 @@ export class Bridge extends Model {
         const corridor_geometry = new THREE.BoxGeometry(this.width, this.height, corridor_depth);
         const corridor = new THREE.Mesh(corridor_geometry, this.material);
 
-        const platform_geometry = new THREE.BoxGeometry(platform_depth, this.height, platform_depth)
+        //const platform_geometry = new THREE.BoxGeometry(platform_depth, this.height, platform_depth)
+
+        const platform_geometry = new THREE.CylinderGeometry(platform_depth, platform_depth, this.height, 6);
         const platform = new THREE.Mesh(platform_geometry, this.material)
 
         const walkway_geometry = new THREE.BoxGeometry(this.width / 3, this.height / 3, walkway_depth)
@@ -54,8 +56,9 @@ export class Bridge extends Model {
         this.add(walkway)
 
         entrence.translateZ(-(corridor_depth / 2 + gap_depth + entrence_depth / 2))
-        platform.translateZ(corridor_depth / 2 + gap_depth + platform_depth / 2)
-        walkway.translateZ((3*this.depth)/8)
+        platform.translateZ(corridor_depth)
+        platform.rotateY(Math.PI/2)
+        walkway.translateZ((9.89*this.depth)/40)
         walkway.translateY(0.01 + this.height / 3)
 
 
