@@ -357,17 +357,14 @@ export class Enemy extends Entity {
     attachModel() {
         if (this.ghost || !this.model || !this.model.loaded) return
 
-        // clone() comum quebra modelos com esqueleto; SkeletonUtils.clone é seguro nos dois casos
         this.ghost = SkeletonUtils.clone(this.model.object)
 
-        // ajusta o tamanho do fantasma para caber na caixa do inimigo
         const box = new THREE.Box3().setFromObject(this.ghost)
         const size = new THREE.Vector3()
         box.getSize(size)
         const fator = this.enemyDimensions.height / size.y
         this.ghost.scale.multiplyScalar(fator)
 
-        // alinha os pés do fantasma com a base da caixa
         box.setFromObject(this.ghost)
         this.ghost.position.y = -this.enemyDimensions.height / 2 - box.min.y
 

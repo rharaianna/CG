@@ -5,7 +5,7 @@ import * as THREE from "three";
 
 const SHY_GHOST_PATH = new URL("../assets/shy_ghost.fbx", import.meta.url).href
 const EVIL_TREE_PATH = new URL("../assets/evil_tree.fbx", import.meta.url).href
-const CROSSBOW_PATH = new URL("../assets/crossbow.fbx", import.meta.url).href
+const CROSSBOW_PATH = new URL("../assets/crossbow.obj", import.meta.url).href
 const ARROW_PATH = new URL("../assets/arrow.obj", import.meta.url).href
 
 export class Objects3D {
@@ -28,7 +28,8 @@ export class Objects3D {
                     if (child.isMesh) {
                         child.castShadow = true
 
-                        child.material = material
+                        if(material != null)
+                            child.material = material
                     }
                 })
 
@@ -67,11 +68,11 @@ export class Objects3D {
     }
 
     loadCrossbow() {
-        return this.loadFBX(CROSSBOW_PATH, 2)
+        return this.loadOBJ(CROSSBOW_PATH, null, 2, false)
     }
 
     loadArrow() {
-        return this.loadOBJ(ARROW_PATH, 1, false)
+        return this.loadOBJ(ARROW_PATH, null, 1, false)
     }
 }
 

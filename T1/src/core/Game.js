@@ -52,7 +52,20 @@ export class Game {
         this.orbitControls.enabled = false;
         this.orbitControls.update();
 
-        this.gun = new Gun(this.playerCamera); 
+        this.objects = new Objects3D(this.scene)
+
+        this.models = {
+            ghost: this.objects.loadGhost(),  
+            tree: this.objects.loadTree(),
+            crossbow: this.objects.loadCrossbow()
+        }
+
+        console.log("logou:"+ this.models.crossbow.loaded)
+        console.log("logou:"+ this.models.ghost.loaded)
+
+        this.gun = new Gun(this.playerCamera, this.models.crossbow); 
+        this.scene.add(this.playerCamera)
+
         configureShadows(this.gun.object);
         //this.playerCamera.add(this.gun.object);
 
@@ -65,13 +78,6 @@ export class Game {
         this.pointerControls = new PointerLockControls(
             this.playerCamera, this.renderer.domElement
         )
-        
-        this.objects = new Objects3D(this.scene)
-
-        this.models = {
-            ghost: this.objects.loadGhost(),  
-            tree: this.objects.loadTree(),
-        }
 
         this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_SECOND)
         this.enemy2 = this.createEnemy(this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_SECOND)
@@ -231,6 +237,8 @@ export class Game {
             this.frames = 0;
             this.fpsTimer = 0;
         }
+
+                    this.gun.update();
         
         this.updateTooltip();
         // so se tiver na camera correta
