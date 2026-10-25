@@ -4,7 +4,7 @@ import { Bullet } from "../entity/Bullet.js";
 export class Gun {
     constructor(playerCamera, model) {
 
-        this.model = model          // o asset { object, loaded }
+        this.model = model  
         this.camera = playerCamera
         this.crossbow = null
 
@@ -29,7 +29,7 @@ export class Gun {
     }
 
     update() {
-        this.attachModel()   // só age uma vez, quando o modelo estiver pronto
+        this.attachModel()
     }
 
     getPontaCilindro() {
@@ -76,24 +76,21 @@ export class Gun {
 
         const obj = this.model.object
 
-        // 1. escala: ajusta o maior lado para um tamanho bom em primeira pessoa
         const TAMANHO = 0.2
         const box = new THREE.Box3().setFromObject(obj)
         const size = box.getSize(new THREE.Vector3())
         obj.scale.multiplyScalar(TAMANHO / Math.max(size.x, size.y, size.z))
 
-        // 2. centraliza o modelo na origem do pivô
         box.setFromObject(obj)
         obj.position.sub(box.getCenter(new THREE.Vector3()))
 
-        // 3. pivô: é ele que você posiciona e gira na tela
         this.crossbow = new THREE.Group()
         this.crossbow.add(obj)
-        this.crossbow.position.set(0, -0.05, -0.15)   // direita, abaixo, à frente
+        this.crossbow.position.set(0, -0.05, -0.15)   // direita, abaixo, frente
+        //this.crossbow.translateX(Math.PI)
 
         this.camera.add(this.crossbow)
 
-        // 4. esconde só o cilindro, mantendo o helper funcionando
         this.object.material.visible = false
     }
 }
