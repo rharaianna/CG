@@ -57,13 +57,11 @@ export class Game {
         this.models = {
             ghost: this.objects.loadGhost(),  
             tree: this.objects.loadTree(),
-            crossbow: this.objects.loadCrossbow()
+            crossbow: this.objects.loadCrossbow(),
+            arrow: this.objects.loadArrow()
         }
 
-        console.log("logou:"+ this.models.crossbow.loaded)
-        console.log("logou:"+ this.models.ghost.loaded)
-
-        this.gun = new Gun(this.playerCamera, this.models.crossbow); 
+        this.gun = new Gun(this.playerCamera, this.models.crossbow, this.models.arrow); 
         this.scene.add(this.playerCamera)
 
         configureShadows(this.gun.object);
@@ -489,6 +487,7 @@ export class Game {
         if(this.timerToShoot >= TIME_NEEDED_TO_SHOOT) {
             this.canShoot = true
             this.timerToShoot = 0
+            if (this.gun.restArrow) this.gun.restArrow.visible = true
         }
         
     }

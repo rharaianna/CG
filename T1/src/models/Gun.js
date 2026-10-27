@@ -2,11 +2,13 @@ import * as THREE from "three"
 import { Bullet } from "../entity/Bullet.js";
 
 export class Gun {
-    constructor(playerCamera, model) {
+    constructor(playerCamera, gunModel, bulletModel) {
 
-        this.model = model  
+        this.gunModel = gunModel
+        this.bulletModel = bulletModel
         this.camera = playerCamera
         this.crossbow = null
+        this.restArrow = null
 
         const gunGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.2, 32);
         const gunMaterial = new THREE.MeshStandardMaterial({
@@ -30,6 +32,7 @@ export class Gun {
 
     update() {
         this.attachModel()
+        this.attachRestArrow()
     }
 
     getPontaCilindro() {
@@ -67,14 +70,15 @@ export class Gun {
         if (direction.dot(camDir) <= 0) direction.copy(camDir);
         direction.normalize();
 
-        bullets.push(new Bullet(scene, origin, direction));
+        bullets.push(new Bullet(scene, origin, direction, this.bulletModel));
+        if (this.restArrow) this.restArrow.visible = false
 
     }
 
     attachModel() {
-        if (this.crossbow || !this.model || !this.model.loaded) return
+        if (this.crossbow || !this.gunModel || !this.gunModel.loaded) return
 
-        const obj = this.model.object
+        const obj = this.gunModel.object
 
         const TAMANHO = 0.2
         const box = new THREE.Box3().setFromObject(obj)
@@ -92,5 +96,30 @@ export class Gun {
         this.camera.add(this.crossbow)
 
         this.object.material.visible = false
+    }
+
+    attachRestArrow() {
+        if (this.restArrow || !this.crossbow) return
+        if (!this.bulletModel || !this.bulletModel.loaded) return
+
+        const arrow = this.bulletModel.object.clone()
+
+        const ARROW_LENGTH = 0.4
+        const box = new THREE.Box3().setFromObject(arrow)
+        const size = box.getSize(new THREE.Vector3())
+        arrow.scale.multiplyScalar(ARROW_LENGTH / Math.max(size.x, size.y, size.z))
+
+        box.setFromObject(arrow)
+        arrow.position.sub(box.getCenter(new THREE.Vector3()))
+
+        this.restArrow = new THREE.Group()
+        this.restArrow.add(arrow)
+
+        // ajuste da posição
+        this.restArrow.position.set(0, 0, 0)
+        this.restArrow.rotateY(Math.PI/2)
+
+        this.crossbow.add(this.restArrow)
+        this.restArrow.visible = this.podeAtirar
     }
 }
