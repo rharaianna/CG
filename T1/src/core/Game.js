@@ -29,7 +29,8 @@ export class Game {
         
         this.scene = new THREE.Scene();  
         this.world = new World(this.scene) 
-    
+        
+        this.ready = false
         this.renderer = initRenderer('rgba(0, 0, 0, 0.69)', THREE.PCFShadowMap);
         this.state = new State();
         this.lighting()
@@ -200,8 +201,15 @@ export class Game {
         this.enemies.forEach(enemy => enemy.setEnabled(enemiesEnabled))
     }
 
-    start() {
-        this.renderer.setAnimationLoop(() => this.render());
+    start(){
+        this.renderer.setAnimationLoop(() => {
+            if(!this.ready){
+                if(!this.checkModelsLoading()) return 
+
+                this.ready = true 
+            }
+            this.render()
+        })
     }
 
     togglePlayerControl() {
@@ -355,6 +363,8 @@ export class Game {
     }
     
     toggleCamera() {
+        if(!this.ready) return
+
         this.pointerControlsOn = !this.pointerControlsOn;
 
         if (this.pointerControlsOn) {
@@ -482,6 +492,7 @@ export class Game {
     }
 
     shoot() {
+        if(!this.ready) return
 
         if(this.canShoot && this.pointerControlsOn) {
             this.pointerControls.lock()
@@ -541,6 +552,10 @@ export class Game {
         });
 
         this.updateKeys();
+    }
+
+    checkModelsLoading() {
+        return Object.values(this.models).every(model => model.loaded)
     }
 
 }

@@ -85,12 +85,11 @@ export class Bullet extends Entity {
     } */
 
     attachModel() {
-        if (!this.model || !this.model.loaded) return   // sem modelo, a bala continua sendo a esfera
+        if (!this.model || !this.model.loaded) return 
 
-        // clone() simples basta: o OBJ não tem esqueleto e compartilha geometria e material
         const arrow = this.model.object.clone()
 
-        // escala: ajusta o maior lado para ARROW_LENGTH
+        // ajusta o maior lado para tamanho da arrow
         const box = new THREE.Box3().setFromObject(arrow)
         const size = box.getSize(new THREE.Vector3())
         arrow.scale.multiplyScalar(ARROW_LENGTH / Math.max(size.x, size.y, size.z))
@@ -99,7 +98,7 @@ export class Bullet extends Entity {
         box.setFromObject(arrow)
         arrow.position.sub(box.getCenter(new THREE.Vector3()))
 
-        // pivô: alinha o comprimento da flecha com o eixo +Z
+        // alinha o comprimento da flecha com o eixo +Z
         this.pivot = new THREE.Group()
         this.pivot.add(arrow)
 
