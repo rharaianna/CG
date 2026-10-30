@@ -26,8 +26,6 @@ export class Gun {
         this.object.add(this.helper);
 
         playerCamera.add(this.object)
-
-        this.podeAtirar = true
     }
 
     update() {
@@ -70,9 +68,8 @@ export class Gun {
         if (direction.dot(camDir) <= 0) direction.copy(camDir);
         direction.normalize();
 
+        this.restArrow.visible = false
         bullets.push(new Bullet(scene, origin, direction, this.bulletModel));
-        if (this.restArrow) this.restArrow.visible = false
-
     }
 
     attachModel() {
@@ -104,7 +101,7 @@ export class Gun {
 
         const arrow = this.bulletModel.object.clone()
 
-        const ARROW_LENGTH = 0.4
+        const ARROW_LENGTH = 0.12
         const box = new THREE.Box3().setFromObject(arrow)
         const size = box.getSize(new THREE.Vector3())
         arrow.scale.multiplyScalar(ARROW_LENGTH / Math.max(size.x, size.y, size.z))
@@ -115,11 +112,19 @@ export class Gun {
         this.restArrow = new THREE.Group()
         this.restArrow.add(arrow)
 
-        // ajuste da posição
-        this.restArrow.position.set(0, 0, 0)
-        this.restArrow.rotateY(Math.PI/2)
+        const axes = new THREE.AxesHelper(0.2) // tamanho dos eixos (em unidades locais)
+        this.restArrow.add(axes)
+        this.restArrowAxes = axes // guarda a referência, se quiser remover depois
+
+        this.restArrow.position.set(0, 0.02, 0)
+        this.restArrow.rotateY(THREE.MathUtils.degToRad(233))
+        // this.restArrow.rotateX(THREE.MathUtils.degToRad(-30))
 
         this.crossbow.add(this.restArrow)
-        this.restArrow.visible = this.podeAtirar
+        this.restArrow.visible = true
+    }
+
+    setArrowVisible(visible) {
+        if (this.restArrow) this.restArrow.visible = visible
     }
 }

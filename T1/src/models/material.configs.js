@@ -43,4 +43,10 @@ export const materials = {
     roof_brick: new THREE.MeshLambertMaterial({
         color: "rgb(168, 76, 64)"
     }),
+    crossbow: new THREE.MeshLambertMaterial({
+        color: "#878787"
+    }),
+    arrow: new THREE.MeshLambertMaterial({
+        color: '#D70413',
+    })
 }

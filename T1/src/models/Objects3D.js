@@ -68,63 +68,10 @@ export class Objects3D {
     }
 
     loadCrossbow() {
-        return this.loadOBJ(CROSSBOW_PATH, null, 2, false)
+        return this.loadOBJ(CROSSBOW_PATH, materials.crossbow, 2, false)
     }
 
     loadArrow() {
-        return this.loadOBJ(ARROW_PATH, null, 1, false)
+        return this.loadOBJ(ARROW_PATH, materials.arrow, 1, false)
     }
 }
-
-// _load(loader, path, scale = 1, addToScene = true, texturePath = null) {
-//     const asset = { object: null, loaded: false }
-
-//     loader.load(
-//         path,
-//         (obj) => {
-//             obj.scale.set(scale, scale, scale)
-
-//             let texture = null
-//             if (texturePath) {
-//                 texture = new THREE.TextureLoader().load(texturePath)
-//                 texture.colorSpace = THREE.SRGBColorSpace
-//                 texture.flipY = false
-//             }
-
-//             obj.traverse((child) => {
-//                 if (child.isMesh) {
-//                     child.castShadow = true
-
-//                     if (texture) {
-//                         child.material = new THREE.MeshStandardMaterial({
-//                             map: texture,
-//                             roughness: 0.6,
-//                         })
-//                     }
-//                 }
-//             })
-
-//             obj.updateMatrixWorld(true)
-//             if (addToScene) this.scene.add(obj)
-
-//             asset.object = obj
-//             asset.loaded = true
-//         },
-//         null,
-//         (error) => console.error(`Erro ao carregar ${path}:`, error)
-//     )
-
-//     return asset
-// }
-
-// loadFBX(path, scale = 1, addToScene = true, texturePath = null) {
-//     return this._load(new FBXLoader(), path, scale, addToScene, texturePath)
-// }
-
-// loadShyGhost() {
-//     return this.loadFBX(SHY_GHOST_PATH, 2, true, GHOST_TEXTURE_PATH)
-// }
-
-// loadHappyGhost() {
-//     return this.loadFBX(HAPPY_GHOST_PATH, 2, true, GHOST_TEXTURE_PATH)
-// }

@@ -22,6 +22,7 @@ import { KEYS, KEYS_CONFIG } from '../entity/key.config.js';
 
 
 const STEPS_PER_FRAME = 3;
+const TIME_TO_SHOOT = 0.2
 
 export class Game {
     constructor() {
@@ -86,7 +87,7 @@ export class Game {
         this.updateEnemiesDayState()
         //this.enemies = [this.enemy2]
 
-        this.canShoot = false;
+        this.canShoot = true;
         this.timerToShoot = 0
         this.pointerControlsOn = true
 
@@ -224,7 +225,6 @@ export class Game {
     update() {
         this.clock.update();
         const deltaTime = Math.min(0.05, this.clock.getDelta());
-        this.timerToShoot += deltaTime
         
         this.frames++;
         this.fpsTimer += deltaTime;
@@ -236,7 +236,17 @@ export class Game {
             this.fpsTimer = 0;
         }
 
-                    this.gun.update();
+        // regarga do tiro aqui
+        if (!this.canShoot && this.pointerControlsOn) {
+            this.timerToShoot += deltaTime
+            if (this.timerToShoot >= TIME_TO_SHOOT) {
+                this.canShoot = true
+                this.timerToShoot = 0
+            }
+        }
+
+        this.gun.update();
+        this.gun.setArrowVisible(this.canShoot && this.pointerControlsOn)
         
         this.updateTooltip();
         // so se tiver na camera correta
@@ -480,15 +490,16 @@ export class Game {
         
         // fica falso até completar os segundos entre tiros
         this.canShoot = false;
+        this.timerToShoot = 0
         
-        // tempo necessário para liberar o tiro
-        const TIME_NEEDED_TO_SHOOT = 0.5; 
+        // // tempo necessário para liberar o tiro
+        // const TIME_NEEDED_TO_SHOOT = 0.5; 
         
-        if(this.timerToShoot >= TIME_NEEDED_TO_SHOOT) {
-            this.canShoot = true
-            this.timerToShoot = 0
-            if (this.gun.restArrow) this.gun.restArrow.visible = true
-        }
+        // if(this.timerToShoot >= TIME_NEEDED_TO_SHOOT) {
+        //     this.canShoot = true
+        //     this.timerToShoot = 0
+        //     this.gun.restArrow.visible = true
+        // }
         
     }
 
