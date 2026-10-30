@@ -11,21 +11,25 @@ export class PlayerController {
         this.moveBackward = false;
         this.moveLeft = false;
         this.moveRight = false;
-        this.moveUp = false;
+        this.moveUp = false; // serve pra verificar se a tecla foi pressionada
+        this.jump = false //serve para pular
         this.moveFaster = false;
 
 
         /* listener global no window pro evento keydown (quando qualquer tecla é pressionada)
            Quando é pressionada chama handlekey
         */
-        window.addEventListener('keydown', (e) => this.handleKey(e.keyCode, true));
 
+        window.addEventListener('keydown', (e) => {
+            if (e.repeat) return; // verifica repetição da tecla
+            this.handleKey(e.keyCode, true);
+        });
 
         // listener global no window pro evento keyup, indicando que aquela tecla não está mais pressionada.   
         window.addEventListener('keyup', (e) => this.handleKey(e.keyCode, false));
     }
 
-    
+
     // que recebe o código da tecla (key) e um valor booleano (value) indicando se foi pressionada (true) ou solta (false).
     handleKey(key, value) {
         switch (key) {
@@ -42,7 +46,9 @@ export class PlayerController {
                 this.moveRight = value; break;
 
             case 32: //space
-                this.moveUp = value; break;
+                this.moveUp = value;
+                if (value) this.jump = true;
+                break;
 
             case 16: // shift
                 this.moveFaster = value; break;
