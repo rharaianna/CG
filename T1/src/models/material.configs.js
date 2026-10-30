@@ -47,6 +47,7 @@ export const materials = {
         color: "#878787"
     }),
     arrow: new THREE.MeshLambertMaterial({
-        color: '#D70413',
+        //color: '#D70413',
+        color: '#662912'
     })
 }

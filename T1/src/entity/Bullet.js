@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import { Entity } from './Entity.js';
 
 const hiddenMaterial = new THREE.MeshBasicMaterial({ visible: false })
-const ARROW_LENGTH = 0.2 
-const BULLET_VELOCITY = 150
+const ARROW_LENGTH = 0.8
+const BULLET_VELOCITY = 100
 const BULLET_Y_VELOCITY_DECAY = 0.001
 const MAX_DISTANCE = 150
 
@@ -103,14 +103,8 @@ export class Bullet extends Entity {
         this.pivot = new THREE.Group()
         this.pivot.add(arrow)
 
-        // comprimento da flecha ao longo de Y  ->  alinhar com Z
-        //this.pivot.rotateX(Math.PI / 2)
-
-        // comprimento ao longo de X  ->  alinhar com Z
-        this.pivot.rotateY(3*Math.PI/2)
-
-        // flecha saindo com a ponta para trás: gire meia volta
-        //this.pivot.rotation.y += Math.PI    // (ou rotation.x, conforme o caso acima)
+        //alinha ponta pra frente
+        this.pivot.rotateY(THREE.MathUtils.degToRad(53))
 
         this.mesh.add(this.pivot)
         this.mesh.material = hiddenMaterial

@@ -112,13 +112,14 @@ export class Gun {
         this.restArrow = new THREE.Group()
         this.restArrow.add(arrow)
 
-        const axes = new THREE.AxesHelper(0.2) // tamanho dos eixos (em unidades locais)
-        this.restArrow.add(axes)
-        this.restArrowAxes = axes // guarda a referência, se quiser remover depois
+        //axes para ajuste de rotacao
+        // const axes = new THREE.AxesHelper(0.2) // tamanho dos eixos (em unidades locais)
+        // this.restArrow.add(axes)
+        // this.restArrowAxes = axes // guarda a referência, se quiser remover depois
 
         this.restArrow.position.set(0, 0.02, 0)
         this.restArrow.rotateY(THREE.MathUtils.degToRad(233))
-        // this.restArrow.rotateX(THREE.MathUtils.degToRad(-30))
+        // this.restArrow.rotateX(THREE.MathUtils.degToRad(-30)) //nao consegui ;-;
 
         this.crossbow.add(this.restArrow)
         this.restArrow.visible = true
