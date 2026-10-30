@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { Entity } from './Entity.js';
 
-const BULLET_VELOCITY = 150
+const hiddenMaterial = new THREE.MeshBasicMaterial({ visible: false })
+const ARROW_LENGTH = 0.8
+const BULLET_VELOCITY = 100
 const BULLET_Y_VELOCITY_DECAY = 0.001
 const MAX_DISTANCE = 150
 
@@ -13,22 +15,27 @@ const bulletMaterial = new THREE.MeshStandardMaterial({
 });
 
 export class Bullet extends Entity {
-    constructor(scene, posicaoInicial, direction) {
+    constructor(scene, posicaoInicial, direction, model) {
         super(scene)
 
         this.scene = scene
+        this.model = model
+
         this.mesh = new THREE.Mesh(bulletGeometry, bulletMaterial);
         this.mesh.position.copy(posicaoInicial);
 
         this.origin = posicaoInicial.clone();
         this.prevPosition = posicaoInicial.clone();
-        
+
         this.direction = direction.clone().normalize()
 
         this.velocity = direction.clone().setY(direction.y - BULLET_Y_VELOCITY_DECAY).normalize().multiplyScalar(BULLET_VELOCITY);
-        
+
         //this.alive = true;
         this.damage = 1
+
+        this.attachModel()
+        this.mesh.lookAt(posicaoInicial.clone().add(this.direction))
 
         this.scene.add(this.mesh)
     }
@@ -39,7 +46,7 @@ export class Bullet extends Entity {
         this.mesh.position.addScaledVector(this.velocity, deltaTime)
 
         // cuida do caso de sair da distancia máxima
-        if (this.mesh.position.distanceTo(this.origin) >= MAX_DISTANCE) 
+        if (this.mesh.position.distanceTo(this.origin) >= MAX_DISTANCE)
             this.destroy()
     }
 
@@ -76,4 +83,29 @@ export class Bullet extends Entity {
             scene.remove(this.mesh);
         }
     } */
+
+    attachModel() {
+        if (!this.model || !this.model.loaded) return 
+
+        const arrow = this.model.object.clone()
+
+        // ajusta o maior lado para tamanho da arrow
+        const box = new THREE.Box3().setFromObject(arrow)
+        const size = box.getSize(new THREE.Vector3())
+        arrow.scale.multiplyScalar(ARROW_LENGTH / Math.max(size.x, size.y, size.z))
+
+        // centraliza na origem
+        box.setFromObject(arrow)
+        arrow.position.sub(box.getCenter(new THREE.Vector3()))
+
+        // alinha o comprimento da flecha com o eixo +Z
+        this.pivot = new THREE.Group()
+        this.pivot.add(arrow)
+
+        //alinha ponta pra frente
+        this.pivot.rotateY(THREE.MathUtils.degToRad(53))
+
+        this.mesh.add(this.pivot)
+        this.mesh.material = hiddenMaterial
+    }
 }

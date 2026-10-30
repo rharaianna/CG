@@ -16,17 +16,21 @@ import { State } from './State.js';
 import { Tooltip } from './Tooltip.js';
 import { Key } from '../entity/Key.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
+import { EVENTS } from './events.enum.js';
+import { KEYS, KEYS_CONFIG } from '../entity/key.config.js';
 
 
 
 const STEPS_PER_FRAME = 3;
+const TIME_TO_SHOOT = 0.2
 
 export class Game {
     constructor() {
         
         this.scene = new THREE.Scene();  
         this.world = new World(this.scene) 
-    
+        
+        this.ready = false
         this.renderer = initRenderer('rgba(0, 0, 0, 0.69)', THREE.PCFShadowMap);
         this.state = new State();
         this.lighting()
@@ -50,7 +54,18 @@ export class Game {
         this.orbitControls.enabled = false;
         this.orbitControls.update();
 
-        this.gun = new Gun(this.playerCamera); 
+        this.objects = new Objects3D(this.scene)
+
+        this.models = {
+            ghost: this.objects.loadGhost(),  
+            tree: this.objects.loadTree(),
+            crossbow: this.objects.loadCrossbow(),
+            arrow: this.objects.loadArrow()
+        }
+
+        this.gun = new Gun(this.playerCamera, this.models.crossbow, this.models.arrow); 
+        this.scene.add(this.playerCamera)
+
         configureShadows(this.gun.object);
         //this.playerCamera.add(this.gun.object);
 
@@ -63,23 +78,17 @@ export class Game {
         this.pointerControls = new PointerLockControls(
             this.playerCamera, this.renderer.domElement
         )
-        
-        this.objects = new Objects3D(this.scene)
 
-        this.models = {
-            ghost: this.objects.loadGhost(),  
-            tree: this.objects.loadTree(),
-        }
-
-        this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_BLUE)
-        this.enemy2 = this.createEnemy(this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_PURPLE)
-        this.enemy3 = this.createEnemy(this.world.castle.towerMovementArea, enemiesConfig.FLYING_RED)
-        this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_ORANGE)
+        this.enemy1 = this.createEnemy(this.world.castle.frontalTowerMovementArea, enemiesConfig.FLYING_SECOND)
+        this.enemy2 = this.createEnemy(this.world.castle.secondFloorMovementArea, enemiesConfig.WALKING_SECOND)
+        this.enemy3 = this.createEnemy(this.world.castle.towerMovementArea, enemiesConfig.FLYING_FIRST)
+        this.enemy4 = this.createEnemy(this.world.castle.internalBuildingMovementArea, enemiesConfig.WALKING_FIRST)
 
         this.enemies = [this.enemy1, this.enemy2, this.enemy3, this.enemy4]
+        this.updateEnemiesDayState()
         //this.enemies = [this.enemy2]
 
-        this.canShoot = false;
+        this.canShoot = true;
         this.timerToShoot = 0
         this.pointerControlsOn = true
 
@@ -124,37 +133,55 @@ export class Game {
             this.state.isDay ? 'rgb(139, 197, 228)' : 'rgb(5, 4, 8)'
         );
 
-        if (!this.ambientLight) {
-            // this.ambientLight = new THREE.AmbientLight('rgb(255,255,255)');
-            // this.scene.add(this.ambientLight);
+        if (!this.dirLight) {
 
             this.dirLight2 = new THREE.DirectionalLight('rgb(250, 250, 250)');
             this.dirLight2.position.set(-10, 50, -15);
             this.dirLight2.castShadow = false;
             this.scene.add(this.dirLight2);
 
-            
             this.dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
-            this.dirLight.position.set(10, 50, 15);
             this.dirLight.castShadow = true;
-            this.dirLight.shadow.mapSize.set(2048, 2048);
-            this.dirLight.shadow.camera.left = -70;
-            this.dirLight.shadow.camera.right = 70;
-            this.dirLight.shadow.camera.top = 70;
-            this.dirLight.shadow.camera.bottom = -70;
-            this.dirLight.shadow.camera.near = 0.1;
-            this.dirLight.shadow.camera.far = 200;
-            this.dirLight.shadow.bias = -0.0015;
-            this.dirLight.shadow.normalBias = 0.07;
-            this.dirLight.shadow.camera.updateProjectionMatrix();
+
+            //tamanho da textura da sombra (largura × altura em pixels). Mais pixels = sombra mais nítida
+            //tem que ter proporção similar ao frustum
+            this.dirLight.shadow.mapSize.set(2048, 4096);
+            
+
+            //tem direção, não posição real. A direção é o vetor que vai de position até target
+            const cx = 0, cz = 40;
+            this.dirLight.target.position.set(cx, 0, cz);
+            this.dirLight.position.set(cx+3, 50, cz + 15);
+            this.scene.add(this.dirLight.target);
+
+            //Frustum da câmera, É o tamanho do retângulo (em unidades do mundo) que recebe sombra, medido a partir do centro da câmera.
+            //Quanto menor o retângulo, mais nítida a sombra
+            const cam = this.dirLight.shadow.camera;
+            cam.left = -60;
+            cam.right = 60;
+            cam.top = 110;
+            cam.bottom = -110;
+
+            //É a faixa de profundidade, medida a partir da position da luz ao longo da direção dela. Só objetos entre 0.1 e 100 de distância entram no shadow map
+            cam.near = 0.1;
+            cam.far = 100;
+            cam.updateProjectionMatrix();
+
+            //bias: um pequeno deslocamento na profundidade ao comparar. Evita que uma superfície “se sombreie sozinha”
+            //normalBias: empurra o ponto de teste para fora ao longo da normal da superfície
+            //radius: o quanto a borda da sombra é borrada
+            this.dirLight.shadow.bias = -0.0007;
+            this.dirLight.shadow.normalBias = 0.2;
+            this.dirLight.shadow.radius = 2.5;
+
             this.scene.add(this.dirLight);
+            
+            //Camera p debugar a luz
+            //this.scene.add(new THREE.CameraHelper(this.dirLight.shadow.camera));
         }
 
         const ambientColor = this.state.isDay ? 'rgb(254, 225, 251)' : 'rgb(220, 233, 255)';
         const directionalColor = this.state.isDay ? 'rgb(244, 225, 183)' : 'rgb(128, 172, 243)';
-
-        //this.ambientLight.color.set(ambientColor);
-        //this.ambientLight.intensity = this.state.isDay ? 0.4 : 0.15;
 
         this.dirLight2.color.set(ambientColor);
         this.dirLight2.intensity = this.state.isDay ? 0.8 : 0.4;
@@ -166,10 +193,23 @@ export class Game {
     setDay(isDay) {
         this.state.isDay = isDay;
         this.lighting();
+        this.updateEnemiesDayState();
     }
 
-    start() {
-        this.renderer.setAnimationLoop(() => this.render());
+    updateEnemiesDayState() {
+        const enemiesEnabled = !this.state.isDay
+        this.enemies.forEach(enemy => enemy.setEnabled(enemiesEnabled))
+    }
+
+    start(){
+        this.renderer.setAnimationLoop(() => {
+            if(!this.ready){
+                if(!this.checkModelsLoading()) return 
+
+                this.ready = true 
+            }
+            this.render()
+        })
     }
 
     togglePlayerControl() {
@@ -193,7 +233,6 @@ export class Game {
     update() {
         this.clock.update();
         const deltaTime = Math.min(0.05, this.clock.getDelta());
-        this.timerToShoot += deltaTime
         
         this.frames++;
         this.fpsTimer += deltaTime;
@@ -203,16 +242,28 @@ export class Game {
 
             this.frames = 0;
             this.fpsTimer = 0;
-            this.updateTooltip();
         }
+
+        // regarga do tiro aqui
+        if (!this.canShoot && this.pointerControlsOn) {
+            this.timerToShoot += deltaTime
+            if (this.timerToShoot >= TIME_TO_SHOOT) {
+                this.canShoot = true
+                this.timerToShoot = 0
+            }
+        }
+
+        this.gun.update();
+        this.gun.setArrowVisible(this.canShoot && this.pointerControlsOn)
         
+        this.updateTooltip();
         // so se tiver na camera correta
         this.updatePlayer(deltaTime)
         this.updateOrbitControls()
 
         // cuida de atualizar todos os casos do mundo
         // e interações so se o jogador tiver se movendo
-        this.world.update(deltaTime, this.player.getPosition(), this.player.isMoving)
+        this.world.update(deltaTime, this.player.getPosition(), this.player.isMoving, (event) => this.handleEvent(event))
 
         // atualiza a movimentação e detecção só se o jogador 
         // tiver se movendo
@@ -312,6 +363,8 @@ export class Game {
     }
     
     toggleCamera() {
+        if(!this.ready) return
+
         this.pointerControlsOn = !this.pointerControlsOn;
 
         if (this.pointerControlsOn) {
@@ -364,7 +417,7 @@ export class Game {
         const position = enemy.getPosition()
 
         const config = {
-            color: key,
+            key,
             position
         }
 
@@ -381,6 +434,8 @@ export class Game {
 
         // verifica para cada inimigo se tem algum inimigo que foi atingido nesse frame
         for (const enemy of this.enemies) {
+            if (!enemy.enabled)
+                continue
             
             if (enemy.life <= 0)
                 continue
@@ -437,6 +492,7 @@ export class Game {
     }
 
     shoot() {
+        if(!this.ready) return
 
         if(this.canShoot && this.pointerControlsOn) {
             this.pointerControls.lock()
@@ -445,19 +501,61 @@ export class Game {
         
         // fica falso até completar os segundos entre tiros
         this.canShoot = false;
+        this.timerToShoot = 0
         
-        // tempo necessário para liberar o tiro
-        const TIME_NEEDED_TO_SHOOT = 0.5; 
+        // // tempo necessário para liberar o tiro
+        // const TIME_NEEDED_TO_SHOOT = 0.5; 
         
-        if(this.timerToShoot >= TIME_NEEDED_TO_SHOOT) {
-            this.canShoot = true
-            this.timerToShoot = 0
-        }
+        // if(this.timerToShoot >= TIME_NEEDED_TO_SHOOT) {
+        //     this.canShoot = true
+        //     this.timerToShoot = 0
+        //     this.gun.restArrow.visible = true
+        // }
         
     }
 
     spawnKey(config) {
+
         const key = new Key(this.scene, config)
         this.keysEntity.push(key)
     }
+
+    // função para a gente poder organizar melhor os eventos do jogo
+    // criado pra tratar caso do receptaculo consumir as chaves
+    handleEvent(event) {
+        
+        const { type, body } = event
+        console.log(event);
+
+        // identifica cada caso e retorna para onde a função foi chamada
+        switch(type) {
+            case EVENTS.CONSUME_KEY:
+                return this.handleConsumeKey(body)
+
+        }
+    }
+
+    handleConsumeKey(body) {
+        const { key } = body 
+
+        // remove a chave e retorna se deu certo
+        if(this.keys.has(key)) {
+            this.keys.delete(key)
+            this.updateKeys()
+            return true
+        } else return false
+    }
+
+    collectAllKeys() {
+        Object.values(KEYS).forEach(key => {
+            this.keys.add(key);
+        });
+
+        this.updateKeys();
+    }
+
+    checkModelsLoading() {
+        return Object.values(this.models).every(model => model.loaded)
+    }
+
 }

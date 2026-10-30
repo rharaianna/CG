@@ -4,6 +4,7 @@ import { STATUS, BEHAVIOR } from './enemy.enums.js';
 import { Entity } from './Entity.js';
 import * as SkeletonUtils from "../../../build/jsm/utils/SkeletonUtils.js"
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { KEYS_CONFIG } from './key.config.js';
 
 export class Enemy extends Entity {
     constructor(scene, movementArea, config) {
@@ -12,7 +13,7 @@ export class Enemy extends Entity {
         const {
             name, 
             dimensions, 
-            color,
+            key,
             life,
             behavior,
             speed,
@@ -23,10 +24,15 @@ export class Enemy extends Entity {
         this.config = config
         this.scene = scene
         this.respawn = false
+        this.enabled = true
         this.enemyDimensions = dimensions
         this.speed = speed
         this.life = life
-        this.color = color
+
+        // pega a chave e a cor correspondente
+        this.key = key;
+        this.color = KEYS_CONFIG[key].color;
+
         this.model = model
         this.ghost = null
         this.minProximity = minProximity
@@ -158,7 +164,7 @@ export class Enemy extends Entity {
 
     // a chave tem a exata cor do inimigo
     getKey() {
-        return this.color
+        return this.key
     }
 
     getPosition() {
@@ -296,8 +302,14 @@ export class Enemy extends Entity {
         }
     }
 
+    setEnabled(enabled) {
+        this.enabled = enabled
+        this.mesh.visible = enabled
+    }
+
     // recebe os ticks do jogo e coordena a logica
     update(deltaTime, playerPosition, isPlayerMoving) {
+        if (!this.enabled) return
         
         // sempre roda, qualquer que seja o estado
         this.updateHitbox()
@@ -345,17 +357,14 @@ export class Enemy extends Entity {
     attachModel() {
         if (this.ghost || !this.model || !this.model.loaded) return
 
-        // clone() comum quebra modelos com esqueleto; SkeletonUtils.clone é seguro nos dois casos
         this.ghost = SkeletonUtils.clone(this.model.object)
 
-        // ajusta o tamanho do fantasma para caber na caixa do inimigo
         const box = new THREE.Box3().setFromObject(this.ghost)
         const size = new THREE.Vector3()
         box.getSize(size)
         const fator = this.enemyDimensions.height / size.y
         this.ghost.scale.multiplyScalar(fator)
 
-        // alinha os pés do fantasma com a base da caixa
         box.setFromObject(this.ghost)
         this.ghost.position.y = -this.enemyDimensions.height / 2 - box.min.y
 
