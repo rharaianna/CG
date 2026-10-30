@@ -13,7 +13,7 @@ import { Capsule } from '../../../build/jsm/math/Capsule.js';
  * @property {bollean} playerOnFloor - Indica se o player está ou não no chão
  */
 
-const GRAVITY = 100
+const GRAVITY = 80
 
 export class PlayerPhysics {
     constructor(worldOctree, initialPosition, playerHeight) {
@@ -103,7 +103,7 @@ export class PlayerPhysics {
            -> 4 é uma constante que controla a "intensidade" do amortecimento (quanto maior, mais rápido 
               a velocidade é reduzida).
         */
-        let damping = Math.exp(-7 * deltaTime) - 1;
+        let damping = Math.exp(-6 * deltaTime) - 1;
 
         // física da queda
         if (!this.playerOnFloor) {
