@@ -77,7 +77,7 @@ export class Bridge extends Model {
         platform.translateZ(corridor_depth)
         platform.rotateY(Math.PI / 2)
         walkway.translateZ((9.89 * this.depth) / 40)
-        walkway.translateY(0.01 + this.height / 3)
+        walkway.translateY(0.05 + this.height / 3)
 
 
     }
