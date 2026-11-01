@@ -6,7 +6,7 @@ export class Key extends Entity {
     constructor(scene, config) {
         super(scene)
 
-        const { key, position, collectible = true } = config;
+        const { key, position, collectible = true, radius = 0.2, floatHeight = 1 } = config;
   
         this.key = key
         this.color = KEYS_CONFIG[key].color
@@ -14,12 +14,14 @@ export class Key extends Entity {
         this.speed = 0;
         this.gravity = 9.8;
         this.floating = false;
+        this.radius = radius
+        this.floatHeight = floatHeight
         
         this.floatTime = 0;
         this.initialY = 0;
         
         this.sphere = new THREE.Mesh(
-            new THREE.SphereGeometry(0.2, 32, 32), 
+            new THREE.SphereGeometry(radius, 32, 32), 
             new THREE.MeshPhongMaterial({ 
                 color: this.color, 
                 emissive: this.color,
@@ -58,7 +60,6 @@ export class Key extends Entity {
         const radius = this.sphere.geometry.parameters.radius;
         const direction = new THREE.Vector3(0, -1, 0);
         const movement = this.speed * deltaTime;
-        const minHeight = 1
 
         const ray = new THREE.Ray(this.position.clone(), direction);
 
@@ -72,7 +73,7 @@ export class Key extends Entity {
         if (this.floating) {
 
             // sobe até atingir uma altura minima
-            if(this.position.y < floorY + minHeight) {
+            if(this.position.y < floorY + this.floatHeight) {
                 this.speed += gravity * 0.5 * deltaTime;
                 this.position.add(direction.clone().multiplyScalar(-movement));
             }
@@ -103,8 +104,7 @@ export class Key extends Entity {
     // inicia comportamento de flutuar
     animateFloating(deltaTime, floorY) {
 
-        const minHeight = 1.5
-        const amplitude = 0.8 * minHeight
+        const amplitude = 0.8 * this.floatHeight
         const velocity = 2;
 
         this.floatTime += deltaTime;
@@ -112,7 +112,7 @@ export class Key extends Entity {
         // p nao dar ruim
         this.floatTime %= (2 * Math.PI) / velocity;
 
-        this.position.y = floorY + minHeight + amplitude * (1 - Math.cos(this.floatTime * velocity)) / 2;
+        this.position.y = floorY + this.floatHeight + amplitude * (1 - Math.cos(this.floatTime * velocity)) / 2;
     
         this.sphere.position.copy(this.position)
         this.light.position.copy(this.position)

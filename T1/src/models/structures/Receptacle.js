@@ -47,7 +47,7 @@ export class Receptacle extends Model {
             const position = this.worldPosition.clone()
             position.y += this.config.height
             
-            this.keyEntity = new Key(this.scene, { key: this.key, position, collectible: false })
+            this.keyEntity = new Key(this.scene, { key: this.key, position, collectible: false, radius: 0.35, floatHeight: 0.9 })
             this.active = true;
         }
 

@@ -61,7 +61,7 @@ export function makeCastleConfig(WIDTH, DEPTH, SCALE) {
     const BASE_RADIUS = 10 * SCALE
 
     //Receptacle
-    const RECEPTACLE_HEIGHT = 3*SCALE
+    const RECEPTACLE_HEIGHT = 2*SCALE
     const RECEPTACLE_WIDTH = 1.5*SCALE
 
 

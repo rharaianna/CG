@@ -9,7 +9,7 @@ export const KEYS = {
 // caso mudemos as cores
 export const KEYS_CONFIG = {
     [KEYS.FIRST]: {
-        color: "#3a8500",
+        color: "#5a8859",
     },
     [KEYS.SECOND]: {
         color: "#009278",
