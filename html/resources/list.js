@@ -61,7 +61,16 @@ var list = {
 			"Textures - Extras":  {
 				"Transition": "html/textureExtraTransitionInfo",            
             "Traversing": "html/textureExtraTraversingInfo",            
-			},         
+			},
+			"Shaders":  {
+				"Info": "html/shadersInfoInfo",                                    
+				"Basic": "html/shadersBasicInfo",	                        
+				"Phong": "html/shadersPhongInfo",            
+				"Mountain": "html/shadersMountainInfo",	            
+            "Fire": "html/shadersFireInfo",	
+            "Water": "html/shadersWaterInfo",						            
+            "Wavy Object": "html/shadersObjetoOnduladoInfo",	            
+			},		          
 			"Realism":  {
             "Ray Tracing  (GLSL)": "html/rayTracingGLSLExampleInfo",
 				"Path Tracing (GLSL)": "html/pathTracingExampleInfo",            
@@ -108,10 +117,6 @@ var list = {
 				"Fly Controls":"html/exampleFlyControlInfo",		
 				"Joystick Elements":"html/exampleJoystickInfo",						
 			},
-			"Shaders":  {
-				"Water": "html/exampleShaderWaterInfo",				
-				"Fire": "html/exampleShaderFireInfo",				            
-			},			
 			"Auxiliary":  {
 				"Loading Screen": "html/exampleLoadingScreenInfo",
 				"Loading Screen with button": "html/exampleLoadingScreenWithButtonInfo",				
