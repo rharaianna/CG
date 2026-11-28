@@ -13,10 +13,6 @@ export const materials = {
         color: "#312921",
 
     }),
-    water: new THREE.MeshLambertMaterial({
-        color: "#2a5a85",
-
-    }),
     ghost: new THREE.MeshLambertMaterial({
         color: "#dde6ff",
         transparent: !true,

@@ -5,6 +5,7 @@ import { House } from '../models/buildings/House.js';
 import { materials } from '../models/material.configs.js';
 import { Floor } from '../models/structures/Floor.js';
 import { config as houseConfig } from '../models/buildings/house.config.js';
+import { WaterSurface } from '../models/WaterSurface.js';
 
 export class World {
     constructor(scene) {
@@ -12,6 +13,7 @@ export class World {
         this.collisionEnabledGroup = new THREE.Group();
         this.collisionDisabledGroup = new THREE.Group();
 
+        this.water = new WaterSurface(scene);
         // Show axes (parameter is size of each axis)
         let axesHelper = new THREE.AxesHelper(100);
         //scene.add(axesHelper);
@@ -66,6 +68,7 @@ export class World {
 
     update(deltaTime, playerPosition, isPlayerMoving, handleEvent) {
         this.castle.update(deltaTime, playerPosition, isPlayerMoving, handleEvent)
+        this.water.update(deltaTime);
     }
 
     getInicialPosition() {
